@@ -4,9 +4,13 @@ import static com.example.demo.common.ErrorMessage.SERIES_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 
 import com.example.demo.common.exception.ApplicationException;
+import com.example.demo.entity.Collection;
 import com.example.demo.entity.Series;
+import com.example.demo.repository.CollectionRepository;
 import com.example.demo.repository.SeriesRepository;
 import com.example.demo.request.CreateSeriesRequest;
 import com.example.demo.request.UpdateSeriesRequest;
@@ -15,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -27,6 +32,9 @@ class SeriesServiceTest {
     @Autowired
     private SeriesRepository seriesRepository;
 
+    @MockitoBean
+    private CollectionRepository collectionRepository;
+
     @DisplayName("시리즈 생성 성공")
     @Test
     void createRecord() {
@@ -36,6 +44,8 @@ class SeriesServiceTest {
         request.setContent("시리즈내용");
         request.setCollectionId(0L);
         request.setUse(true);
+
+        given(collectionRepository.findById(anyLong())).willReturn(Optional.ofNullable(Collection.builder().build()));
 
         //when
         Series series = seriesService.createSeries(request);
@@ -51,11 +61,14 @@ class SeriesServiceTest {
     @Test
     void updateRecord() {
         //given
+
         CreateSeriesRequest request = new CreateSeriesRequest();
         request.setName("시리즈제목");
         request.setContent("시리즈내용");
         request.setCollectionId(0L);
         request.setUse(true);
+
+        given(collectionRepository.findById(anyLong())).willReturn(Optional.ofNullable(Collection.builder().build()));
 
         Series series = seriesService.createSeries(request);
 
@@ -85,7 +98,10 @@ class SeriesServiceTest {
         updateRequest.setId(0L);
         updateRequest.setName("수정된제목");
         updateRequest.setContent("수정된내용");
+        updateRequest.setCollectionId(1L);
         updateRequest.setUse(false);
+
+        given(collectionRepository.findById(anyLong())).willReturn(Optional.ofNullable(Collection.builder().build()));
 
         //when
         //then
@@ -101,6 +117,8 @@ class SeriesServiceTest {
         request.setContent("시리즈내용");
         request.setCollectionId(0L);
         request.setUse(true);
+
+        given(collectionRepository.findById(anyLong())).willReturn(Optional.ofNullable(Collection.builder().build()));
 
         Series series = seriesService.createSeries(request);
 
