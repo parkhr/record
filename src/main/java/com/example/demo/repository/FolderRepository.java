@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface FolderRepository extends CrudRepository<Folder, Long> {
 
-//    List<Series> findByCollectionId(long collectionId);
+    List<Folder> findBySeriesId(long seriesId);
 }

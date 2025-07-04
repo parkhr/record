@@ -10,9 +10,12 @@ import static org.mockito.BDDMockito.given;
 
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.Collection;
+import com.example.demo.entity.Folder;
 import com.example.demo.entity.Series;
 import com.example.demo.repository.CollectionRepository;
+import com.example.demo.repository.FolderRepository;
 import com.example.demo.repository.SeriesRepository;
+import com.example.demo.request.CreateFolderRequest;
 import com.example.demo.request.CreateSeriesRequest;
 import com.example.demo.request.UpdateSeriesRequest;
 import java.util.Optional;
@@ -31,10 +34,16 @@ class SeriesServiceTest {
     private SeriesService seriesService;
 
     @Autowired
+    private FolderService folderService;
+
+    @Autowired
     private SeriesRepository seriesRepository;
 
     @MockitoBean
     private CollectionRepository collectionRepository;
+
+    @Autowired
+    private FolderRepository folderRepository;
 
     @DisplayName("시리즈 생성 성공")
     @Test
@@ -125,6 +134,14 @@ class SeriesServiceTest {
 
         Series series = seriesService.createSeries(request);
 
+        CreateFolderRequest request2 = new CreateFolderRequest();
+        request2.setName("폴더제목");
+        request2.setContent("폴더내용");
+        request2.setSeriesId(series.getId());
+        request2.setUse(true);
+
+        Folder folder = folderService.createFolder(request2);
+
         //when
         seriesService.deleteSeries(series.getId());
 
@@ -132,6 +149,12 @@ class SeriesServiceTest {
         Optional<Series> deletedSeries = seriesRepository.findById(series.getId());
         assertTrue(deletedSeries.isPresent());
         assertNotNull(deletedSeries.get().getDeletedAt());
+
+        //when
+        Folder findFolder = folderRepository.findById(folder.getId()).get();
+
+        //then
+        assertThat(findFolder.getSeriesId()).isEqualTo(0L);
     }
 
     @DisplayName("시리즈 삭제 실패 (시리즈이 존재하지 않는 경우)")

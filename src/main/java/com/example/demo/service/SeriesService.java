@@ -4,11 +4,14 @@ import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.SERIES_NOT_FOUND;
 
 import com.example.demo.common.exception.ApplicationException;
+import com.example.demo.entity.Folder;
 import com.example.demo.entity.Series;
 import com.example.demo.repository.CollectionRepository;
+import com.example.demo.repository.FolderRepository;
 import com.example.demo.repository.SeriesRepository;
 import com.example.demo.request.CreateSeriesRequest;
 import com.example.demo.request.UpdateSeriesRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +22,7 @@ public class SeriesService {
 
     private final SeriesRepository seriesRepository;
     private final CollectionRepository collectionRepository;
+    private final FolderRepository folderRepository;
 
     @Transactional
     public Series createSeries(CreateSeriesRequest request) {
@@ -40,11 +44,19 @@ public class SeriesService {
     }
 
     @Transactional
-    public void deleteSeries(long collectionId) {
-        Series series = seriesRepository.findById(collectionId).orElseThrow(() -> new ApplicationException(SERIES_NOT_FOUND));
+    public void deleteSeries(long seriesId) {
+        Series series = seriesRepository.findById(seriesId).orElseThrow(() -> new ApplicationException(SERIES_NOT_FOUND));
 
         series.delete();
         seriesRepository.save(series);
+
+        // 상위 시리즈를 가지고 있는 폴더 처리
+        List<Folder> findFolder = folderRepository.findBySeriesId(seriesId);
+
+        for (Folder folder : findFolder) {
+            folder.moveTempSeries();
+            folderRepository.save(folder);
+        }
     }
 
 }
