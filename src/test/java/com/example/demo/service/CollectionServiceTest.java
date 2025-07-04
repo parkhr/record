@@ -7,8 +7,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.Collection;
+import com.example.demo.entity.Series;
 import com.example.demo.repository.CollectionRepository;
+import com.example.demo.repository.SeriesRepository;
 import com.example.demo.request.CreateCollectionRequest;
+import com.example.demo.request.CreateSeriesRequest;
 import com.example.demo.request.UpdateCollectionRequest;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +28,13 @@ class CollectionServiceTest {
     private CollectionService collectionService;
 
     @Autowired
+    private SeriesService seriesService;
+
+    @Autowired
     private CollectionRepository collectionRepository;
+
+    @Autowired
+    private SeriesRepository seriesRepository;
 
     @DisplayName("컬렉션 생성 성공")
     @Test
@@ -84,7 +93,8 @@ class CollectionServiceTest {
 
         //when
         //then
-        assertThatThrownBy(() -> collectionService.updateCollection(updateRequest)).isInstanceOf(ApplicationException.class).hasMessage(COLLECTION_NOT_FOUND);
+        assertThatThrownBy(() -> collectionService.updateCollection(updateRequest)).isInstanceOf(ApplicationException.class)
+            .hasMessage(COLLECTION_NOT_FOUND);
     }
 
     @DisplayName("컬렉션 삭제 성공")
@@ -98,6 +108,14 @@ class CollectionServiceTest {
 
         Collection collection = collectionService.createCollection(request);
 
+        CreateSeriesRequest request2 = new CreateSeriesRequest();
+        request2.setName("시리즈제목1");
+        request2.setContent("시리즈내용1");
+        request2.setCollectionId(collection.getId());
+        request2.setUse(true);
+
+        Series series = seriesService.createSeries(request2);
+
         //when
         collectionService.deleteCollection(collection.getId());
 
@@ -105,6 +123,12 @@ class CollectionServiceTest {
         Optional<Collection> deletedCollection = collectionRepository.findById(collection.getId());
         assertTrue(deletedCollection.isPresent());
         assertNotNull(deletedCollection.get().getDeletedAt());
+
+        //when
+        Series findSeries = seriesRepository.findById(series.getId()).get();
+
+        //then
+        assertThat(findSeries.getCollectionId()).isEqualTo(0L);
     }
 
     @DisplayName("컬렉션 삭제 실패 (컬렉션이 존재하지 않는 경우)")

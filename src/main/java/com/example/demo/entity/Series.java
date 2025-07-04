@@ -62,4 +62,8 @@ public class Series {
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void moveTempCollection() {
+        this.collectionId = 0;
+    }
 }

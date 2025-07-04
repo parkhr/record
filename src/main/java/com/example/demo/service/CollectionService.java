@@ -4,9 +4,12 @@ import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
 
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.Collection;
+import com.example.demo.entity.Series;
 import com.example.demo.repository.CollectionRepository;
+import com.example.demo.repository.SeriesRepository;
 import com.example.demo.request.CreateCollectionRequest;
 import com.example.demo.request.UpdateCollectionRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CollectionService {
 
     private final CollectionRepository collectionRepository;
+    private final SeriesRepository seriesRepository;
 
     @Transactional
     public Collection createCollection(CreateCollectionRequest request) {
@@ -39,6 +43,14 @@ public class CollectionService {
 
         collection.delete();
         collectionRepository.save(collection);
+
+        // 상위 컬렉션을 가지고 있는 시리즈 처리
+        List<Series> findSeries = seriesRepository.findByCollectionId(collectionId);
+
+        for (Series series : findSeries) {
+            series.moveTempCollection();
+            seriesRepository.save(series);
+        }
     }
 
 }
