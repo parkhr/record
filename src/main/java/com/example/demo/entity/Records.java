@@ -1,7 +1,9 @@
 package com.example.demo.entity;
 
+import static com.example.demo.enums.RecordStatus.DELETE;
+
+import com.example.demo.enums.RecordStatus;
 import com.example.demo.request.CreateRecordRequest;
-import com.example.demo.request.DispatchRecordRequest;
 import com.example.demo.request.UpdateRecordRequest;
 import com.example.demo.request.UpdateRecordStatusRequest;
 import com.example.demo.request.UpdateRecordVisibilityRequest;
@@ -31,7 +33,7 @@ public class Records {
     private String content;
 
     @Column("status")
-    private String status;
+    private RecordStatus status;
 
     @Column("visibility")
     private String visibility;
@@ -62,7 +64,7 @@ public class Records {
     }
 
     public void delete() {
-        this.status = "삭제";
+        this.status = DELETE;
         this.deletedAt = LocalDateTime.now();
     }
 

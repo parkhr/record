@@ -3,6 +3,9 @@ package com.example.demo.service;
 import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.RECORD_NOT_FOUND;
 import static com.example.demo.enums.Location.COLLECTION;
+import static com.example.demo.enums.RecordStatus.DELETE;
+import static com.example.demo.enums.RecordStatus.REGISTER;
+import static com.example.demo.enums.RecordStatus.TEMP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +49,7 @@ class RecordServiceTest {
         CreateRecordRequest request = new CreateRecordRequest();
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
-        request.setStatus("임시");
+        request.setStatus(TEMP);
         request.setVisibility("공개");
 
         //when
@@ -55,7 +58,7 @@ class RecordServiceTest {
         //then
         assertThat(record.getTitle()).isEqualTo("기록물제목");
         assertThat(record.getContent()).isEqualTo("기록물내용");
-        assertThat(record.getStatus()).isEqualTo("임시");
+        assertThat(record.getStatus()).isEqualTo(TEMP);
         assertThat(record.getVisibility()).isEqualTo("공개");
         assertNotNull(record.getCreatedAt());
     }
@@ -67,7 +70,7 @@ class RecordServiceTest {
         CreateRecordRequest request = new CreateRecordRequest();
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
-        request.setStatus("임시");
+        request.setStatus(TEMP);
         request.setVisibility("공개");
 
         Records record = recordService.createRecord(request);
@@ -108,7 +111,7 @@ class RecordServiceTest {
         CreateRecordRequest request = new CreateRecordRequest();
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
-        request.setStatus("임시");
+        request.setStatus(TEMP);
         request.setVisibility("공개");
 
         Records record = recordService.createRecord(request);
@@ -119,7 +122,7 @@ class RecordServiceTest {
         // then
         Optional<Records> deletedRecord = recordRepository.findById(record.getId());
         assertTrue(deletedRecord.isPresent());  // 1단계: 실제로는 DB엔 남아있고
-        assertEquals("삭제", deletedRecord.get().getStatus());  // 2단계: 상태가 "삭제"인지 확인
+        assertEquals(DELETE, deletedRecord.get().getStatus());  // 2단계: 상태가 "삭제"인지 확인
         assertNotNull(deletedRecord.get().getDeletedAt());  // 3단계: 삭제 시간도 찍혀있는지
     }
 
@@ -139,7 +142,7 @@ class RecordServiceTest {
         CreateRecordRequest request = new CreateRecordRequest();
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
-        request.setStatus("임시");
+        request.setStatus(TEMP);
         request.setVisibility("공개");
 
         Records record = recordService.createRecord(request);
@@ -177,20 +180,20 @@ class RecordServiceTest {
         CreateRecordRequest request = new CreateRecordRequest();
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
-        request.setStatus("임시");
+        request.setStatus(TEMP);
         request.setVisibility("공개");
 
         Records record = recordService.createRecord(request);
 
         UpdateRecordStatusRequest request2 = new UpdateRecordStatusRequest();
         request2.setId(record.getId());
-        request2.setStatus("정식");
+        request2.setStatus(REGISTER);
 
         //when
         Records updatedRecord = recordService.updateStatus(request2);
 
         // then
-        assertThat(updatedRecord.getStatus()).isEqualTo("정식");
+        assertThat(updatedRecord.getStatus()).isEqualTo(REGISTER);
         assertNotNull(updatedRecord.getUpdatedAt());
     }
 
@@ -201,7 +204,7 @@ class RecordServiceTest {
 
         UpdateRecordStatusRequest request2 = new UpdateRecordStatusRequest();
         request2.setId(0L);
-        request2.setStatus("정식");
+        request2.setStatus(REGISTER);
 
         //when
         // then
@@ -222,7 +225,7 @@ class RecordServiceTest {
         CreateRecordRequest request2 = new CreateRecordRequest();
         request2.setTitle("기록물제목");
         request2.setContent("기록물내용");
-        request2.setStatus("임시");
+        request2.setStatus(TEMP);
         request2.setVisibility("공개");
 
         Records record = recordService.createRecord(request2);
@@ -263,7 +266,7 @@ class RecordServiceTest {
         CreateRecordRequest request2 = new CreateRecordRequest();
         request2.setTitle("기록물제목");
         request2.setContent("기록물내용");
-        request2.setStatus("임시");
+        request2.setStatus(TEMP);
         request2.setVisibility("공개");
 
         Records record = recordService.createRecord(request2);

@@ -1,5 +1,6 @@
 package com.example.demo.request;
 
+import com.example.demo.enums.RecordStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,5 +9,5 @@ import lombok.Setter;
 public class UpdateRecordStatusRequest {
 
     private Long id;
-    private String status;
+    private RecordStatus status;
 }
