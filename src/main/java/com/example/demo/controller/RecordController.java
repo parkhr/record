@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.request.CreateRecordRequest;
+import com.example.demo.request.DispatchRecordRequest;
 import com.example.demo.request.SearchRecordRequest;
 import com.example.demo.request.UpdateRecordRequest;
 import com.example.demo.request.UpdateRecordStatusRequest;
@@ -63,5 +64,11 @@ public class RecordController {
 
         recordService.updateStatus(request);
         return ResponseEntity.ok().build();
+    }
+
+    // 기록물 배치
+    @PostMapping("/dispatch")
+    public ResponseEntity<Object> dispatchRecord(DispatchRecordRequest request) {
+        return null;
     }
 }
