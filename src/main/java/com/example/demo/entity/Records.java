@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import static com.example.demo.enums.RecordStatus.DELETE;
+import static com.example.demo.enums.RecordStatus.REGISTER;
 
 import com.example.demo.enums.RecordStatus;
 import com.example.demo.request.CreateRecordRequest;
@@ -48,13 +49,8 @@ public class Records {
     private LocalDateTime deletedAt;
 
     public static Records createTempRecord(CreateRecordRequest request) {
-        return Records.builder()
-            .title(request.getTitle())
-            .content(request.getContent())
-            .status(request.getStatus())
-            .visibility(request.getVisibility())
-            .createdAt(LocalDateTime.now())
-            .build();
+        return Records.builder().title(request.getTitle()).content(request.getContent()).status(request.getStatus())
+            .visibility(request.getVisibility()).createdAt(LocalDateTime.now()).build();
     }
 
     public void update(UpdateRecordRequest request) {
@@ -77,5 +73,9 @@ public class Records {
     public void updateStatus(UpdateRecordStatusRequest request) {
         this.status = request.getStatus();
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean isAvailableLoan() {
+        return this.deletedAt == null && this.status == REGISTER && this.visibility.equals("공개");
     }
 }

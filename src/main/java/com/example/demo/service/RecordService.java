@@ -2,9 +2,9 @@ package com.example.demo.service;
 
 import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.FOLDER_NOT_FOUND;
+import static com.example.demo.common.ErrorMessage.INVALID_RECORD_LOCATION_TYPE;
 import static com.example.demo.common.ErrorMessage.RECORD_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.SERIES_NOT_FOUND;
-import static com.example.demo.enums.Location.COLLECTION;
 
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.RecordLocation;
@@ -92,7 +92,7 @@ public class RecordService {
                 collectionRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
             case SERIES -> seriesRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(SERIES_NOT_FOUND));
             case FOLDER -> folderRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(FOLDER_NOT_FOUND));
-            default -> throw new ApplicationException("기록물을 배치할 계층 타입이 아닙니다.");
+            default -> throw new ApplicationException(INVALID_RECORD_LOCATION_TYPE);
         }
 
         RecordLocation recordLocation = RecordLocation.builder()
