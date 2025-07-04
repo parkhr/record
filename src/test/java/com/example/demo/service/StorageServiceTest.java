@@ -14,10 +14,15 @@ import com.example.demo.entity.Records;
 import com.example.demo.entity.StorageOut;
 import com.example.demo.request.CreateRecordRequest;
 import com.example.demo.request.LoanRequest;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -52,6 +57,51 @@ class StorageServiceTest {
         assertThat(storageOut.getRecordId()).isEqualTo(record.getId());
         assertNotNull(storageOut.getDueDate());
         assertNotNull(storageOut.getCreatedAt());
+    }
+
+    @DisplayName("대출 성공 (동시성 체크)")
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void loan_2() throws InterruptedException {
+        //given
+        CreateRecordRequest request = new CreateRecordRequest();
+        request.setTitle("기록물제목");
+        request.setContent("기록물내용");
+        request.setStatus(REGISTER);
+        request.setVisibility("공개");
+
+        Records record = recordService.createRecord(request);
+
+        LoanRequest request2 = new LoanRequest();
+        request2.setRecordId(record.getId());
+
+        //when
+        ExecutorService executor = Executors.newFixedThreadPool(100);
+        CountDownLatch latch = new CountDownLatch(100);
+
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger failureCount = new AtomicInteger();
+
+        Runnable task = () -> {
+            try {
+                storageService.loan(request2);
+                successCount.incrementAndGet();
+            } catch (ApplicationException e) {
+                System.out.println(e.getMessage());
+                failureCount.incrementAndGet();
+            } finally {
+                latch.countDown();
+            }
+        };
+
+        for (int i = 0; i < 100; i++) {
+            executor.submit(task);
+        }
+        latch.await();
+        executor.shutdown();
+
+        assertThat(successCount.get()).isEqualTo(1);
+        assertThat(failureCount.get()).isEqualTo(99);
     }
 
     @DisplayName("대출 실패 (기록물이 없는 경우)")

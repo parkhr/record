@@ -36,8 +36,7 @@ public class StorageService {
             throw new ApplicationException(RECORD_NOT_AVAILABLE_FOR_LOAN);
         }
 
-        //TODO lock
-        Optional<StorageOut> storageOutOptional = storageOutRepository.findByRecordIdAndDeletedAtIsNull(request.getRecordId());
+        Optional<StorageOut> storageOutOptional = storageOutRepository.findByRecordIdAndDeletedAtIsNullForUpdate(request.getRecordId());
 
         if (storageOutOptional.isPresent()) {
             throw new ApplicationException(RECORD_ALREADY_ON_LOAN);
