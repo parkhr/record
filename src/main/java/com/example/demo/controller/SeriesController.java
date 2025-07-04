@@ -34,10 +34,10 @@ public class SeriesController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{recordId}")
-    public ResponseEntity<Object> deleteSeries(@PathVariable("recordId") Long recordId) {
+    @DeleteMapping("/{seriesId}")
+    public ResponseEntity<Object> deleteSeries(@PathVariable("seriesId") Long seriesId) {
 
-        seriesService.deleteSeries(recordId);
+        seriesService.deleteSeries(seriesId);
         return ResponseEntity.ok().build();
     }
 }
