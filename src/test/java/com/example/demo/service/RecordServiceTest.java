@@ -4,6 +4,7 @@ import static com.example.demo.common.ErrorMessage.RECORD_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.Records;
@@ -47,6 +48,7 @@ class RecordServiceTest {
         assertThat(record.getContent()).isEqualTo("기록물내용");
         assertThat(record.getStatus()).isEqualTo("임시");
         assertThat(record.getVisibility()).isEqualTo("공개");
+        assertNotNull(record.getCreatedAt());
     }
 
     @DisplayName("기록물 수정 성공")
@@ -72,6 +74,7 @@ class RecordServiceTest {
         //then
         assertThat(updatedRecord.getTitle()).isEqualTo("수정된제목");
         assertThat(updatedRecord.getContent()).isEqualTo("수정된내용");
+        assertNotNull(updatedRecord.getUpdatedAt());
     }
 
     @DisplayName("기록물 수정 실패 (기록물이 존재하지 않는 경우)")
@@ -141,6 +144,7 @@ class RecordServiceTest {
 
         // then
         assertThat(updatedRecord.getVisibility()).isEqualTo("비공개");
+        assertNotNull(updatedRecord.getUpdatedAt());
     }
 
     @DisplayName("기록물 공개유무 수정 실패 (기록물이 없는 경우)")
@@ -178,6 +182,7 @@ class RecordServiceTest {
 
         // then
         assertThat(updatedRecord.getStatus()).isEqualTo("정식");
+        assertNotNull(updatedRecord.getUpdatedAt());
     }
 
     @DisplayName("기록물 상태 수정 실패 (기록물이 없는 경우)")

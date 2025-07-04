@@ -57,6 +57,7 @@ public class Series {
         this.content = request.getContent();
         this.isUse = request.isUse();
         this.collectionId = request.getCollectionId();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void delete() {
@@ -65,5 +66,6 @@ public class Series {
 
     public void moveTempCollection() {
         this.collectionId = 0;
+        this.updatedAt = LocalDateTime.now();
     }
 }

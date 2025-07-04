@@ -4,6 +4,7 @@ import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.Collection;
@@ -52,6 +53,7 @@ class CollectionServiceTest {
         assertThat(collection.getName()).isEqualTo("컬렉션제목");
         assertThat(collection.getContent()).isEqualTo("컬렉션내용");
         assertThat(collection.isUse()).isTrue();
+        assertNotNull(collection.getCreatedAt());
     }
 
     @DisplayName("컬렉션 수정 성공")
@@ -78,6 +80,7 @@ class CollectionServiceTest {
         assertThat(updateCollection.getName()).isEqualTo("수정된제목");
         assertThat(updateCollection.getContent()).isEqualTo("수정된내용");
         assertThat(updateCollection.isUse()).isFalse();
+        assertNotNull(updateCollection.getUpdatedAt());
     }
 
     @DisplayName("컬렉션 수정 실패 (컬렉션이 존재하지 않는 경우)")

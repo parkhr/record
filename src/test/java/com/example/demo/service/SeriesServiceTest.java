@@ -4,6 +4,7 @@ import static com.example.demo.common.ErrorMessage.SERIES_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
@@ -55,6 +56,7 @@ class SeriesServiceTest {
         assertThat(series.getContent()).isEqualTo("시리즈내용");
         assertThat(series.isUse()).isTrue();
         assertThat(series.getCollectionId()).isEqualTo(0L);
+        assertNotNull(series.getCreatedAt());
     }
 
     @DisplayName("시리즈 수정 성공")
@@ -87,6 +89,7 @@ class SeriesServiceTest {
         assertThat(updateSeries.getContent()).isEqualTo("수정된내용");
         assertThat(updateSeries.isUse()).isFalse();
         assertThat(updateSeries.getCollectionId()).isEqualTo(1L);
+        assertNotNull(updateSeries.getUpdatedAt());
     }
 
     @DisplayName("시리즈 수정 실패 (시리즈이 존재하지 않는 경우)")

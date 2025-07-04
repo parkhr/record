@@ -52,6 +52,7 @@ public class Collection {
         this.name = request.getName();
         this.content = request.getContent();
         this.isUse = request.isUse();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void delete() {
