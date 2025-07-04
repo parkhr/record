@@ -20,7 +20,7 @@ public class CollectionService {
     @Transactional
     public Collection createCollection(CreateCollectionRequest request) {
 
-        return collectionRepository.save(Collection.createTempRecord(request));
+        return collectionRepository.save(Collection.createCollection(request));
     }
 
     @Transactional

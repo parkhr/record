@@ -39,7 +39,7 @@ public class Collection {
     @Column("deletedAt")
     private LocalDateTime deletedAt;
 
-    public static Collection createTempRecord(CreateCollectionRequest request) {
+    public static Collection createCollection(CreateCollectionRequest request) {
         return Collection.builder()
             .name(request.getName())
             .content(request.getContent())

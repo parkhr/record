@@ -21,23 +21,23 @@ public class CollectionController {
     private final CollectionService collectionService;
 
     @PostMapping
-    public ResponseEntity<Object> createRecord(@RequestBody CreateCollectionRequest request) {
+    public ResponseEntity<Object> createCollection(@RequestBody CreateCollectionRequest request) {
 
         collectionService.createCollection(request);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping
-    public ResponseEntity<Object> updateRecord(@RequestBody UpdateCollectionRequest request) {
+    public ResponseEntity<Object> updateCollection(@RequestBody UpdateCollectionRequest request) {
 
         collectionService.updateCollection(request);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{recordId}")
-    public ResponseEntity<Object> deleteRecord(@PathVariable("recordId") Long recordId) {
+    @DeleteMapping("/{collectionId}")
+    public ResponseEntity<Object> deleteCollection(@PathVariable("collectionId") Long collectionId) {
 
-        collectionService.deleteCollection(recordId);
+        collectionService.deleteCollection(collectionId);
         return ResponseEntity.ok().build();
     }
 }
