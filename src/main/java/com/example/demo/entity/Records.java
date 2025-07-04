@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import com.example.demo.request.CreateRecordRequest;
+import com.example.demo.request.DispatchRecordRequest;
 import com.example.demo.request.UpdateRecordRequest;
 import com.example.demo.request.UpdateRecordStatusRequest;
 import com.example.demo.request.UpdateRecordVisibilityRequest;

@@ -1,16 +1,27 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
+import static com.example.demo.common.ErrorMessage.FOLDER_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.RECORD_NOT_FOUND;
+import static com.example.demo.common.ErrorMessage.SERIES_NOT_FOUND;
+import static com.example.demo.enums.Location.COLLECTION;
 
 import com.example.demo.common.exception.ApplicationException;
+import com.example.demo.entity.RecordLocation;
 import com.example.demo.entity.Records;
+import com.example.demo.repository.CollectionRepository;
+import com.example.demo.repository.FolderRepository;
+import com.example.demo.repository.RecordLocationRepository;
 import com.example.demo.repository.RecordRepository;
+import com.example.demo.repository.SeriesRepository;
 import com.example.demo.request.CreateRecordRequest;
+import com.example.demo.request.DispatchRecordRequest;
 import com.example.demo.request.SearchRecordRequest;
 import com.example.demo.request.UpdateRecordRequest;
 import com.example.demo.request.UpdateRecordStatusRequest;
 import com.example.demo.request.UpdateRecordVisibilityRequest;
 import com.example.demo.response.SearchRecordResponse;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecordService {
 
     private final RecordRepository recordRepository;
+    private final CollectionRepository collectionRepository;
+    private final SeriesRepository seriesRepository;
+    private final FolderRepository folderRepository;
+    private final RecordLocationRepository recordLocationRepository;
 
     @Transactional
     public Records createRecord(CreateRecordRequest request) {
@@ -67,4 +82,26 @@ public class RecordService {
         return recordRepository.save(record);
     }
 
+    @Transactional
+    public RecordLocation dispatchRecord(DispatchRecordRequest request) {
+
+        recordRepository.findById(request.getRecordId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
+
+        switch (request.getLocationType()) {
+            case COLLECTION ->
+                collectionRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
+            case SERIES -> seriesRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(SERIES_NOT_FOUND));
+            case FOLDER -> folderRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(FOLDER_NOT_FOUND));
+            default -> throw new ApplicationException("기록물을 배치할 계층 타입이 아닙니다.");
+        }
+
+        RecordLocation recordLocation = RecordLocation.builder()
+            .recordId(request.getRecordId())
+            .locationId(request.getLocationId())
+            .locationType(request.getLocationType())
+            .createdAt(LocalDateTime.now())
+            .build();
+
+        return recordLocationRepository.save(recordLocation);
+    }
 }

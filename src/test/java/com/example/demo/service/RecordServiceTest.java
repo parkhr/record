@@ -1,15 +1,21 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.RECORD_NOT_FOUND;
+import static com.example.demo.enums.Location.COLLECTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.example.demo.common.exception.ApplicationException;
+import com.example.demo.entity.Collection;
+import com.example.demo.entity.RecordLocation;
 import com.example.demo.entity.Records;
 import com.example.demo.repository.RecordRepository;
+import com.example.demo.request.CreateCollectionRequest;
 import com.example.demo.request.CreateRecordRequest;
+import com.example.demo.request.DispatchRecordRequest;
 import com.example.demo.request.UpdateRecordRequest;
 import com.example.demo.request.UpdateRecordStatusRequest;
 import com.example.demo.request.UpdateRecordVisibilityRequest;
@@ -26,6 +32,9 @@ class RecordServiceTest {
 
     @Autowired
     private RecordService recordService;
+
+    @Autowired
+    private CollectionService collectionService;
 
     @Autowired
     private RecordRepository recordRepository;
@@ -197,5 +206,76 @@ class RecordServiceTest {
         //when
         // then
         assertThatThrownBy(() -> recordService.updateStatus(request2)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_NOT_FOUND);
+    }
+
+    @DisplayName("기록물 배치 성공")
+    @Test
+    void dispatch() {
+        //given
+        CreateCollectionRequest request = new CreateCollectionRequest();
+        request.setName("컬렉션제목");
+        request.setContent("컬렉션내용");
+        request.setUse(true);
+
+        Collection collection = collectionService.createCollection(request);
+
+        CreateRecordRequest request2 = new CreateRecordRequest();
+        request2.setTitle("기록물제목");
+        request2.setContent("기록물내용");
+        request2.setStatus("임시");
+        request2.setVisibility("공개");
+
+        Records record = recordService.createRecord(request2);
+
+        DispatchRecordRequest request3 = new DispatchRecordRequest();
+
+        request3.setRecordId(record.getId());
+        request3.setLocationId(collection.getId());
+        request3.setLocationType(COLLECTION);
+
+        //when
+        RecordLocation recordLocation = recordService.dispatchRecord(request3);
+
+        // then
+        assertThat(recordLocation.getRecordId()).isEqualTo(record.getId());
+        assertThat(recordLocation.getLocationId()).isEqualTo(collection.getId());
+        assertThat(recordLocation.getLocationType()).isEqualTo(COLLECTION);
+    }
+
+    @DisplayName("기록물 배치 실패 (기록물이 없는 경우)")
+    @Test
+    void dispatch_fail1() {
+        DispatchRecordRequest request3 = new DispatchRecordRequest();
+
+        request3.setRecordId(0L);
+        request3.setLocationId(0L);
+        request3.setLocationType(COLLECTION);
+
+        //when
+        // then
+        assertThatThrownBy(() -> recordService.dispatchRecord(request3)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_NOT_FOUND);
+    }
+
+    @DisplayName("기록물 배치 실패 (계층구조가 없는 경우)")
+    @Test
+    void dispatch_fail2() {
+
+        CreateRecordRequest request2 = new CreateRecordRequest();
+        request2.setTitle("기록물제목");
+        request2.setContent("기록물내용");
+        request2.setStatus("임시");
+        request2.setVisibility("공개");
+
+        Records record = recordService.createRecord(request2);
+
+        DispatchRecordRequest request3 = new DispatchRecordRequest();
+
+        request3.setRecordId(record.getId());
+        request3.setLocationId(0L);
+        request3.setLocationType(COLLECTION);
+
+        //when
+        // then
+        assertThatThrownBy(() -> recordService.dispatchRecord(request3)).isInstanceOf(ApplicationException.class).hasMessage(COLLECTION_NOT_FOUND);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.request;
 
+import com.example.demo.enums.Location;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,9 +12,9 @@ public class DispatchRecordRequest {
     @NotBlank
     private Long recordId;
 
-    private Long collectionId;
+    @NotBlank
+    private Long locationId;
 
-    private Long seriesId;
-
-    private Long folderId;
+    @NotBlank
+    private Location locationType;
 }

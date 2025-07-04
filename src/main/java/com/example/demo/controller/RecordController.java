@@ -69,6 +69,8 @@ public class RecordController {
     // 기록물 배치
     @PostMapping("/dispatch")
     public ResponseEntity<Object> dispatchRecord(DispatchRecordRequest request) {
-        return null;
+
+        recordService.dispatchRecord(request);
+        return ResponseEntity.ok().build();
     }
 }
