@@ -1,0 +1,49 @@
+CREATE TABLE `records` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  `content` varchar(100) NOT NULL,
+  `status` varchar(100) NOT NULL,
+  `visibility` varchar(100) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `collection` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `isUse` tinyint(1) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `series` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `isUse` tinyint(1) NOT NULL,
+  `collectionId` bigint NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `folder` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `isUse` tinyint(1) NOT NULL,
+  `seriesId` bigint NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
