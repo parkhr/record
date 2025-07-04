@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -83,7 +84,7 @@ class CollectionServiceTest {
 
         //when
         //then
-        assertThatThrownBy(() -> collectionService.updateCollection(updateRequest)).isInstanceOf(ApplicationException.class).hasMessage("MSG");
+        assertThatThrownBy(() -> collectionService.updateCollection(updateRequest)).isInstanceOf(ApplicationException.class).hasMessage(COLLECTION_NOT_FOUND);
     }
 
     @DisplayName("컬렉션 삭제 성공")
@@ -112,6 +113,6 @@ class CollectionServiceTest {
 
         //when
         // then
-        assertThatThrownBy(() -> collectionService.deleteCollection(0L)).isInstanceOf(ApplicationException.class).hasMessage("MSG");
+        assertThatThrownBy(() -> collectionService.deleteCollection(0L)).isInstanceOf(ApplicationException.class).hasMessage(COLLECTION_NOT_FOUND);
     }
 }

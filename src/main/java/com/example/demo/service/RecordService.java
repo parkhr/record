@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.RECORD_NOT_FOUND;
+
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.Records;
 import com.example.demo.repository.RecordRepository;
@@ -30,7 +32,7 @@ public class RecordService {
     @Transactional
     public Records updateRecord(UpdateRecordRequest request) {
 
-        Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException("MSG"));
+        Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
         record.update(request);
 
@@ -39,7 +41,7 @@ public class RecordService {
 
     @Transactional
     public void deleteRecord(long recordId) {
-        Records record = recordRepository.findById(recordId).orElseThrow(() -> new ApplicationException("MSG"));
+        Records record = recordRepository.findById(recordId).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
         record.delete();
         recordRepository.save(record);
@@ -51,7 +53,7 @@ public class RecordService {
 
     @Transactional
     public Records updateVisibility(UpdateRecordVisibilityRequest request) {
-        Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException("MSG"));
+        Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
         record.updateVisibility(request);
         return recordRepository.save(record);
@@ -59,7 +61,7 @@ public class RecordService {
 
     @Transactional
     public Records updateStatus(UpdateRecordStatusRequest request) {
-        Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException("MSG"));
+        Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
         record.updateStatus(request);
         return recordRepository.save(record);

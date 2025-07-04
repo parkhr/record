@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
+
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.Collection;
 import com.example.demo.repository.CollectionRepository;
@@ -24,7 +26,7 @@ public class CollectionService {
     @Transactional
     public Collection updateCollection(UpdateCollectionRequest request) {
 
-        Collection collection = collectionRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException("MSG"));
+        Collection collection = collectionRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
 
         collection.update(request);
 
@@ -33,7 +35,7 @@ public class CollectionService {
 
     @Transactional
     public void deleteCollection(long collectionId) {
-        Collection collection = collectionRepository.findById(collectionId).orElseThrow(() -> new ApplicationException("MSG"));
+        Collection collection = collectionRepository.findById(collectionId).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
 
         collection.delete();
         collectionRepository.save(collection);

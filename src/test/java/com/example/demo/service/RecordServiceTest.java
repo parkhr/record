@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.RECORD_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,7 +86,7 @@ class RecordServiceTest {
 
         //when
         //then
-        assertThatThrownBy(() -> recordService.updateRecord(updateRequest)).isInstanceOf(ApplicationException.class).hasMessage("MSG");
+        assertThatThrownBy(() -> recordService.updateRecord(updateRequest)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_NOT_FOUND);
     }
 
     @DisplayName("기록물 삭제 성공")
@@ -116,7 +117,7 @@ class RecordServiceTest {
 
         //when
         // then
-        assertThatThrownBy(() -> recordService.deleteRecord(0L)).isInstanceOf(ApplicationException.class).hasMessage("MSG");
+        assertThatThrownBy(() -> recordService.deleteRecord(0L)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_NOT_FOUND);
     }
 
     @DisplayName("기록물 공개유무 수정 성공")
@@ -153,7 +154,7 @@ class RecordServiceTest {
 
         //when
         // then
-        assertThatThrownBy(() -> recordService.updateVisibility(request2)).isInstanceOf(ApplicationException.class).hasMessage("MSG");
+        assertThatThrownBy(() -> recordService.updateVisibility(request2)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_NOT_FOUND);
     }
 
     @DisplayName("기록물 상태 수정 성공")
@@ -190,6 +191,6 @@ class RecordServiceTest {
 
         //when
         // then
-        assertThatThrownBy(() -> recordService.updateStatus(request2)).isInstanceOf(ApplicationException.class).hasMessage("MSG");
+        assertThatThrownBy(() -> recordService.updateStatus(request2)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_NOT_FOUND);
     }
 }
