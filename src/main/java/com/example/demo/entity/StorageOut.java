@@ -1,5 +1,8 @@
 package com.example.demo.entity;
 
+import static com.example.demo.common.ErrorMessage.DELAY_LIMIT_EXCEEDED;
+
+import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.request.LoanRequest;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -26,6 +29,9 @@ public class StorageOut {
     @Column("dueDate")
     private LocalDateTime dueDate;
 
+    @Column("delayCount")
+    private int delayCount;
+
     @Column("createdAt")
     private LocalDateTime createdAt;
 
@@ -39,6 +45,7 @@ public class StorageOut {
         return StorageOut.builder()
             .recordId(request.getRecordId())
             .dueDate(LocalDateTime.now().plusDays(7))
+            .delayCount(0)
             .createdAt(LocalDateTime.now())
             .build();
     }
@@ -46,5 +53,15 @@ public class StorageOut {
 
     public void returns() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void delayReturn() {
+        if (delayCount == 2) {
+            throw new ApplicationException(DELAY_LIMIT_EXCEEDED);
+        }
+
+        this.delayCount = this.delayCount + 1;
+        this.dueDate = this.dueDate.plusDays(7);
+        this.updatedAt = LocalDateTime.now();
     }
 }

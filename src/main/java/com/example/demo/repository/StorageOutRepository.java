@@ -10,4 +10,6 @@ public interface StorageOutRepository extends CrudRepository<StorageOut, Long> {
 
     @Query("SELECT * FROM storage_out WHERE recordId = :recordId AND deletedAt IS NULL FOR UPDATE")
     Optional<StorageOut> findByRecordIdAndDeletedAtIsNullForUpdate(@Param("recordId") Long recordId);
+
+    Optional<StorageOut> findByRecordIdAndDeletedAtIsNull(Long recordId);
 }

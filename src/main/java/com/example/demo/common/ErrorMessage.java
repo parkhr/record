@@ -9,5 +9,6 @@ public class ErrorMessage {
     public static final String RECORD_NOT_AVAILABLE_FOR_LOAN = "대출할 수 없는 기록물입니다.";
     public static final String RECORD_ALREADY_ON_LOAN = "대출중인 기록물입니다.";
     public static final String INVALID_RECORD_LOCATION_TYPE = "기록물을 배치할 계층 타입이 아닙니다.";
-    public static final String RECORD_IS_NOT_ON_LOAN = "대출중인 도서가 아닙니다.";
+    public static final String RECORD_IS_NOT_ON_LOAN = "대출중인 기록물이 아닙니다.";
+    public static final String DELAY_LIMIT_EXCEEDED = "반납연기 가능횟수를 초과합니다.";
 }

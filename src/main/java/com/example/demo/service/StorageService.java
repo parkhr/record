@@ -13,6 +13,7 @@ import com.example.demo.repository.RecordRepository;
 import com.example.demo.repository.StorageInRepository;
 import com.example.demo.repository.StorageOutRepository;
 import com.example.demo.request.LoanRequest;
+import com.example.demo.request.ReturnDelayRequest;
 import com.example.demo.request.ReturnRequest;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class StorageService {
 
         Records records = recordRepository.findById(request.getRecordId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
-        if(!records.isAvailableLoan()) {
+        if (!records.isAvailableLoan()) {
             throw new ApplicationException(RECORD_NOT_AVAILABLE_FOR_LOAN);
         }
 
@@ -45,15 +46,25 @@ public class StorageService {
         return storageOutRepository.save(StorageOut.createStorageOut(request));
     }
 
-//    @Transactional
-//    public StorageIn returns(ReturnRequest request) {
-//
-//        StorageOut storageOut = storageOutRepository.findByRecordIdAndDeletedAtIsNull(request.getRecordId())
-//            .orElseThrow(() -> new ApplicationException(RECORD_IS_NOT_ON_LOAN));
-//
-//        storageOut.returns();
-//        storageOutRepository.save(storageOut);
-//
-//        return storageInRepository.save(StorageIn.createStorageIn(request));
-//    }
+    @Transactional
+    public StorageIn returns(ReturnRequest request) {
+
+        StorageOut storageOut = storageOutRepository.findByRecordIdAndDeletedAtIsNull(request.getRecordId())
+            .orElseThrow(() -> new ApplicationException(RECORD_IS_NOT_ON_LOAN));
+
+        storageOut.returns();
+        storageOutRepository.save(storageOut);
+
+        return storageInRepository.save(StorageIn.createStorageIn(request));
+    }
+
+    @Transactional
+    public StorageOut delayReturn(ReturnDelayRequest request) {
+
+        StorageOut storageOut = storageOutRepository.findByRecordIdAndDeletedAtIsNull(request.getRecordId())
+            .orElseThrow(() -> new ApplicationException(RECORD_IS_NOT_ON_LOAN));
+
+        storageOut.delayReturn();
+        return storageOutRepository.save(storageOut);
+    }
 }

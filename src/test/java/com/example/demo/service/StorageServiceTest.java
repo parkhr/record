@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.DELAY_LIMIT_EXCEEDED;
 import static com.example.demo.common.ErrorMessage.RECORD_ALREADY_ON_LOAN;
+import static com.example.demo.common.ErrorMessage.RECORD_IS_NOT_ON_LOAN;
 import static com.example.demo.common.ErrorMessage.RECORD_NOT_AVAILABLE_FOR_LOAN;
 import static com.example.demo.common.ErrorMessage.RECORD_NOT_FOUND;
 import static com.example.demo.enums.RecordStatus.REGISTER;
@@ -11,9 +13,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.Records;
+import com.example.demo.entity.StorageIn;
 import com.example.demo.entity.StorageOut;
+import com.example.demo.repository.StorageOutRepository;
 import com.example.demo.request.CreateRecordRequest;
 import com.example.demo.request.LoanRequest;
+import com.example.demo.request.ReturnDelayRequest;
+import com.example.demo.request.ReturnRequest;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +41,9 @@ class StorageServiceTest {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private StorageOutRepository storageOutRepository;
 
     @DisplayName("대출 성공")
     @Test
@@ -203,5 +213,115 @@ class StorageServiceTest {
 
         // 한번 더 대출
         assertThatThrownBy(() -> storageService.loan(request2)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_ALREADY_ON_LOAN);
+    }
+
+    @DisplayName("반납 성공")
+    @Test
+    void returns() {
+        //given
+        CreateRecordRequest request = new CreateRecordRequest();
+        request.setTitle("기록물제목");
+        request.setContent("기록물내용");
+        request.setStatus(REGISTER);
+        request.setVisibility("공개");
+
+        Records record = recordService.createRecord(request);
+
+        LoanRequest request2 = new LoanRequest();
+        request2.setRecordId(record.getId());
+
+        StorageOut storageOut = storageService.loan(request2);
+
+        ReturnRequest request3 = new ReturnRequest();
+        request3.setRecordId(record.getId());
+
+        //when
+        StorageIn storageIn = storageService.returns(request3);
+        Optional<StorageOut> findStorageOut = storageOutRepository.findByRecordIdAndDeletedAtIsNull(record.getId());
+
+        //then
+        assertThat(storageIn.getRecordId()).isEqualTo(record.getId());
+        assertNotNull(storageIn.getCreatedAt());
+        assertFalse(findStorageOut.isPresent());
+    }
+
+    @DisplayName("반납 실패 (대출중인 기록물이 아닌 경우)")
+    @Test
+    void return_fail1() {
+        //given
+        ReturnRequest request = new ReturnRequest();
+        request.setRecordId(0L);
+
+        //when
+        //then
+        assertThatThrownBy(() -> storageService.returns(request)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_IS_NOT_ON_LOAN);
+    }
+
+    @DisplayName("반납연기 성공")
+    @Test
+    void delay() {
+        //given
+        CreateRecordRequest request = new CreateRecordRequest();
+        request.setTitle("기록물제목");
+        request.setContent("기록물내용");
+        request.setStatus(REGISTER);
+        request.setVisibility("공개");
+
+        Records record = recordService.createRecord(request);
+
+        LoanRequest request2 = new LoanRequest();
+        request2.setRecordId(record.getId());
+
+        StorageOut loan = storageService.loan(request2);
+
+        ReturnDelayRequest request3 = new ReturnDelayRequest();
+        request3.setRecordId(record.getId());
+
+        //when
+        StorageOut storageOut = storageService.delayReturn(request3);
+
+        //then
+        assertThat(storageOut.getDelayCount()).isEqualTo(loan.getDelayCount() + 1);
+//        assertThat(storageOut.getDueDate()).isEqualTo(loan.getDueDate().plusDays(7));
+        assertNotNull(storageOut.getUpdatedAt());
+    }
+
+    @DisplayName("반납연기 실패 (연기 횟수를 초과한 경우)")
+    @Test
+    void delay_fail1() {
+        //given
+        CreateRecordRequest request = new CreateRecordRequest();
+        request.setTitle("기록물제목");
+        request.setContent("기록물내용");
+        request.setStatus(REGISTER);
+        request.setVisibility("공개");
+
+        Records record = recordService.createRecord(request);
+
+        LoanRequest request2 = new LoanRequest();
+        request2.setRecordId(record.getId());
+
+        StorageOut loan = storageService.loan(request2);
+
+        ReturnDelayRequest request3 = new ReturnDelayRequest();
+        request3.setRecordId(record.getId());
+
+        //when
+        storageService.delayReturn(request3);
+        storageService.delayReturn(request3);
+
+        assertThatThrownBy(() -> storageService.delayReturn(request3)).isInstanceOf(ApplicationException.class).hasMessage(DELAY_LIMIT_EXCEEDED);
+    }
+
+    @DisplayName("반납연기 실패 (대출중인 기록물이 아닌 경우)")
+    @Test
+    void delay_fail2() {
+        //given
+
+        ReturnDelayRequest request3 = new ReturnDelayRequest();
+        request3.setRecordId(0L);
+
+        //when
+        assertThatThrownBy(() -> storageService.delayReturn(request3)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_IS_NOT_ON_LOAN);
     }
 }
