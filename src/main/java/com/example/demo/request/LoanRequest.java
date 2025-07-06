@@ -10,4 +10,7 @@ public class LoanRequest {
 
     @NotBlank
     public Long recordId;
+
+    @NotBlank
+    public Long userId;
 }

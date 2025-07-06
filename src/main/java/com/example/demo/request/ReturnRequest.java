@@ -9,5 +9,8 @@ import lombok.Setter;
 public class ReturnRequest {
 
     @NotBlank
+    public Long userId;
+
+    @NotBlank
     public Long recordId;
 }

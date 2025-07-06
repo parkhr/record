@@ -59,6 +59,7 @@ class StorageServiceTest {
 
         LoanRequest request2 = new LoanRequest();
         request2.setRecordId(record.getId());
+        request2.setUserId(1L);
 
         //when
         StorageOut storageOut = storageService.loan(request2);
@@ -84,6 +85,7 @@ class StorageServiceTest {
 
         LoanRequest request2 = new LoanRequest();
         request2.setRecordId(record.getId());
+        request2.setUserId(1L);
 
         //when
         ExecutorService executor = Executors.newFixedThreadPool(100);
@@ -202,6 +204,7 @@ class StorageServiceTest {
 
         LoanRequest request2 = new LoanRequest();
         request2.setRecordId(record.getId());
+        request2.setUserId(1L);
 
         //when
         StorageOut storageOut = storageService.loan(request2);
@@ -229,11 +232,13 @@ class StorageServiceTest {
 
         LoanRequest request2 = new LoanRequest();
         request2.setRecordId(record.getId());
+        request2.setUserId(1L);
 
         StorageOut storageOut = storageService.loan(request2);
 
         ReturnRequest request3 = new ReturnRequest();
         request3.setRecordId(record.getId());
+        request3.setUserId(1L);
 
         //when
         StorageIn storageIn = storageService.returns(request3);
@@ -271,6 +276,7 @@ class StorageServiceTest {
 
         LoanRequest request2 = new LoanRequest();
         request2.setRecordId(record.getId());
+        request2.setUserId(1L);
 
         StorageOut loan = storageService.loan(request2);
 
@@ -300,6 +306,7 @@ class StorageServiceTest {
 
         LoanRequest request2 = new LoanRequest();
         request2.setRecordId(record.getId());
+        request2.setUserId(1L);
 
         StorageOut loan = storageService.loan(request2);
 

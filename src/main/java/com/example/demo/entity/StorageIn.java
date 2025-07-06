@@ -23,6 +23,9 @@ public class StorageIn {
     @Column("recordId")
     private long recordId;
 
+    @Column("userId")
+    private long userId;
+
     @Column("createdAt")
     private LocalDateTime createdAt;
 
@@ -38,6 +41,7 @@ public class StorageIn {
         return StorageIn.builder()
             .recordId(request.getRecordId())
             .createdAt(LocalDateTime.now())
+            .userId(request.getUserId())
             .build();
     }
 }

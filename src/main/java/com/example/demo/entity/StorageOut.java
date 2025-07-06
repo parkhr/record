@@ -26,6 +26,9 @@ public class StorageOut {
     @Column("recordId")
     private long recordId;
 
+    @Column("userId")
+    private long userId;
+
     @Column("dueDate")
     private LocalDateTime dueDate;
 
@@ -44,6 +47,7 @@ public class StorageOut {
     public static StorageOut createStorageOut(LoanRequest request) {
         return StorageOut.builder()
             .recordId(request.getRecordId())
+            .userId(request.getUserId())
             .dueDate(LocalDateTime.now().plusDays(7))
             .delayCount(0)
             .createdAt(LocalDateTime.now())
