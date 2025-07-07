@@ -50,7 +50,6 @@ public class AdminService {
     @Transactional
     public void resetPassword(long adminId) {
 
-        //TODO 비밀번호 난수 생성
         String newPassword = generateRandomPassword();
 
         // encode
@@ -60,6 +59,9 @@ public class AdminService {
         admin.resetPassword(encodedNewPassword);
 
         adminRepository.save(admin);
+
+        //TODO 관리자에게 비밀번호 전송
+
     }
 
     // 난수 비밀번호 생성기 (영문 + 숫자 조합)
