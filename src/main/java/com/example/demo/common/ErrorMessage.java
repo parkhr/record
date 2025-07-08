@@ -9,6 +9,7 @@ public class ErrorMessage {
     public static final String ADMIN_NOT_FOUND = "해당 관리자를 찾을 수 없습니다.";
     public static final String ROLE_NOT_FOUND = "해당 권한그룹을 찾을 수 없습니다.";
     public static final String PERMISSION_NOT_FOUND = "해당 권한을 찾을 수 없습니다.";
+    public static final String MENU_NOT_FOUND = "해당 메뉴를 찾을 수 없습니다.";
     public static final String RECORD_NOT_AVAILABLE_FOR_LOAN = "대출할 수 없는 기록물입니다.";
     public static final String RECORD_ALREADY_ON_LOAN = "대출중인 기록물입니다.";
     public static final String INVALID_RECORD_LOCATION_TYPE = "기록물을 배치할 계층 타입이 아닙니다.";
