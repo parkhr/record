@@ -36,18 +36,18 @@ class AdminServiceTest {
     void createAdmin() {
         //given
         CreateAdminRequest request = new CreateAdminRequest();
-        request.setName("관리자이름");
-        request.setPassword("12345678");
-        request.setAuthGroup("auth");
+        request.setName("admin");
+        request.setPassword("admin");
+        request.setRoleId(1L);
 
         //when
         Admin admin = adminService.createAdmin(request);
 
         //then
         passwordEncoder.matches(request.getPassword(), admin.getPassword());
-        assertThat(admin.getName()).isEqualTo("관리자이름");
-        assertTrue(passwordEncoder.matches("12345678", admin.getPassword()));
-        assertThat(admin.getAuthGroup()).isEqualTo("auth");
+        assertThat(admin.getName()).isEqualTo("admin");
+        assertTrue(passwordEncoder.matches("admin", admin.getPassword()));
+        assertThat(admin.getRoleId()).isEqualTo(1L);
         assertNotNull(admin.getCreatedAt());
     }
 
@@ -58,21 +58,21 @@ class AdminServiceTest {
         CreateAdminRequest request = new CreateAdminRequest();
         request.setName("관리자이름");
         request.setPassword("12345678");
-        request.setAuthGroup("auth");
+        request.setRoleId(12345L);
 
         Admin admin = adminService.createAdmin(request);
 
         UpdateAdminRequest request2 = new UpdateAdminRequest();
         request2.setIsUse(false);
         request2.setAdminId(admin.getId());
-        request2.setAuthGroup("auth");
+        request2.setRoleId(12345L);
 
         //when
         Admin updatedAdmin = adminService.update(request2);
 
         //then
         assertThat(updatedAdmin.getName()).isEqualTo("관리자이름");
-        assertThat(updatedAdmin.getAuthGroup()).isEqualTo("auth");
+        assertThat(updatedAdmin.getRoleId()).isEqualTo(12345L);
         assertFalse(updatedAdmin.isUse());
         assertNotNull(updatedAdmin.getUpdatedAt());
     }
@@ -85,7 +85,7 @@ class AdminServiceTest {
         UpdateAdminRequest request2 = new UpdateAdminRequest();
         request2.setIsUse(false);
         request2.setAdminId(0L);
-        request2.setAuthGroup("auth");
+        request2.setRoleId(12345L);
 
         //when
         assertThatThrownBy(() -> adminService.update(request2)).isInstanceOf(ApplicationException.class).hasMessage(ADMIN_NOT_FOUND);
@@ -98,7 +98,7 @@ class AdminServiceTest {
         CreateAdminRequest request = new CreateAdminRequest();
         request.setName("관리자이름");
         request.setPassword("12345678");
-        request.setAuthGroup("auth");
+        request.setRoleId(12345L);
 
         Admin admin = adminService.createAdmin(request);
 
@@ -124,7 +124,7 @@ class AdminServiceTest {
         CreateAdminRequest request = new CreateAdminRequest();
         request.setName("관리자이름");
         request.setPassword("12345678");
-        request.setAuthGroup("auth");
+        request.setRoleId(12345L);
 
         Admin admin = adminService.createAdmin(request);
 

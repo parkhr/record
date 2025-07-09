@@ -12,7 +12,7 @@ public class UpdateAdminRequest {
     private Long adminId;
 
     @NotBlank
-    private String authGroup;
+    private Long roleId;
 
     @NotBlank
     private Boolean isUse;
