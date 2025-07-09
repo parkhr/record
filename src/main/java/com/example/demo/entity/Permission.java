@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.enums.PermissionType;
 import com.example.demo.request.CreatePermissionRequest;
 import com.example.demo.request.UpdatePermissionRequest;
 import java.time.LocalDateTime;
@@ -22,7 +23,7 @@ public class Permission {
     private long id;
 
     @Column("name")
-    private String name;
+    private PermissionType name;
 
     @Column("content")
     private String content;
