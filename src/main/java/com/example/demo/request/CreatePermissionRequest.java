@@ -1,5 +1,6 @@
 package com.example.demo.request;
 
+import com.example.demo.enums.PermissionType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class CreatePermissionRequest {
 
-    private String name;
+    private PermissionType name;
     private String content;
 }

@@ -27,8 +27,8 @@ public class Admin {
     @Column("password")
     private String password;
 
-    @Column("authGroup")
-    private String authGroup;
+    @Column("roleId")
+    private long roleId;
 
     @Column("isUse")
     private boolean isUse;
@@ -46,14 +46,14 @@ public class Admin {
         return Admin.builder()
             .name(request.getName())
             .password(request.getPassword())
-            .authGroup(request.getAuthGroup())
+            .roleId(request.getRoleId())
             .isUse(true)
             .createdAt(LocalDateTime.now()).build();
     }
 
     public void update(UpdateAdminRequest request) {
 
-        this.authGroup = request.getAuthGroup();
+        this.roleId = request.getRoleId();
         this.isUse = request.getIsUse();
         this.updatedAt = LocalDateTime.now();
     }

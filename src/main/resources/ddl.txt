@@ -1,3 +1,175 @@
+-- record.admin definition
+
+CREATE TABLE `admin` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `password` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `authGroup` varchar(100) NOT NULL,
+  `isUse` tinyint(1) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO record.admin
+(id, name, password, roleId, isUse, createdAt, updatedAt, deletedAt)
+VALUES(1, 'admin', '$2a$10$vywBhMeyFe39kom7QSZ/nOmJBUnngL3pvF2IxaqewUAwoQEGcy.16', 1, 1, '2025-07-09 22:28:53', NULL, NULL);
+
+
+-- record.collection definition
+
+CREATE TABLE `collection` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `isUse` tinyint(1) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- record.folder definition
+
+CREATE TABLE `folder` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `isUse` tinyint(1) NOT NULL,
+  `seriesId` bigint NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- record.messages definition
+
+CREATE TABLE `messages` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `messageType` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `status` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `message` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `userId` bigint NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- record.permission definition
+
+CREATE TABLE `permission` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(1, 'WRITE_RECORD', 'WRITE_RECORD', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(2, 'UPDATE_RECORD', 'UPDATE_RECORD', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(3, 'DELETE_RECORD', 'DELETE_RECORD', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(4, 'WRITE_LAYER', 'WRITE_LAYER', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(5, 'UPDATE_LAYER', 'UPDATE_LAYER', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(6, 'DELETE_LAYER', 'DELETE_LAYER', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(7, 'READ_LAYER', 'READ_LAYER', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(8, 'MANAGE_STORAGE', 'MANAGE_STORAGE', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(9, 'RESERVATION', 'RESERVATION', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(10, 'READ_STATISTIC', 'READ_STATISTIC', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(11, 'MANAGE_CHECK', 'MANAGE_CHECK', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(12, 'WRITE_ROLE', 'WRITE_ROLE', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(13, 'UPDATE_ROLE', 'UPDATE_ROLE', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(14, 'DELETE_ROLE', 'DELETE_ROLE', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(15, 'READ_ROLE', 'READ_ROLE', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(16, 'WRITE_MENU', 'WRITE_MENU', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(17, 'UPDATE_MENU', 'UPDATE_MENU', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(18, 'DELETE_MENU', 'DELETE_MENU', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(21, 'WRITE_ADMIN', 'WRITE_ADMIN', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(22, 'UPDATE_ADMIN', 'UPDATE_ADMIN', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(23, 'DELETE_ADMIN', 'DELETE_ADMIN', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(24, 'READ_ADMIN', 'READ_ADMIN', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(25, 'WRITE_ALARM', 'WRITE_ALARM', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(26, 'UPDATE_ALARM', 'UPDATE_ALARM', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(27, 'DELETE_ALARM', 'DELETE_ALARM', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.permission
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(28, 'READ_ALARM', 'READ_ALARM', '2025-07-09 00:00:00', NULL, NULL);
+
+
+-- record.record_location definition
+
+CREATE TABLE `record_location` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `recordId` bigint NOT NULL,
+  `locationId` bigint NOT NULL,
+  `locationType` varchar(19) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- record.records definition
+
 CREATE TABLE `records` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
@@ -11,17 +183,139 @@ CREATE TABLE `records` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-CREATE TABLE `collection` (
+-- record.`role` definition
+
+CREATE TABLE `role` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `isUse` tinyint(1) NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+INSERT INTO record.`role`
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(1, 'ADMIN', 'ADMIN', '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.`role`
+(id, name, content, createdAt, updatedAt, deletedAt)
+VALUES(2, 'GUEST', 'GUEST', '2025-07-09 00:00:00', NULL, NULL);
+
+
+-- record.role_permission definition
+
+CREATE TABLE `role_permission` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `roleId` bigint NOT NULL,
+  `permissionId` bigint NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(1, 1, 1, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(5, 1, 2, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(6, 1, 3, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(7, 1, 4, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(8, 1, 5, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(9, 1, 6, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(10, 1, 7, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(11, 1, 8, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(12, 1, 9, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(13, 1, 10, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(14, 1, 11, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(15, 1, 12, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(16, 1, 13, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(17, 1, 14, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(18, 1, 15, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(19, 1, 16, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(20, 1, 17, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(21, 1, 18, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(22, 1, 19, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(23, 1, 20, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(24, 1, 21, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(25, 1, 22, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(26, 1, 23, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(27, 1, 24, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(28, 1, 25, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(29, 1, 26, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(30, 1, 27, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(31, 1, 28, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(32, 2, 7, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(33, 2, 10, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(34, 2, 15, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(35, 2, 24, '2025-07-09 00:00:00', NULL, NULL);
+INSERT INTO record.role_permission
+(id, roleId, permissionId, createdAt, updatedAt, deletedAt)
+VALUES(36, 2, 28, '2025-07-09 00:00:00', NULL, NULL);
+
+-- record.series definition
 
 CREATE TABLE `series` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -36,54 +330,27 @@ CREATE TABLE `series` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-CREATE TABLE `folder` (
+-- record.storage_in definition
+
+CREATE TABLE `storage_in` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `isUse` tinyint(1) NOT NULL,
-  `seriesId` bigint NOT NULL,
+  `recordId` bigint NOT NULL,
+  `userId` bigint NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE record.admin (
-	id bigint auto_increment NOT NULL,
-	name varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-	password varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-	authGroup tinyint(1) NOT NULL,
-	isUse BOOL NOT NULL,
-	createdAt datetime NOT NULL,
-	updatedAt datetime NULL,
-	deletedAt datetime NULL,
-	CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `role_permission` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `roleId` bigint NOT NULL,
-  `permissionId` bigint NOT NULL,
-  `createdAt` datetime NOT NULL,
-  `updatedAt` datetime DEFAULT NULL,
-  `deletedAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- record.storage_out definition
 
-CREATE TABLE `permission` (
+CREATE TABLE `storage_out` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `createdAt` datetime NOT NULL,
-  `updatedAt` datetime DEFAULT NULL,
-  `deletedAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `role` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `recordId` bigint NOT NULL,
+  `userId` bigint NOT NULL,
+  `delayCount` int unsigned NOT NULL,
+  `dueDate` datetime NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
