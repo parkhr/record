@@ -6,10 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.demo.common.exception.ApplicationException;
-import com.example.demo.entity.Menu;
-import com.example.demo.repository.MenuRepository;
-import com.example.demo.request.CreateMenuRequest;
-import com.example.demo.request.UpdateMenuRequest;
+import com.example.demo.menu.entity.Menu;
+import com.example.demo.menu.repository.MenuRepository;
+import com.example.demo.menu.MenuService;
+import com.example.demo.menu.request.CreateMenuRequest;
+import com.example.demo.menu.request.UpdateMenuRequest;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -5,11 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.example.demo.admin.AdminService;
 import com.example.demo.common.exception.ApplicationException;
-import com.example.demo.entity.Admin;
-import com.example.demo.repository.AdminRepository;
-import com.example.demo.request.CreateAdminRequest;
-import com.example.demo.request.UpdateAdminRequest;
+import com.example.demo.admin.entity.Admin;
+import com.example.demo.admin.repository.AdminRepository;
+import com.example.demo.admin.request.CreateAdminRequest;
+import com.example.demo.admin.request.UpdateAdminRequest;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

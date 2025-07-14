@@ -6,8 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.demo.common.JwtAuthFilter;
 import com.example.demo.common.config.SecurityConfig;
-import com.example.demo.request.CreateRecordRequest;
-import com.example.demo.service.RecordService;
+import com.example.demo.record.RecordController;
+import com.example.demo.record.request.CreateRecordRequest;
+import com.example.demo.record.RecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
