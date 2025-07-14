@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import static com.example.demo.common.ErrorMessage.FOLDER_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.PERMISSION_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.ROLE_NOT_FOUND;
 
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -5,6 +5,7 @@ import com.example.demo.request.UpdateSeriesRequest;
 import com.example.demo.service.SeriesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ public class SeriesController {
     private final SeriesService seriesService;
 
     @PostMapping
+    @PreAuthorize("hasRole('WRITE_LAYER')")
     public ResponseEntity<Object> createSeries(@RequestBody CreateSeriesRequest request) {
 
         seriesService.createSeries(request);
@@ -28,6 +30,7 @@ public class SeriesController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('UPDATE_LAYER')")
     public ResponseEntity<Object> updateSeries(@RequestBody UpdateSeriesRequest request) {
 
         seriesService.updateSeries(request);
@@ -35,6 +38,7 @@ public class SeriesController {
     }
 
     @DeleteMapping("/{seriesId}")
+    @PreAuthorize("hasRole('DELETE_LAYER')")
     public ResponseEntity<Object> deleteSeries(@PathVariable("seriesId") Long seriesId) {
 
         seriesService.deleteSeries(seriesId);

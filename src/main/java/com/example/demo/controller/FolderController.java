@@ -7,6 +7,7 @@ import com.example.demo.request.UpdateSeriesRequest;
 import com.example.demo.service.FolderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ public class FolderController {
     private final FolderService folderService;
 
     @PostMapping
+    @PreAuthorize("hasRole('WRITE_LAYER')")
     public ResponseEntity<Object> createFolder(@RequestBody CreateFolderRequest request) {
 
         folderService.createFolder(request);
@@ -30,6 +32,7 @@ public class FolderController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('UPDATE_LAYER')")
     public ResponseEntity<Object> updateFolder(@RequestBody UpdateFolderRequest request) {
 
         folderService.updateFolder(request);
@@ -37,6 +40,7 @@ public class FolderController {
     }
 
     @DeleteMapping("/{folderId}")
+    @PreAuthorize("hasRole('DELETE_LAYER')")
     public ResponseEntity<Object> deleteFolder(@PathVariable("folderId") Long folderId) {
 
         folderService.deleteFolder(folderId);

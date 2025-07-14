@@ -36,6 +36,7 @@ public class RecordController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('UPDATE_RECORD')")
     public ResponseEntity<Object> updateRecord(@RequestBody UpdateRecordRequest request) {
 
         recordService.updateRecord(request);
@@ -43,6 +44,7 @@ public class RecordController {
     }
 
     @DeleteMapping("/{recordId}")
+    @PreAuthorize("hasRole('DELETE_RECORD')")
     public ResponseEntity<Object> deleteRecord(@PathVariable("recordId") Long recordId) {
 
         recordService.deleteRecord(recordId);
@@ -55,6 +57,7 @@ public class RecordController {
     }
 
     @PutMapping("/visibility")
+    @PreAuthorize("hasRole('UPDATE_RECORD')")
     public ResponseEntity<Object> updateVisibility(UpdateRecordVisibilityRequest request) {
 
         recordService.updateVisibility(request);
@@ -62,6 +65,7 @@ public class RecordController {
     }
 
     @PutMapping("/status")
+    @PreAuthorize("hasRole('UPDATE_RECORD')")
     public ResponseEntity<Object> updateStatus(UpdateRecordStatusRequest request) {
 
         recordService.updateStatus(request);
@@ -70,6 +74,7 @@ public class RecordController {
 
     // 기록물 배치
     @PostMapping("/dispatch")
+    @PreAuthorize("hasRole('UPDATE_LAYER')")
     public ResponseEntity<Object> dispatchRecord(DispatchRecordRequest request) {
 
         recordService.dispatchRecord(request);
