@@ -12,6 +12,7 @@ import com.example.demo.entity.StorageOut;
 import com.example.demo.repository.RecordRepository;
 import com.example.demo.repository.StorageInRepository;
 import com.example.demo.repository.StorageOutRepository;
+import com.example.demo.request.CancelLoanRequest;
 import com.example.demo.request.LoanRequest;
 import com.example.demo.request.ReturnDelayRequest;
 import com.example.demo.request.ReturnRequest;
@@ -49,8 +50,12 @@ public class StorageService {
     @Transactional
     public StorageIn returns(ReturnRequest request) {
 
-        StorageOut storageOut = storageOutRepository.findByRecordIdAndDeletedAtIsNull(request.getRecordId())
+        StorageOut storageOut = storageOutRepository.findByRecordId(request.getRecordId())
             .orElseThrow(() -> new ApplicationException(RECORD_IS_NOT_ON_LOAN));
+
+        if(storageOut.isDeleted()) {
+            throw new ApplicationException(RECORD_IS_NOT_ON_LOAN);
+        }
 
         storageOut.returns();
         storageOutRepository.save(storageOut);
@@ -61,10 +66,28 @@ public class StorageService {
     @Transactional
     public StorageOut delayReturn(ReturnDelayRequest request) {
 
-        StorageOut storageOut = storageOutRepository.findByRecordIdAndDeletedAtIsNull(request.getRecordId())
+        StorageOut storageOut = storageOutRepository.findByRecordId(request.getRecordId())
             .orElseThrow(() -> new ApplicationException(RECORD_IS_NOT_ON_LOAN));
 
+        if(storageOut.isDeleted()) {
+            throw new ApplicationException(RECORD_IS_NOT_ON_LOAN);
+        }
+
         storageOut.delayReturn();
+        return storageOutRepository.save(storageOut);
+    }
+
+    @Transactional
+    public StorageOut cancelLoan(CancelLoanRequest request) {
+
+        StorageOut storageOut = storageOutRepository.findById(request.getStorageOutId())
+            .orElseThrow(() -> new ApplicationException(RECORD_IS_NOT_ON_LOAN));
+
+        if(storageOut.isDeleted()) {
+            throw new ApplicationException(RECORD_IS_NOT_ON_LOAN);
+        }
+
+        storageOut.cancel();
         return storageOutRepository.save(storageOut);
     }
 }

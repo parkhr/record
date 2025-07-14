@@ -72,4 +72,8 @@ public class StorageOut {
     public boolean isDeleted() {
         return this.deletedAt != null;
     }
+
+    public void cancel() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

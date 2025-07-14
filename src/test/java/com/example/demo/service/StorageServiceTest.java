@@ -16,6 +16,7 @@ import com.example.demo.entity.Records;
 import com.example.demo.entity.StorageIn;
 import com.example.demo.entity.StorageOut;
 import com.example.demo.repository.StorageOutRepository;
+import com.example.demo.request.CancelLoanRequest;
 import com.example.demo.request.CreateRecordRequest;
 import com.example.demo.request.LoanRequest;
 import com.example.demo.request.ReturnDelayRequest;
@@ -242,12 +243,12 @@ class StorageServiceTest {
 
         //when
         StorageIn storageIn = storageService.returns(request3);
-        Optional<StorageOut> findStorageOut = storageOutRepository.findByRecordIdAndDeletedAtIsNull(record.getId());
+        Optional<StorageOut> findStorageOut = storageOutRepository.findByRecordId(record.getId());
 
         //then
         assertThat(storageIn.getRecordId()).isEqualTo(record.getId());
         assertNotNull(storageIn.getCreatedAt());
-        assertFalse(findStorageOut.isPresent());
+        assertTrue(findStorageOut.get().isDeleted());
     }
 
     @DisplayName("반납 실패 (대출중인 기록물이 아닌 경우)")
@@ -330,5 +331,45 @@ class StorageServiceTest {
 
         //when
         assertThatThrownBy(() -> storageService.delayReturn(request3)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_IS_NOT_ON_LOAN);
+    }
+
+    @DisplayName("반납연기 성공")
+    @Test
+    void cancel() {
+        //given
+        CreateRecordRequest request = new CreateRecordRequest();
+        request.setTitle("기록물제목");
+        request.setContent("기록물내용");
+        request.setStatus(REGISTER);
+        request.setVisibility("공개");
+
+        Records record = recordService.createRecord(request);
+
+        LoanRequest request2 = new LoanRequest();
+        request2.setRecordId(record.getId());
+        request2.setUserId(1L);
+
+        StorageOut loan = storageService.loan(request2);
+
+        CancelLoanRequest request3 = new CancelLoanRequest();
+        request3.setStorageOutId(loan.getId());
+
+        //when
+        StorageOut storageOut = storageService.cancelLoan(request3);
+
+        //then
+        assertNotNull(storageOut.getDeletedAt());
+    }
+
+    @DisplayName("대출취소 실패 (대출중인 기록물이 아닌 경우)")
+    @Test
+    void cancel_fail() {
+        //given
+
+        CancelLoanRequest request3 = new CancelLoanRequest();
+        request3.setStorageOutId(0L);
+
+        //when
+        assertThatThrownBy(() -> storageService.cancelLoan(request3)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_IS_NOT_ON_LOAN);
     }
 }
