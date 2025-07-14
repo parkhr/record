@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.MENU_NOT_FOUND;
 
 import com.example.demo.common.exception.ApplicationException;
@@ -27,6 +28,10 @@ public class MenuService {
 
         Menu menu = menuRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(MENU_NOT_FOUND));
 
+        if (menu.isDeleted()) {
+            throw new ApplicationException(MENU_NOT_FOUND);
+        }
+
         menu.update(request);
 
         return menuRepository.save(menu);
@@ -35,6 +40,10 @@ public class MenuService {
     @Transactional
     public void deleteMenu(long menuId) {
         Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new ApplicationException(MENU_NOT_FOUND));
+
+        if (menu.isDeleted()) {
+            throw new ApplicationException(MENU_NOT_FOUND);
+        }
 
         menu.delete();
         menuRepository.save(menu);

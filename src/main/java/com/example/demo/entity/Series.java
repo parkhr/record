@@ -68,4 +68,8 @@ public class Series {
         this.collectionId = 0;
         this.updatedAt = LocalDateTime.now();
     }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
 }

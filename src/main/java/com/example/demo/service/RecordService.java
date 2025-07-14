@@ -3,12 +3,16 @@ package com.example.demo.service;
 import static com.example.demo.common.ErrorMessage.COLLECTION_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.FOLDER_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.INVALID_RECORD_LOCATION_TYPE;
+import static com.example.demo.common.ErrorMessage.MENU_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.RECORD_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.SERIES_NOT_FOUND;
 
 import com.example.demo.common.exception.ApplicationException;
+import com.example.demo.entity.Collection;
+import com.example.demo.entity.Folder;
 import com.example.demo.entity.RecordLocation;
 import com.example.demo.entity.Records;
+import com.example.demo.entity.Series;
 import com.example.demo.repository.CollectionRepository;
 import com.example.demo.repository.FolderRepository;
 import com.example.demo.repository.RecordLocationRepository;
@@ -49,6 +53,10 @@ public class RecordService {
 
         Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
+        if (record.isDeleted()) {
+            throw new ApplicationException(RECORD_NOT_FOUND);
+        }
+
         record.update(request);
 
         return recordRepository.save(record);
@@ -57,6 +65,10 @@ public class RecordService {
     @Transactional
     public void deleteRecord(long recordId) {
         Records record = recordRepository.findById(recordId).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
+
+        if (record.isDeleted()) {
+            throw new ApplicationException(RECORD_NOT_FOUND);
+        }
 
         record.delete();
         recordRepository.save(record);
@@ -70,6 +82,10 @@ public class RecordService {
     public Records updateVisibility(UpdateRecordVisibilityRequest request) {
         Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
+        if (record.isDeleted()) {
+            throw new ApplicationException(RECORD_NOT_FOUND);
+        }
+
         record.updateVisibility(request);
         return recordRepository.save(record);
     }
@@ -78,6 +94,10 @@ public class RecordService {
     public Records updateStatus(UpdateRecordStatusRequest request) {
         Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
+        if (record.isDeleted()) {
+            throw new ApplicationException(RECORD_NOT_FOUND);
+        }
+
         record.updateStatus(request);
         return recordRepository.save(record);
     }
@@ -85,13 +105,35 @@ public class RecordService {
     @Transactional
     public RecordLocation dispatchRecord(DispatchRecordRequest request) {
 
-        recordRepository.findById(request.getRecordId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
+        Records record = recordRepository.findById(request.getRecordId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
+
+        if (record.isDeleted()) {
+            throw new ApplicationException(RECORD_NOT_FOUND);
+        }
 
         switch (request.getLocationType()) {
-            case COLLECTION ->
-                collectionRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
-            case SERIES -> seriesRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(SERIES_NOT_FOUND));
-            case FOLDER -> folderRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(FOLDER_NOT_FOUND));
+            case COLLECTION -> {
+                Collection collection = collectionRepository.findById(request.getLocationId())
+                    .orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
+
+                if (collection.isDeleted()) {
+                    throw new ApplicationException(COLLECTION_NOT_FOUND);
+                }
+            }
+            case SERIES -> {
+                Series series = seriesRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(SERIES_NOT_FOUND));
+
+                if (series.isDeleted()) {
+                    throw new ApplicationException(SERIES_NOT_FOUND);
+                }
+            }
+            case FOLDER -> {
+                Folder folder = folderRepository.findById(request.getLocationId()).orElseThrow(() -> new ApplicationException(FOLDER_NOT_FOUND));
+
+                if (folder.isDeleted()) {
+                    throw new ApplicationException(FOLDER_NOT_FOUND);
+                }
+            }
             default -> throw new ApplicationException(INVALID_RECORD_LOCATION_TYPE);
         }
 

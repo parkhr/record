@@ -33,4 +33,8 @@ public class RolePermission {
 
     @Column("deletedAt")
     private LocalDateTime deletedAt;
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
 }

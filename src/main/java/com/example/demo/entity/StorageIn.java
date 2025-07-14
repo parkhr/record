@@ -44,4 +44,8 @@ public class StorageIn {
             .userId(request.getUserId())
             .build();
     }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
 }

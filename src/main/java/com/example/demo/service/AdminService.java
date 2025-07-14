@@ -33,6 +33,11 @@ public class AdminService {
     public Admin update(UpdateAdminRequest request) {
 
         Admin admin = adminRepository.findById(request.getAdminId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException(ADMIN_NOT_FOUND);
+        }
+
         admin.update(request);
 
         return adminRepository.save(admin);
@@ -42,6 +47,11 @@ public class AdminService {
     public void delete(long adminId) {
 
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException(ADMIN_NOT_FOUND);
+        }
+
         admin.delete();
 
         adminRepository.save(admin);
@@ -56,6 +66,11 @@ public class AdminService {
         String encodedNewPassword = passwordEncoder.encode(newPassword);
 
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException(ADMIN_NOT_FOUND);
+        }
+
         admin.resetPassword(encodedNewPassword);
 
         adminRepository.save(admin);

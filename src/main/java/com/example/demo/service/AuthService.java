@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.ADMIN_NOT_FOUND;
+
 import com.example.demo.common.JwtTokenProvider;
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.entity.Admin;
@@ -30,7 +32,11 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public String login(LoginRequest request) {
-        Admin admin = adminRepository.findByName(request.getName()).orElseThrow(() -> new BadCredentialsException("해당하는 유저가 없습니다."));
+        Admin admin = adminRepository.findByName(request.getName()).orElseThrow(() -> new BadCredentialsException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException(ADMIN_NOT_FOUND);
+        }
 
         if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
@@ -38,17 +44,23 @@ public class AuthService {
 
         Role role = roleRepository.findById(admin.getRoleId()).orElseThrow(() -> new BadCredentialsException("해당하는 권한그룹이 없습니다."));
 
-        List<RolePermission> rolePermissions = rolePermissionRepository.findByRoleId(role.getId());
-        if (rolePermissions.isEmpty()) {
+        if (role.isDeleted()) {
+            throw new ApplicationException("해당하는 권한그룹이 없습니다.");
+        }
+
+        List<Long> permissionIds = rolePermissionRepository.findByRoleId(role.getId()).stream().filter(item -> !item.isDeleted())
+            .map(RolePermission::getPermissionId).toList();
+
+        if (permissionIds.isEmpty()) {
             throw new BadCredentialsException("해당하는 권한이 없습니다.");
         }
-        List<Long> permissionIds = rolePermissions.stream().map(RolePermission::getPermissionId).toList();
 
         List<Permission> permissions = permissionRepository.findByIdIn(permissionIds);
         if (permissions.isEmpty()) {
             throw new BadCredentialsException("해당하는 권한이 없습니다.");
         }
-        List<PermissionType> permissionTypes = permissions.stream().map(Permission::getName).toList();
+
+        List<PermissionType> permissionTypes = permissions.stream().filter(item -> !item.isDeleted()).map(Permission::getName).toList();
 
         return jwtTokenProvider.createToken(admin.getName(), permissionTypes);
     }

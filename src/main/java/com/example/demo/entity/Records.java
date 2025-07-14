@@ -78,4 +78,8 @@ public class Records {
     public boolean isAvailableLoan() {
         return this.deletedAt == null && this.status == REGISTER && this.visibility.equals("공개");
     }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
 }

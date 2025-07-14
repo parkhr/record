@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import static com.example.demo.common.ErrorMessage.FOLDER_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.PERMISSION_NOT_FOUND;
 import static com.example.demo.common.ErrorMessage.ROLE_NOT_FOUND;
 
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +43,10 @@ public class RoleService {
 
         Role role = roleRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(ROLE_NOT_FOUND));
 
+        if (role.isDeleted()) {
+            throw new ApplicationException(ROLE_NOT_FOUND);
+        }
+
         role.update(request);
 
         rolePermission(request, role);
@@ -52,13 +58,14 @@ public class RoleService {
         if (request.getPermissionIds() != null && !request.getPermissionIds().isEmpty()) {
 
             List<Long> permissionIds = request.getPermissionIds();
-            List<Permission> permissions = permissionRepository.findByIdIn(permissionIds);
+            List<Permission> permissions = permissionRepository.findByIdIn(permissionIds).stream().filter(item -> !item.isDeleted()).toList();
 
             if (permissions.size() != permissionIds.size()) {
                 throw new ApplicationException("존재하지 않은 권한이 있습니다.");
             }
 
-            List<RolePermission> existingRolePermissions = rolePermissionRepository.findByRoleId(role.getId());
+            List<RolePermission> existingRolePermissions = rolePermissionRepository.findByRoleId(role.getId()).stream()
+                .filter(item -> !item.isDeleted()).toList();
 
             Map<Long, RolePermission> existingPermissionMap = new HashMap<>();
             for (RolePermission item : existingRolePermissions) {
@@ -89,6 +96,10 @@ public class RoleService {
     public void deleteRole(long roleId) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new ApplicationException(ROLE_NOT_FOUND));
 
+        if (role.isDeleted()) {
+            throw new ApplicationException(ROLE_NOT_FOUND);
+        }
+
         role.delete();
 
         //TODO delete rolePermission
@@ -108,6 +119,10 @@ public class RoleService {
 
         Permission permission = permissionRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(PERMISSION_NOT_FOUND));
 
+        if (permission.isDeleted()) {
+            throw new ApplicationException(PERMISSION_NOT_FOUND);
+        }
+
         permission.update(request);
 
         return permissionRepository.save(permission);
@@ -116,6 +131,10 @@ public class RoleService {
     @Transactional
     public void deletePermission(long permissionId) {
         Permission permission = permissionRepository.findById(permissionId).orElseThrow(() -> new ApplicationException(PERMISSION_NOT_FOUND));
+
+        if (permission.isDeleted()) {
+            throw new ApplicationException(PERMISSION_NOT_FOUND);
+        }
 
         permission.delete();
 

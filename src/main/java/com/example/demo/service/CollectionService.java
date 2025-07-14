@@ -32,6 +32,10 @@ public class CollectionService {
 
         Collection collection = collectionRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
 
+        if (collection.isDeleted()) {
+            throw new ApplicationException(COLLECTION_NOT_FOUND);
+        }
+
         collection.update(request);
 
         return collectionRepository.save(collection);
@@ -40,6 +44,10 @@ public class CollectionService {
     @Transactional
     public void deleteCollection(long collectionId) {
         Collection collection = collectionRepository.findById(collectionId).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
+
+        if (collection.isDeleted()) {
+            throw new ApplicationException(COLLECTION_NOT_FOUND);
+        }
 
         collection.delete();
         collectionRepository.save(collection);

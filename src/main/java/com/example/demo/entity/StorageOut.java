@@ -68,4 +68,8 @@ public class StorageOut {
         this.dueDate = this.dueDate.plusDays(7);
         this.updatedAt = LocalDateTime.now();
     }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
 }
