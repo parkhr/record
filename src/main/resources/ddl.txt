@@ -175,7 +175,7 @@ CREATE TABLE `records` (
   `title` varchar(100) NOT NULL,
   `content` varchar(100) NOT NULL,
   `status` varchar(100) NOT NULL,
-  `visibility` varchar(100) NOT NULL,
+  `isPublic` tinyint(1) NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
