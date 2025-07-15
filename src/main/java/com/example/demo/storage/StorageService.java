@@ -16,6 +16,7 @@ import com.example.demo.storage.request.CancelLoanRequest;
 import com.example.demo.storage.request.LoanRequest;
 import com.example.demo.storage.request.ReturnDelayRequest;
 import com.example.demo.storage.request.ReturnRequest;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,9 @@ public class StorageService {
             throw new ApplicationException(RECORD_NOT_AVAILABLE_FOR_LOAN);
         }
 
-        Optional<StorageOut> storageOutOptional = storageOutRepository.findByRecordIdForUpdate(request.getRecordId());
+        List<StorageOut> storageOuts = storageOutRepository.findByRecordIdForUpdate(request.getRecordId());
 
-        if (storageOutOptional.isPresent()) {
+        if (!storageOuts.isEmpty()) {
             throw new ApplicationException(RECORD_ALREADY_ON_LOAN);
         }
 
@@ -50,12 +51,13 @@ public class StorageService {
     @Transactional
     public StorageIn returns(ReturnRequest request) {
 
-        StorageOut storageOut = storageOutRepository.findByRecordId(request.getRecordId())
-            .orElseThrow(() -> new ApplicationException(RECORD_IS_NOT_ON_LOAN));
+        List<StorageOut> storageOuts = storageOutRepository.findByRecordId(request.getRecordId()).stream().filter(item -> !item.isDeleted()).toList();
 
-        if(storageOut.isDeleted()) {
+        if (storageOuts.isEmpty()) {
             throw new ApplicationException(RECORD_IS_NOT_ON_LOAN);
         }
+
+        StorageOut storageOut = storageOuts.get(0);
 
         storageOut.returns();
         storageOutRepository.save(storageOut);
@@ -66,12 +68,13 @@ public class StorageService {
     @Transactional
     public StorageOut delayReturn(ReturnDelayRequest request) {
 
-        StorageOut storageOut = storageOutRepository.findByRecordId(request.getRecordId())
-            .orElseThrow(() -> new ApplicationException(RECORD_IS_NOT_ON_LOAN));
+        List<StorageOut> storageOuts = storageOutRepository.findByRecordId(request.getRecordId()).stream().filter(item -> !item.isDeleted()).toList();
 
-        if(storageOut.isDeleted()) {
+        if (storageOuts.isEmpty()) {
             throw new ApplicationException(RECORD_IS_NOT_ON_LOAN);
         }
+
+        StorageOut storageOut = storageOuts.get(0);
 
         storageOut.delayReturn();
         return storageOutRepository.save(storageOut);
@@ -83,7 +86,7 @@ public class StorageService {
         StorageOut storageOut = storageOutRepository.findById(request.getStorageOutId())
             .orElseThrow(() -> new ApplicationException(RECORD_IS_NOT_ON_LOAN));
 
-        if(storageOut.isDeleted()) {
+        if (storageOut.isDeleted()) {
             throw new ApplicationException(RECORD_IS_NOT_ON_LOAN);
         }
 

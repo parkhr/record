@@ -23,6 +23,7 @@ import com.example.demo.storage.request.LoanRequest;
 import com.example.demo.storage.request.ReturnDelayRequest;
 import com.example.demo.storage.request.ReturnRequest;
 import com.example.demo.storage.StorageService;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -245,12 +246,13 @@ class StorageServiceTest {
 
         //when
         StorageIn storageIn = storageService.returns(request3);
-        Optional<StorageOut> findStorageOut = storageOutRepository.findByRecordId(record.getId());
+        List<StorageOut> storageOuts = storageOutRepository.findByRecordId(record.getId());
+        StorageOut findStorageOut = storageOuts.get(0);
 
         //then
         assertThat(storageIn.getRecordId()).isEqualTo(record.getId());
         assertNotNull(storageIn.getCreatedAt());
-        assertTrue(findStorageOut.get().isDeleted());
+        assertTrue(findStorageOut.isDeleted());
     }
 
     @DisplayName("반납 실패 (대출중인 기록물이 아닌 경우)")
@@ -335,7 +337,7 @@ class StorageServiceTest {
         assertThatThrownBy(() -> storageService.delayReturn(request3)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_IS_NOT_ON_LOAN);
     }
 
-    @DisplayName("반납연기 성공")
+    @DisplayName("대출취소 성공")
     @Test
     void cancel() {
         //given

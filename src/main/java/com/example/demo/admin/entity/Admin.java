@@ -21,7 +21,7 @@ public class Admin {
     @Id
     private long id;
 
-    @Column("name")
+    @Column("name") // 아이디
     private String name;
 
     @Column("password")
