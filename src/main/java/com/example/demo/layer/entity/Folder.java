@@ -46,7 +46,7 @@ public class Folder {
         return Folder.builder()
             .name(request.getName())
             .content(request.getContent())
-            .isUse(request.isUse())
+            .isUse(request.getIsUse())
             .seriesId(request.getSeriesId())
             .createdAt(LocalDateTime.now())
             .build();
@@ -55,7 +55,7 @@ public class Folder {
     public void update(UpdateFolderRequest request) {
         this.name = request.getName();
         this.content = request.getContent();
-        this.isUse = request.isUse();
+        this.isUse = request.getIsUse();
         this.seriesId = request.getSeriesId();
         this.updatedAt = LocalDateTime.now();
     }

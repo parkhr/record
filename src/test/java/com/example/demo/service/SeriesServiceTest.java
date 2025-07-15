@@ -55,7 +55,7 @@ class SeriesServiceTest {
         request.setName("시리즈제목");
         request.setContent("시리즈내용");
         request.setCollectionId(0L);
-        request.setUse(true);
+        request.setIsUse(true);
 
         given(collectionRepository.findById(anyLong())).willReturn(Optional.ofNullable(Collection.builder().build()));
 
@@ -79,18 +79,18 @@ class SeriesServiceTest {
         request.setName("시리즈제목");
         request.setContent("시리즈내용");
         request.setCollectionId(0L);
-        request.setUse(true);
+        request.setIsUse(true);
 
         given(collectionRepository.findById(anyLong())).willReturn(Optional.ofNullable(Collection.builder().build()));
 
         Series series = seriesService.createSeries(request);
 
         UpdateSeriesRequest updateRequest = new UpdateSeriesRequest();
-        updateRequest.setId(series.getId());
+        updateRequest.setSeriesId(series.getId());
         updateRequest.setName("수정된제목");
         updateRequest.setContent("수정된내용");
         updateRequest.setCollectionId(1L);
-        updateRequest.setUse(false);
+        updateRequest.setIsUse(false);
 
         //when
         Series updateSeries = seriesService.updateSeries(updateRequest);
@@ -109,11 +109,11 @@ class SeriesServiceTest {
         //given
 
         UpdateSeriesRequest updateRequest = new UpdateSeriesRequest();
-        updateRequest.setId(0L);
+        updateRequest.setSeriesId(0L);
         updateRequest.setName("수정된제목");
         updateRequest.setContent("수정된내용");
         updateRequest.setCollectionId(1L);
-        updateRequest.setUse(false);
+        updateRequest.setIsUse(false);
 
         given(collectionRepository.findById(anyLong())).willReturn(Optional.ofNullable(Collection.builder().build()));
 
@@ -130,7 +130,7 @@ class SeriesServiceTest {
         request.setName("시리즈제목");
         request.setContent("시리즈내용");
         request.setCollectionId(0L);
-        request.setUse(true);
+        request.setIsUse(true);
 
         given(collectionRepository.findById(anyLong())).willReturn(Optional.ofNullable(Collection.builder().build()));
 
@@ -140,7 +140,7 @@ class SeriesServiceTest {
         request2.setName("폴더제목");
         request2.setContent("폴더내용");
         request2.setSeriesId(series.getId());
-        request2.setUse(true);
+        request2.setIsUse(true);
 
         Folder folder = folderService.createFolder(request2);
 

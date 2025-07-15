@@ -50,7 +50,7 @@ public class RecordService {
     @Transactional
     public Records updateRecord(UpdateRecordRequest request) {
 
-        Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
+        Records record = recordRepository.findById(request.getRecordId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
         if (record.isDeleted()) {
             throw new ApplicationException(RECORD_NOT_FOUND);
@@ -79,7 +79,7 @@ public class RecordService {
 
     @Transactional
     public Records updateVisibility(UpdateRecordVisibilityRequest request) {
-        Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
+        Records record = recordRepository.findById(request.getRecordId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
         if (record.isDeleted()) {
             throw new ApplicationException(RECORD_NOT_FOUND);
@@ -91,7 +91,7 @@ public class RecordService {
 
     @Transactional
     public Records updateStatus(UpdateRecordStatusRequest request) {
-        Records record = recordRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
+        Records record = recordRepository.findById(request.getRecordId()).orElseThrow(() -> new ApplicationException(RECORD_NOT_FOUND));
 
         if (record.isDeleted()) {
             throw new ApplicationException(RECORD_NOT_FOUND);

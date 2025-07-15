@@ -17,10 +17,8 @@ import com.example.demo.record.entity.Records;
 import com.example.demo.storage.entity.StorageIn;
 import com.example.demo.storage.entity.StorageOut;
 import com.example.demo.storage.repository.StorageOutRepository;
-import com.example.demo.storage.request.CancelLoanRequest;
 import com.example.demo.record.request.CreateRecordRequest;
 import com.example.demo.storage.request.LoanRequest;
-import com.example.demo.storage.request.ReturnDelayRequest;
 import com.example.demo.storage.request.ReturnRequest;
 import com.example.demo.storage.StorageService;
 import java.util.List;
@@ -57,7 +55,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -83,7 +81,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -141,7 +139,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
         recordService.deleteRecord(record.getId()); // 삭제
@@ -162,7 +160,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(TEMP);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -182,7 +180,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("비공개");
+        request.setIsPublic(false);
 
         Records record = recordService.createRecord(request);
 
@@ -202,7 +200,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -230,7 +228,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -275,7 +273,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -285,11 +283,8 @@ class StorageServiceTest {
 
         StorageOut loan = storageService.loan(request2);
 
-        ReturnDelayRequest request3 = new ReturnDelayRequest();
-        request3.setRecordId(record.getId());
-
         //when
-        StorageOut storageOut = storageService.delayReturn(request3);
+        StorageOut storageOut = storageService.delayReturn(loan.getId());
 
         //then
         assertThat(storageOut.getDelayCount()).isEqualTo(loan.getDelayCount() + 1);
@@ -305,7 +300,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -315,14 +310,11 @@ class StorageServiceTest {
 
         StorageOut loan = storageService.loan(request2);
 
-        ReturnDelayRequest request3 = new ReturnDelayRequest();
-        request3.setRecordId(record.getId());
-
         //when
-        storageService.delayReturn(request3);
-        storageService.delayReturn(request3);
+        storageService.delayReturn(loan.getId());
+        storageService.delayReturn(loan.getId());
 
-        assertThatThrownBy(() -> storageService.delayReturn(request3)).isInstanceOf(ApplicationException.class).hasMessage(DELAY_LIMIT_EXCEEDED);
+        assertThatThrownBy(() -> storageService.delayReturn(loan.getId())).isInstanceOf(ApplicationException.class).hasMessage(DELAY_LIMIT_EXCEEDED);
     }
 
     @DisplayName("반납연기 실패 (대출중인 기록물이 아닌 경우)")
@@ -330,11 +322,8 @@ class StorageServiceTest {
     void delay_fail2() {
         //given
 
-        ReturnDelayRequest request3 = new ReturnDelayRequest();
-        request3.setRecordId(0L);
-
         //when
-        assertThatThrownBy(() -> storageService.delayReturn(request3)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_IS_NOT_ON_LOAN);
+        assertThatThrownBy(() -> storageService.delayReturn(0L)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_IS_NOT_ON_LOAN);
     }
 
     @DisplayName("대출취소 성공")
@@ -345,7 +334,7 @@ class StorageServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -355,11 +344,8 @@ class StorageServiceTest {
 
         StorageOut loan = storageService.loan(request2);
 
-        CancelLoanRequest request3 = new CancelLoanRequest();
-        request3.setStorageOutId(loan.getId());
-
         //when
-        StorageOut storageOut = storageService.cancelLoan(request3);
+        StorageOut storageOut = storageService.cancelLoan(loan.getId());
 
         //then
         assertNotNull(storageOut.getDeletedAt());
@@ -368,12 +354,8 @@ class StorageServiceTest {
     @DisplayName("대출취소 실패 (대출중인 기록물이 아닌 경우)")
     @Test
     void cancel_fail() {
-        //given
-
-        CancelLoanRequest request3 = new CancelLoanRequest();
-        request3.setStorageOutId(0L);
 
         //when
-        assertThatThrownBy(() -> storageService.cancelLoan(request3)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_IS_NOT_ON_LOAN);
+        assertThatThrownBy(() -> storageService.cancelLoan(0L)).isInstanceOf(ApplicationException.class).hasMessage(RECORD_IS_NOT_ON_LOAN);
     }
 }

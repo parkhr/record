@@ -70,7 +70,7 @@ class CollectionServiceTest {
         Collection collection = collectionService.createCollection(request);
 
         UpdateCollectionRequest updateRequest = new UpdateCollectionRequest();
-        updateRequest.setId(collection.getId());
+        updateRequest.setCollectionId(collection.getId());
         updateRequest.setName("수정된제목");
         updateRequest.setContent("수정된내용");
         updateRequest.setUse(false);
@@ -91,7 +91,7 @@ class CollectionServiceTest {
         //given
 
         UpdateCollectionRequest updateRequest = new UpdateCollectionRequest();
-        updateRequest.setId(0L);
+        updateRequest.setCollectionId(0L);
         updateRequest.setName("수정된제목");
         updateRequest.setContent("수정된내용");
         updateRequest.setUse(false);
@@ -117,7 +117,7 @@ class CollectionServiceTest {
         request2.setName("시리즈제목1");
         request2.setContent("시리즈내용1");
         request2.setCollectionId(collection.getId());
-        request2.setUse(true);
+        request2.setIsUse(true);
 
         Series series = seriesService.createSeries(request2);
 

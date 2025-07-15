@@ -62,7 +62,7 @@ class MenuServiceTest {
         Menu menu = menuService.createMenu(request);
 
         UpdateMenuRequest updateRequest = new UpdateMenuRequest();
-        updateRequest.setId(menu.getId());
+        updateRequest.setMenuId(menu.getId());
         updateRequest.setName("수정된메뉴이름");
         updateRequest.setContent("수정된메뉴내용");
         updateRequest.setLink("/update");
@@ -85,7 +85,7 @@ class MenuServiceTest {
         //given
 
         UpdateMenuRequest updateRequest = new UpdateMenuRequest();
-        updateRequest.setId(0L);
+        updateRequest.setMenuId(0L);
         updateRequest.setName("수정된메뉴이름");
         updateRequest.setContent("수정된메뉴내용");
         updateRequest.setLink("/update");

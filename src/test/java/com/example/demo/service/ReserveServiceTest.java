@@ -42,7 +42,7 @@ class ReserveServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -74,7 +74,7 @@ class ReserveServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -103,7 +103,7 @@ class ReserveServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(REGISTER);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 

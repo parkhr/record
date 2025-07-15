@@ -42,7 +42,7 @@ public class FolderService {
             throw new ApplicationException(SERIES_NOT_FOUND);
         }
 
-        Folder folder = folderRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(FOLDER_NOT_FOUND));
+        Folder folder = folderRepository.findById(request.getFolderId()).orElseThrow(() -> new ApplicationException(FOLDER_NOT_FOUND));
 
         if (folder.isDeleted()) {
             throw new ApplicationException(FOLDER_NOT_FOUND);

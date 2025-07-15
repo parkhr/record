@@ -25,7 +25,7 @@ public class MenuService {
     @Transactional
     public Menu updateMenu(UpdateMenuRequest request) {
 
-        Menu menu = menuRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(MENU_NOT_FOUND));
+        Menu menu = menuRepository.findById(request.getMenuId()).orElseThrow(() -> new ApplicationException(MENU_NOT_FOUND));
 
         if (menu.isDeleted()) {
             throw new ApplicationException(MENU_NOT_FOUND);

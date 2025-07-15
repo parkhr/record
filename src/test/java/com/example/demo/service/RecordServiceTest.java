@@ -52,7 +52,7 @@ class RecordServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(TEMP);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         //when
         Records record = recordService.createRecord(request);
@@ -61,7 +61,7 @@ class RecordServiceTest {
         assertThat(record.getTitle()).isEqualTo("기록물제목");
         assertThat(record.getContent()).isEqualTo("기록물내용");
         assertThat(record.getStatus()).isEqualTo(TEMP);
-        assertThat(record.getVisibility()).isEqualTo("공개");
+        assertTrue(record.isPublic());
         assertNotNull(record.getCreatedAt());
     }
 
@@ -73,12 +73,12 @@ class RecordServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(TEMP);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
         UpdateRecordRequest updateRequest = new UpdateRecordRequest();
-        updateRequest.setId(record.getId());
+        updateRequest.setRecordId(record.getId());
         updateRequest.setTitle("수정된제목");
         updateRequest.setContent("수정된내용");
 
@@ -97,7 +97,7 @@ class RecordServiceTest {
         //given
 
         UpdateRecordRequest updateRequest = new UpdateRecordRequest();
-        updateRequest.setId(0L);
+        updateRequest.setRecordId(0L);
         updateRequest.setTitle("수정된제목");
         updateRequest.setContent("수정된내용");
 
@@ -114,7 +114,7 @@ class RecordServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(TEMP);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
@@ -145,19 +145,19 @@ class RecordServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(TEMP);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
         UpdateRecordVisibilityRequest request2 = new UpdateRecordVisibilityRequest();
-        request2.setId(record.getId());
-        request2.setVisibility("비공개");
+        request2.setRecordId(record.getId());
+        request2.setIsPublic(false);
 
         //when
         Records updatedRecord = recordService.updateVisibility(request2);
 
         // then
-        assertThat(updatedRecord.getVisibility()).isEqualTo("비공개");
+        assertFalse(updatedRecord.isPublic());
         assertNotNull(updatedRecord.getUpdatedAt());
     }
 
@@ -167,8 +167,8 @@ class RecordServiceTest {
         //given
 
         UpdateRecordVisibilityRequest request2 = new UpdateRecordVisibilityRequest();
-        request2.setId(0L);
-        request2.setVisibility("비공개");
+        request2.setRecordId(0L);
+        request2.setIsPublic(false);
 
         //when
         // then
@@ -183,12 +183,12 @@ class RecordServiceTest {
         request.setTitle("기록물제목");
         request.setContent("기록물내용");
         request.setStatus(TEMP);
-        request.setVisibility("공개");
+        request.setIsPublic(true);
 
         Records record = recordService.createRecord(request);
 
         UpdateRecordStatusRequest request2 = new UpdateRecordStatusRequest();
-        request2.setId(record.getId());
+        request2.setRecordId(record.getId());
         request2.setStatus(REGISTER);
 
         //when
@@ -205,7 +205,7 @@ class RecordServiceTest {
         //given
 
         UpdateRecordStatusRequest request2 = new UpdateRecordStatusRequest();
-        request2.setId(0L);
+        request2.setRecordId(0L);
         request2.setStatus(REGISTER);
 
         //when
@@ -228,7 +228,7 @@ class RecordServiceTest {
         request2.setTitle("기록물제목");
         request2.setContent("기록물내용");
         request2.setStatus(TEMP);
-        request2.setVisibility("공개");
+        request2.setIsPublic(true);
 
         Records record = recordService.createRecord(request2);
 
@@ -269,7 +269,7 @@ class RecordServiceTest {
         request2.setTitle("기록물제목");
         request2.setContent("기록물내용");
         request2.setStatus(TEMP);
-        request2.setVisibility("공개");
+        request2.setIsPublic(true);
 
         Records record = recordService.createRecord(request2);
 

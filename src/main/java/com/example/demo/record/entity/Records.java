@@ -36,8 +36,8 @@ public class Records {
     @Column("status")
     private RecordStatus status;
 
-    @Column("visibility")
-    private String visibility;
+    @Column("isPublic")
+    private boolean isPublic;
 
     @Column("createdAt")
     private LocalDateTime createdAt;
@@ -49,8 +49,8 @@ public class Records {
     private LocalDateTime deletedAt;
 
     public static Records createTempRecord(CreateRecordRequest request) {
-        return Records.builder().title(request.getTitle()).content(request.getContent()).status(request.getStatus())
-            .visibility(request.getVisibility()).createdAt(LocalDateTime.now()).build();
+        return Records.builder().title(request.getTitle()).content(request.getContent()).status(request.getStatus()).isPublic(request.getIsPublic())
+            .createdAt(LocalDateTime.now()).build();
     }
 
     public void update(UpdateRecordRequest request) {
@@ -65,7 +65,7 @@ public class Records {
     }
 
     public void updateVisibility(UpdateRecordVisibilityRequest request) {
-        this.visibility = request.getVisibility();
+        this.isPublic = request.getIsPublic();
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -76,7 +76,7 @@ public class Records {
     }
 
     public boolean isAvailableLoan() {
-        return this.deletedAt == null && this.status == REGISTER && this.visibility.equals("공개");
+        return this.deletedAt == null && this.status == REGISTER && this.isPublic;
     }
 
     public boolean isDeleted() {

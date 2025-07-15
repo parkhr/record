@@ -36,7 +36,7 @@ public class SeriesService {
     public Series updateSeries(UpdateSeriesRequest request) {
 
         collectionRepository.findById(request.getCollectionId()).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
-        Series series = seriesRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(SERIES_NOT_FOUND));
+        Series series = seriesRepository.findById(request.getSeriesId()).orElseThrow(() -> new ApplicationException(SERIES_NOT_FOUND));
 
         series.update(request);
 

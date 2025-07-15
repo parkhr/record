@@ -39,7 +39,7 @@ public class RoleService {
     @Transactional
     public Role updateRole(UpdateRoleRequest request) {
 
-        Role role = roleRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(ROLE_NOT_FOUND));
+        Role role = roleRepository.findById(request.getRoleId()).orElseThrow(() -> new ApplicationException(ROLE_NOT_FOUND));
 
         if (role.isDeleted()) {
             throw new ApplicationException(ROLE_NOT_FOUND);

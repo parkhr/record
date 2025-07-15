@@ -30,7 +30,7 @@ public class CollectionService {
     @Transactional
     public Collection updateCollection(UpdateCollectionRequest request) {
 
-        Collection collection = collectionRepository.findById(request.getId()).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
+        Collection collection = collectionRepository.findById(request.getCollectionId()).orElseThrow(() -> new ApplicationException(COLLECTION_NOT_FOUND));
 
         if (collection.isDeleted()) {
             throw new ApplicationException(COLLECTION_NOT_FOUND);

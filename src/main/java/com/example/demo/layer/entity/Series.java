@@ -46,7 +46,7 @@ public class Series {
         return Series.builder()
             .name(request.getName())
             .content(request.getContent())
-            .isUse(request.isUse())
+            .isUse(request.getIsUse())
             .collectionId(request.getCollectionId())
             .createdAt(LocalDateTime.now())
             .build();
@@ -55,7 +55,7 @@ public class Series {
     public void update(UpdateSeriesRequest request) {
         this.name = request.getName();
         this.content = request.getContent();
-        this.isUse = request.isUse();
+        this.isUse = request.getIsUse();
         this.collectionId = request.getCollectionId();
         this.updatedAt = LocalDateTime.now();
     }

@@ -87,7 +87,7 @@ class RoleServiceTest {
         Permission permission4 = roleService.createPermission(request3);
 
         UpdateRoleRequest request2 = new UpdateRoleRequest();
-        request2.setId(role.getId());
+        request2.setRoleId(role.getId());
         request2.setContent("수정내용");
         request2.setPermissionIds(List.of(permission.getId(), permission2.getId(), permission3.getId(), permission4.getId()));
 
@@ -122,7 +122,7 @@ class RoleServiceTest {
         //given
 
         UpdateRoleRequest request2 = new UpdateRoleRequest();
-        request2.setId(0L);
+        request2.setRoleId(0L);
         request2.setContent("권한그룹내용");
 
         //when

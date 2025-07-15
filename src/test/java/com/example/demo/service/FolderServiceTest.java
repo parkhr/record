@@ -44,7 +44,7 @@ class FolderServiceTest {
         request.setName("폴더제목");
         request.setContent("폴더내용");
         request.setSeriesId(0L);
-        request.setUse(true);
+        request.setIsUse(true);
 
         given(seriesRepository.findById(anyLong())).willReturn(Optional.ofNullable(Series.builder().build()));
 
@@ -68,18 +68,18 @@ class FolderServiceTest {
         request.setName("폴더제목");
         request.setContent("폴더내용");
         request.setSeriesId(0L);
-        request.setUse(true);
+        request.setIsUse(true);
 
         given(seriesRepository.findById(anyLong())).willReturn(Optional.ofNullable(Series.builder().build()));
 
         Folder folder = folderService.createFolder(request);
 
         UpdateFolderRequest updateRequest = new UpdateFolderRequest();
-        updateRequest.setId(folder.getId());
+        updateRequest.setFolderId(folder.getId());
         updateRequest.setName("수정된제목");
         updateRequest.setContent("수정된내용");
         updateRequest.setSeriesId(1L);
-        updateRequest.setUse(false);
+        updateRequest.setIsUse(false);
 
         //when
         Folder updateFolder = folderService.updateFolder(updateRequest);
@@ -98,11 +98,11 @@ class FolderServiceTest {
         //given
 
         UpdateFolderRequest updateRequest = new UpdateFolderRequest();
-        updateRequest.setId(0L);
+        updateRequest.setFolderId(0L);
         updateRequest.setName("수정된제목");
         updateRequest.setContent("수정된내용");
         updateRequest.setSeriesId(1L);
-        updateRequest.setUse(false);
+        updateRequest.setIsUse(false);
 
         given(seriesRepository.findById(anyLong())).willReturn(Optional.ofNullable(Series.builder().build()));
 
@@ -119,7 +119,7 @@ class FolderServiceTest {
         request.setName("폴더제목");
         request.setContent("폴더내용");
         request.setSeriesId(0L);
-        request.setUse(true);
+        request.setIsUse(true);
 
         given(seriesRepository.findById(anyLong())).willReturn(Optional.ofNullable(Series.builder().build()));
 
