@@ -44,9 +44,9 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
             params.put("status", request.getStatus());
         }
 
-        sql.append(" AND visibility = :visibility");
-        countSql.append(" AND visibility = :visibility");
-        params.put("visibility", "공개");
+        sql.append(" AND isPublic = :isPublic");
+        countSql.append(" AND isPublic = :isPublic");
+        params.put("isPublic", true);
 
         sql.append(" ORDER BY id DESC");
 
