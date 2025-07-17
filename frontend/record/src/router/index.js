@@ -1,23 +1,69 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import DefaultLayout from '@/layout/DefaultLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView,
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue'),
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/',
+      component: DefaultLayout,
+      children: [
+        {
+          path: '/record',
+          name: 'record',
+          component: () => import('../views/RecordView.vue'),
+        },
+        {
+          path: '/layer',
+          name: 'layer',
+          component: () => import('../views/LayerView.vue'),
+        },
+        {
+          path: '/storage',
+          name: 'storage',
+          component: () => import('../views/StorageView.vue'),
+        },
+        {
+          path: '/reserve',
+          name: 'reserve',
+          component: () => import('../views/ReserveView.vue'),
+        },
+        {
+          path: '/system',
+          name: 'system',
+          component: () => import('../views/SystemView.vue'),
+        },
+      ]
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const token = sessionStorage.getItem('accessToken')
+
+  // 로그인 페이지는 토큰 없이 접근 허용
+  if (to.path === '/login') {
+    if (token) {
+      // 이미 로그인된 상태라면 기록 페이지로 리디렉션
+      next('/record')
+      return
+    }
+
+    next()
+    return
+  }
+
+  // 나머지 페이지는 토큰 없으면 로그인으로 리디렉션
+  if (!token) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 export default router
