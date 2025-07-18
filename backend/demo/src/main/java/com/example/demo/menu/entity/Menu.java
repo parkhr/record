@@ -30,8 +30,11 @@ public class Menu {
     @Column("link")
     private String link;
 
-    @Column("link2")
-    private String link2;
+    @Column("openType")
+    private String openType;
+
+    @Column("menuLevel")
+    private int menuLevel;
 
     @Column("createdAt")
     private LocalDateTime createdAt;
@@ -47,7 +50,8 @@ public class Menu {
             .name(request.getName())
             .content(request.getContent())
             .link(request.getLink())
-            .link2(request.getLink2())
+            .openType(request.getOpenType())
+            .menuLevel(request.getMenuLevel())
             .createdAt(LocalDateTime.now())
             .build();
     }
@@ -56,7 +60,8 @@ public class Menu {
         this.name = request.getName();
         this.content = request.getContent();
         this.link = request.getLink();
-        this.link2 = request.getLink2();
+        this.openType = request.getOpenType();
+        this.menuLevel = request.getMenuLevel();
         this.updatedAt = LocalDateTime.now();
     }
 

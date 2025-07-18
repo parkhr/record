@@ -17,5 +17,7 @@ public class UpdateMenuRequest {
     @NotBlank
     private String link;
     @NotBlank
-    private String link2;
+    private String openType;
+    @NotBlank
+    private Integer menuLevel;
 }

@@ -362,12 +362,29 @@ CREATE TABLE `menu` (
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `link` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `link2` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `openType` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
+  `menuLevel` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO record.menu
+(id, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(1, '기록물관리', '기록물관리', '/record', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+INSERT INTO record.menu
+(id, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(2, '계층관리', '계층관리', '/layer', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+INSERT INTO record.menu
+(id, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(3, '서고관리', '서고관리', '/storage', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+INSERT INTO record.menu
+(id, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(4, '예약관리', '예약관리', '/reserve', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+INSERT INTO record.menu
+(id, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(5, '시스템관리', '시스템관리', '/system', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
 
 -- record.reserve definition
 

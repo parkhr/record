@@ -36,7 +36,8 @@ class MenuServiceTest {
         request.setName("메뉴이름");
         request.setContent("메뉴내용");
         request.setLink("/test");
-        request.setLink2("새창");
+        request.setOpenType("_blank");
+        request.setMenuLevel(1);
 
         //when
         Menu menu = menuService.createMenu(request);
@@ -45,7 +46,7 @@ class MenuServiceTest {
         assertThat(menu.getName()).isEqualTo("메뉴이름");
         assertThat(menu.getContent()).isEqualTo("메뉴내용");
         assertThat(menu.getLink()).isEqualTo("/test");
-        assertThat(menu.getLink2()).isEqualTo("새창");
+        assertThat(menu.getOpenType()).isEqualTo("_blank");
         assertNotNull(menu.getCreatedAt());
     }
 
@@ -57,7 +58,8 @@ class MenuServiceTest {
         request.setName("메뉴이름");
         request.setContent("메뉴내용");
         request.setLink("/test");
-        request.setLink2("새창");
+        request.setOpenType("_blank");
+        request.setMenuLevel(1);
 
         Menu menu = menuService.createMenu(request);
 
@@ -66,7 +68,8 @@ class MenuServiceTest {
         updateRequest.setName("수정된메뉴이름");
         updateRequest.setContent("수정된메뉴내용");
         updateRequest.setLink("/update");
-        updateRequest.setLink2("현재창");
+        updateRequest.setOpenType("_self");
+        updateRequest.setMenuLevel(2);
 
         //when
         Menu updatedMenu = menuService.updateMenu(updateRequest);
@@ -75,7 +78,8 @@ class MenuServiceTest {
         assertThat(updatedMenu.getName()).isEqualTo("수정된메뉴이름");
         assertThat(updatedMenu.getContent()).isEqualTo("수정된메뉴내용");
         assertThat(updatedMenu.getLink()).isEqualTo("/update");
-        assertThat(updatedMenu.getLink2()).isEqualTo("현재창");
+        assertThat(updatedMenu.getOpenType()).isEqualTo("_self");
+        assertThat(updatedMenu.getMenuLevel()).isEqualTo(2);
         assertNotNull(updatedMenu.getUpdatedAt());
     }
 
@@ -89,7 +93,7 @@ class MenuServiceTest {
         updateRequest.setName("수정된메뉴이름");
         updateRequest.setContent("수정된메뉴내용");
         updateRequest.setLink("/update");
-        updateRequest.setLink2("현재창");
+        updateRequest.setOpenType("현재창");
 
         //when
         //then
@@ -104,7 +108,8 @@ class MenuServiceTest {
         request.setName("메뉴이름");
         request.setContent("메뉴내용");
         request.setLink("/test");
-        request.setLink2("새창");
+        request.setOpenType("_blank");
+        request.setMenuLevel(1);
 
         Menu menu = menuService.createMenu(request);
 
