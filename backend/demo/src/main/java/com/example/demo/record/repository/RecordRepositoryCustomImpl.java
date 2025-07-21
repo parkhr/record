@@ -1,6 +1,5 @@
 package com.example.demo.record.repository;
 
-import com.example.demo.record.repository.RecordRepositoryCustom;
 import com.example.demo.record.request.SearchRecordRequest;
 import com.example.demo.record.response.SearchRecordResponse;
 import java.time.LocalDate;
@@ -42,7 +41,7 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
             params.put("content", "%" + request.getContent() + "%");
         }
 
-        if (request.getStatus() != null) {
+        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
             sql.append(" AND status = :status");
             countSql.append(" AND status = :status");
             params.put("status", request.getStatus());
@@ -58,9 +57,11 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
             LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
 
             sql.append(" AND createdAt >= :startDate");
+            countSql.append(" AND createdAt >= :startDate");
             params.put("startDate", startDateTime);
 
             sql.append(" AND createdAt <= :endDate");
+            countSql.append(" AND createdAt >= :startDate");
             params.put("endDate", endDateTime);
         }
 

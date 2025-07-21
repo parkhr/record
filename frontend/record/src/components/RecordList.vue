@@ -1,16 +1,31 @@
 <template>
-  <a-space>
-    <a-input v-model:value="title" placeholder="기록물명을 검색하세요." />
-    <a-select
-      v-model:value="status"
-      style="width: 120px"
-      :options="statuses.map(pro => ({ value: pro }))"
-    ></a-select>
-    <a-range-picker v-model:value="insertDateRange" />
-    <a-button :icon="h(SearchOutlined)" @click="search">Search</a-button>
-  </a-space>
+  
+  <!-- SEARCH -->
+  <a-row style="margin-bottom: 20px">
+    <a-col :span="24">
+      <a-input v-model:value="title" style="width: 300px" placeholder="기록물명을 검색하세요." />
+      <a-select
+        v-model:value="status"
+        style="width: 120px"
+        :options="statuses.map(pro => ({ value: pro }))"
+      ></a-select>
+      <a-range-picker v-model:value="insertDateRange" style="width: 300px" />
+    </a-col>
 
+    <a-col :span="24">
+      <a-button :icon="h(SearchOutlined)" @click="search">Search</a-button>
+      <a-button @click="reset">Reset</a-button>
+    </a-col>
+  </a-row>
+
+  <!-- LIST -->
   <a-table :columns="columns" :data-source="data" :pagination="pagination" @change="handleTableChange">
+    <template #title>
+      <div style="display: flex; justify-content: flex-end">
+        <a-button @click="onExport">엑셀 다운로드</a-button>
+        <a-button type="primary" @click="register">등록</a-button>
+      </div>
+    </template>
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'title'">
         <a>
@@ -128,6 +143,35 @@ const search = () => {
   searchParams.value = params;
 
   fetchRecords(params);
+};
+
+const reset = () => {
+  title.value = '';
+  status.value = statuses[0];
+  insertDateRange.value = null;
+
+  searchParams.value = {
+    title: '',
+    status: '',
+    startDate: null,
+    endDate: null,
+    page: 0,
+    pageSize: pagination.value.pageSize
+  };
+
+  pagination.value.current = 1;
+
+  fetchRecords(searchParams.value);
+}
+
+const register = () => {
+  // Logic to handle record registration
+  console.log("Register new record");
+}
+
+const onExport = () => {
+  // Logic to handle export functionality
+  console.log("Export records to Excel");
 };
 
 onMounted(() => {
