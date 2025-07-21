@@ -12,13 +12,17 @@ import com.example.demo.role.repository.RolePermissionRepository;
 import com.example.demo.role.repository.RoleRepository;
 import com.example.demo.role.request.CreatePermissionRequest;
 import com.example.demo.role.request.CreateRoleRequest;
+import com.example.demo.role.request.SearchRoleRequest;
 import com.example.demo.role.request.UpdatePermissionRequest;
 import com.example.demo.role.request.UpdateRoleRequest;
+import com.example.demo.role.response.SearchRoleResponse;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -137,5 +141,9 @@ public class RoleService {
                 }
             }
         }
+    }
+
+    public Page<SearchRoleResponse> findRoles(SearchRoleRequest request, Pageable pageable) {
+        return roleRepository.findRoles(request, pageable);
     }
 }
