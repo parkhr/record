@@ -10,4 +10,6 @@ public class SearchRecordRequest {
     private String title;
     private String content;
     private String status;
+    private String startDate;
+    private String endDate;
 }

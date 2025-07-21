@@ -3,6 +3,10 @@ package com.example.demo.record.repository;
 import com.example.demo.record.repository.RecordRepositoryCustom;
 import com.example.demo.record.request.SearchRecordRequest;
 import com.example.demo.record.response.SearchRecordResponse;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +46,22 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
             sql.append(" AND status = :status");
             countSql.append(" AND status = :status");
             params.put("status", request.getStatus());
+        }
+
+        if(request.getStartDate() != null && request.getEndDate() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            LocalDate startDate = LocalDate.parse(request.getStartDate(), formatter);
+            LocalDate endDate = LocalDate.parse(request.getEndDate(), formatter);
+
+            LocalDateTime startDateTime = startDate.atStartOfDay();
+            LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+            sql.append(" AND createdAt >= :startDate");
+            params.put("startDate", startDateTime);
+
+            sql.append(" AND createdAt <= :endDate");
+            params.put("endDate", endDateTime);
         }
 
         sql.append(" AND isPublic = :isPublic");
