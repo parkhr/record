@@ -21,7 +21,7 @@
   </a-table>
 </template>
 <script lang="ts" setup>
-import axios from 'axios'
+import api from '@/api/axios'
 import { onMounted, ref, h } from 'vue'
 import type { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons-vue';
@@ -77,7 +77,7 @@ const pagination = ref({
 
 const fetchRecords = async (params) => {
   try {
-    const response = await axios.get('http://localhost:8081/api/record/search', {
+    const response = await api.get('/api/record/search', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
