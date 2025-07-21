@@ -78,7 +78,7 @@ const router = useRouter()
 
 // 현재 경로에 따라 selectedKey 설정
 const selectedKey = ref(route.path)
-const selectedKey2 = ref('')
+const selectedKey2 = ref([''])
 
 watch(route, () => {
   selectedKey.value = route.path
