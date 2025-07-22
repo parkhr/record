@@ -1,7 +1,7 @@
 <template>
   <a-layout style="height: 100vh; width: 100vw;">
     <a-layout-header>
-      <a-menu
+      <!-- <a-menu
         theme="dark"
         mode="horizontal"
         :selectedKeys="[selectedKey]"
@@ -22,6 +22,18 @@
         </a-menu-item>
         <a-menu-item key="/system">
           <router-link to="/system">시스템관리</router-link>
+        </a-menu-item>
+      </a-menu> -->
+
+      <a-menu
+        theme="dark"
+        mode="horizontal"
+        :selectedKeys="[selectedKey]"
+        @click="onMenuClick"
+        :style="{ lineHeight: '64px' }"
+      >
+        <a-menu-item v-for="menu in menus" :key="menu.link">
+          <router-link :to="menu.link">{{ menu.name }}</router-link>
         </a-menu-item>
       </a-menu>
     </a-layout-header>
@@ -70,7 +82,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import api from '@/api/axios'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -89,4 +102,25 @@ const onMenuClick = ({ key }) => {
   selectedKey.value = key
   router.push(key)
 }
+
+
+const menus = ref([])
+
+onMounted(async () => {
+
+  let params = {
+    menuLevel : 1,
+    // parentId 
+  }
+
+  const response = await api.get('/api/menu', {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+    },
+    params: params
+  });
+
+  menus.value = response.data
+})
 </script>
