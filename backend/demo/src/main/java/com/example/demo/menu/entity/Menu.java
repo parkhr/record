@@ -21,6 +21,9 @@ public class Menu {
     @Id
     private long id;
 
+    @Column("parentId")
+    private long parentId;
+
     @Column("name")
     private String name;
 

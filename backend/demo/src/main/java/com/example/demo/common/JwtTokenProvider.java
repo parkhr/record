@@ -14,12 +14,13 @@ public class JwtTokenProvider {
 
     //TODO 설정파일로 이동
     private final String secretKey = "mysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykey";
-//    private final long validityInMs = 3600_000;
-    private final long validityInMs = 100_000;
+    //    private final long validityInMs = 3600_000;
+    private final long validityInMs = 600_000;
 
-    public String createToken(String username, List<PermissionType> permissions) {
+    public String createToken(String username, List<PermissionType> permissions, long roleId) {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("permissions", permissions);
+        claims.put("roleId", roleId);
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMs);
@@ -44,6 +45,16 @@ public class JwtTokenProvider {
     public String getUsername(String token) {
         return Jwts.parser().setSigningKey(secretKey)
             .parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public long getRoleId(String token) {
+        Claims claims = Jwts.parser()
+            .setSigningKey(secretKey)
+            .parseClaimsJws(token)
+            .getBody();
+
+        Integer roleId = (int) claims.get("roleId");
+        return roleId.longValue();
     }
 
     public List<PermissionType> getPermissions(String token) {

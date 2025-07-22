@@ -6,6 +6,8 @@ import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
 import com.example.demo.common.JwtTokenProvider;
 import com.example.demo.common.exception.ApplicationException;
+import com.example.demo.menu.repository.MenuRepository;
+import com.example.demo.menu.repository.RoleMenuRepository;
 import com.example.demo.role.entity.Permission;
 import com.example.demo.role.entity.Role;
 import com.example.demo.role.entity.RolePermission;
@@ -62,6 +64,6 @@ public class AuthService {
 
         List<PermissionType> permissionTypes = permissions.stream().filter(item -> !item.isDeleted()).map(Permission::getName).toList();
 
-        return jwtTokenProvider.createToken(admin.getName(), permissionTypes);
+        return jwtTokenProvider.createToken(admin.getName(), permissionTypes, role.getId());
     }
 }
