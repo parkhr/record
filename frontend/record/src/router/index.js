@@ -14,7 +14,7 @@ const router = createRouter({
       component: DefaultLayout,
       children: [
         {
-          path: '/record',
+          path: '/record/list',
           name: 'record',
           component: () => import('../views/RecordView.vue'),
         },
@@ -38,6 +38,16 @@ const router = createRouter({
           name: 'system',
           component: () => import('../views/SystemView.vue'),
         },
+        {
+          path: '/system/role',
+          name: 'systemRole',
+          component: () => import('../views/SystemRoleView.vue'),
+        },
+        {
+          path: '/system/menu',
+          name: 'systemMenu',
+          component: () => import('../views/SystemMenuView.vue'),
+        },
       ]
     },
   ],
@@ -50,7 +60,7 @@ router.beforeEach((to, from, next) => {
   if (to.path === '/login') {
     if (token) {
       // 이미 로그인된 상태라면 기록 페이지로 리디렉션
-      next('/record')
+      next('/')
       return
     }
 
