@@ -1,39 +1,14 @@
 <template>
   <a-layout style="height: 100vh; width: 100vw;">
     <a-layout-header>
-      <!-- <a-menu
-        theme="dark"
-        mode="horizontal"
-        :selectedKeys="[selectedKey]"
-        @click="onMenuClick"
-        :style="{ lineHeight: '64px' }"
-      >
-        <a-menu-item key="/record">
-          <router-link to="/record">기록물관리</router-link>
-        </a-menu-item>
-        <a-menu-item key="/layer">
-          <router-link to="/layer">계층관리</router-link>
-        </a-menu-item>
-        <a-menu-item key="/storage">
-          <router-link to="/storage">서고관리</router-link>
-        </a-menu-item>
-        <a-menu-item key="/reserve">
-          <router-link to="/reserve">예약관리</router-link>
-        </a-menu-item>
-        <a-menu-item key="/system">
-          <router-link to="/system">시스템관리</router-link>
-        </a-menu-item>
-      </a-menu> -->
-
       <a-menu
         theme="dark"
         mode="horizontal"
-        :selectedKeys="[selectedKey]"
-        @click="onMenuClick"
+        :selectedKeys="[selectedMenu]"
         :style="{ lineHeight: '64px' }"
       >
-        <a-menu-item v-for="menu in menus" :key="menu.link">
-          <router-link :to="menu.link">{{ menu.name }}</router-link>
+        <a-menu-item v-for="menu in menus" :key="menu.link" @click="onMenuClick(menu)">
+          {{ menu.name }}
         </a-menu-item>
       </a-menu>
     </a-layout-header>
@@ -42,21 +17,21 @@
       <a-layout style="padding: 24px 0; background: #fff">
         <a-layout-sider width="200" style="background: #fff">
           <a-menu
-            v-model:selectedKeys="selectedKey2"
             mode="inline"
+            :selectedKeys="[selectedChildMenu]"
             style="height: 100%"
           >
-            <a-menu-item key="9">임시등록</a-menu-item>
-            <a-menu-item key="10">option10</a-menu-item>
-            <a-menu-item key="11">option11</a-menu-item>
-            <a-menu-item key="12">option12</a-menu-item>
+            <a-menu-item v-for="menu in childMenus" :key="menu.link" @click="onChildMenuClick(menu)">
+              <!-- <router-link :to="menu.link">{{ menu.name }}</router-link> -->
+               {{ menu.name }}
+            </a-menu-item>
           </a-menu>
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
           <a-row>
             <a-col :span="21">
               <a-page-header
-                title="임시등록"
+                :title="selectedChildMenuName"
                 @back="() => null">              
               </a-page-header>
             </a-col>
@@ -86,31 +61,24 @@ import api from '@/api/axios'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const route = useRoute()
 const router = useRouter()
 
-// 현재 경로에 따라 selectedKey 설정
-const selectedKey = ref(route.path)
-const selectedKey2 = ref([''])
+const menus = ref([])
+const childMenus = ref([])
 
-watch(route, () => {
-  selectedKey.value = route.path
-})
+// 현재 경로에 따라 selectedKey 설정
+const selectedMenu = ref('')
+const selectedChildMenu = ref('')
+const selectedChildMenuName = ref('')
 
 // 메뉴 클릭 시 key를 기준으로 라우팅
-const onMenuClick = ({ key }) => {
-  selectedKey.value = key
-  router.push(key)
-}
-
-
-const menus = ref([])
-
-onMounted(async () => {
-
-  let params = {
-    menuLevel : 1,
-    // parentId 
+const onMenuClick = async (menu) => {
+  selectedMenu.value = menu.link
+  
+  // child menu 의 가장 첫번째를 찾아 routing
+  const params = {
+    menuLevel : 2,
+    parentId : menu.id
   }
 
   const response = await api.get('/api/menu', {
@@ -121,6 +89,56 @@ onMounted(async () => {
     params: params
   });
 
-  menus.value = response.data
+  childMenus.value = response.data
+  selectedChildMenu.value = childMenus.value[0].link
+  selectedChildMenuName.value = childMenus.value[0].name
+
+  router.push(childMenus.value[0].link)
+}
+
+const onChildMenuClick = (menu) => {
+  selectedChildMenu.value = menu.link
+  selectedChildMenuName.value = menu.name
+  router.push(menu.link)
+}
+
+onMounted(async () => {
+  let params = {
+    menuLevel : 1,
+  }
+
+  try {
+    let response = await api.get('/api/menu', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      },
+      params: params
+    });
+
+    menus.value = response.data
+    selectedMenu.value = menus.value[menus.value.length - 1].link
+
+    params = {
+      menuLevel : 2,
+      parentId : menus.value[menus.value.length - 1].id
+    }
+
+    response = await api.get('/api/menu', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      },
+      params: params
+    });
+
+    childMenus.value = response.data
+    selectedChildMenu.value = childMenus.value[0].link
+    selectedChildMenuName.value = childMenus.value[0].name
+
+    router.push(selectedChildMenu.value)
+  } catch(error) {
+    
+  }
 })
 </script>
