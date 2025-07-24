@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class SearchRecordResponse {
 
+    private String id;
     private String title;
     private String content;
     private String status;

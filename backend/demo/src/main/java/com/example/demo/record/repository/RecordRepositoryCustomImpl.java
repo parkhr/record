@@ -25,7 +25,7 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
 
     @Override
     public Page<SearchRecordResponse> findPublicRecords(SearchRecordRequest request, Pageable pageable) {
-        StringBuilder sql = new StringBuilder("SELECT title, content, status, createdAt, updatedAt FROM records WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT id, title, content, status, createdAt, updatedAt FROM records WHERE 1=1");
         StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM records WHERE 1=1");
         Map<String, Object> params = new HashMap<>();
 
@@ -65,9 +65,12 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
             params.put("endDate", endDateTime);
         }
 
-        sql.append(" AND isPublic = :isPublic");
-        countSql.append(" AND isPublic = :isPublic");
-        params.put("isPublic", true);
+        sql.append(" AND isPublic = true");
+        countSql.append(" AND isPublic = true");
+
+        sql.append(" AND deletedAt IS NULL");
+        countSql.append(" AND deletedAt IS NULL");
+
 
         sql.append(" ORDER BY id DESC");
 
