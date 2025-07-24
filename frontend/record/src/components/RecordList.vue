@@ -32,14 +32,24 @@
           {{ record.title }}
         </a>
       </template>
+      <template v-else-if="column.key === 'action'">
+        <span>
+          <!-- <a-divider type="vertical" /> -->
+          <a @click="onDelete(record)">Delete</a>
+          <!-- <a-divider type="vertical" /> -->
+        </span>
+      </template>
     </template>
   </a-table>
+
+  <CommonModal ref="deleteModalRef"/>
 </template>
 <script lang="ts" setup>
 import api from '@/api/axios'
 import { onMounted, ref, h } from 'vue'
 import type { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons-vue';
+import CommonModal from './CommonModal.vue';
 type RangeValue = [Dayjs, Dayjs];
 
 const title = ref('');
@@ -54,6 +64,8 @@ const searchParams = ref({
 const statuses = ['전체', 'TEMP', 'REGISTER', 'DELETE'];
 const status = ref(statuses[0]);
 const insertDateRange = ref<RangeValue>();
+
+const deleteModalRef = ref();
 
 const columns = [
   {
@@ -76,10 +88,10 @@ const columns = [
     key: 'createdAt',
     dataIndex: 'createdAt',
   },
-//   {
-//     title: 'Action',
-//     key: 'action',
-//   },
+  {
+    title: 'Action',
+    key: 'action',
+  },
 ];
 
 const data = ref([]);
@@ -173,6 +185,27 @@ const onExport = () => {
   // Logic to handle export functionality
   console.log("Export records to Excel");
 };
+
+const onDelete = (record) => {
+  deleteModalRef.value?.show('기록물삭제', record.title + '을 삭제하시겠습니까?', 
+    async () => {
+
+      try {
+        const response = await api.delete('/api/record/' + record.id, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+          },
+        });
+
+        alert("기록물 삭제되었습니다.")
+      } catch (error) {
+        alert("기록물 삭제 실패")
+      }
+
+      fetchRecords(searchParams.value);
+    });
+}
 
 onMounted(() => {
   const params: any = {
