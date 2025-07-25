@@ -1,6 +1,3 @@
-<script setup>
-</script>
-
 <template>
   <a-row style="margin-bottom: 20px">
     <a-col :span="24">
@@ -24,7 +21,7 @@
     <template #title>
       <div style="display: flex; justify-content: flex-end">
         <a-button @click="onExport">엑셀 다운로드</a-button>
-        <a-button type="primary" @click="register">등록</a-button>
+        <a-button type="primary" @click="onCreate">등록</a-button>
       </div>
     </template>
     <template #bodyCell="{ column, record }">
@@ -35,6 +32,8 @@
       </template>
     </template>
   </a-table>
+
+  <RoleCreateModal ref="roleCreateModal"/>
 </template>
 
 <script lang="ts" setup>
@@ -42,6 +41,7 @@ import api from '@/api/axios'
 import { onMounted, ref, h } from 'vue'
 import type { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons-vue';
+import RoleCreateModal from '@/components/RoleCreateModal.vue';
 type RangeValue = [Dayjs, Dayjs];
 
 const title = ref('');
@@ -87,6 +87,8 @@ const pagination = ref({
   position: ['bottomCenter'],
   total: 0,
 })
+
+const roleCreateModal = ref();
 
 const fetchRoles = async (params) => {
   try {
@@ -154,9 +156,16 @@ const reset = () => {
   fetchRoles(searchParams.value);
 }
 
-const register = () => {
-  // Logic to handle record registration
-  console.log("Register new record");
+const onCreate = () => {
+  roleCreateModal.value?.show(
+    async () => {
+      try {
+        // 모달에서 행위 처리 이후에 데이터 재조회
+
+      } catch (error) {
+        alert("권한그룹 생성 실패")
+      }
+    });
 }
 
 const onExport = () => {
