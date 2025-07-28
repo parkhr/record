@@ -3,7 +3,7 @@ spring:
     url: jdbc:mysql://localhost:3306/record
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: root
+    password: <password>
 
   mvc:
     throw-exception-if-no-handler-found: true

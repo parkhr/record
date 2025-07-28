@@ -22,10 +22,14 @@
   <!-- LIST -->
   <a-table :columns="columns" :data-source="data" :pagination="pagination" @change="handleTableChange">
     <template #title>
-      <div style="display: flex; justify-content: flex-end">
-        <a-button @click="onExport">엑셀 다운로드</a-button>
-        <a-button type="primary" @click="register">등록</a-button>
-      </div>
+      <a-row :gutter="5" justify="end">
+        <a-col>
+          <a-button @click="onExport">엑셀 다운로드</a-button>
+        </a-col>
+        <a-col>
+          <a-button type="primary" @click="onCreate">등록</a-button>
+        </a-col>
+      </a-row>
     </template>
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'title'">
@@ -154,7 +158,7 @@ const reset = () => {
   fetchRoles(searchParams.value);
 }
 
-const register = () => {
+const onCreate = () => {
   // Logic to handle record registration
   console.log("Register new record");
 }

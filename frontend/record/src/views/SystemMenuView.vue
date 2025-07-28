@@ -2,30 +2,42 @@
 </script>
 
 <template>
-  <a-row style="margin-bottom: 20px">
-    <a-col :span="24">
-      <a-input v-model:value="title" style="width: 300px" placeholder="권한그룹명을 검색하세요." />
+  <a-row :gutter="[5, 5]" style="margin-bottom: 20px">
+    <a-col :span="4">
+      <a-input v-model:value="title" style="width: 100%" placeholder="기록물명을 검색하세요." />
+    </a-col>
+    <a-col :span="2">
       <a-select
         v-model:value="status"
-        style="width: 120px"
+        style="width: 100%"
         :options="statuses.map(pro => ({ value: pro }))"
       ></a-select>
+    </a-col>
+    <a-col :span="3">
       <a-range-picker v-model:value="insertDateRange" style="width: 300px" />
     </a-col>
 
-    <a-col :span="24">
-      <a-button :icon="h(SearchOutlined)" @click="search">Search</a-button>
-      <a-button @click="reset">Reset</a-button>
+    <a-col :span="24"></a-col>
+
+    <a-col :span="1">
+      <a-button :icon="h(SearchOutlined)" @click="search" style="width: 100%">Search</a-button>
+    </a-col>
+    <a-col :span="1">
+      <a-button @click="reset" style="width: 100%">Reset</a-button>
     </a-col>
   </a-row>
 
   <!-- LIST -->
   <a-table :columns="columns" :data-source="data" :pagination="pagination" @change="handleTableChange">
     <template #title>
-      <div style="display: flex; justify-content: flex-end">
-        <a-button @click="onExport">엑셀 다운로드</a-button>
-        <a-button type="primary" @click="register">등록</a-button>
-      </div>
+      <a-row :gutter="5" justify="end">
+        <a-col>
+          <a-button @click="onExport">엑셀 다운로드</a-button>
+        </a-col>
+        <a-col>
+          <a-button type="primary" @click="onCreate">등록</a-button>
+        </a-col>
+      </a-row>
     </template>
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'title'">
@@ -154,7 +166,7 @@ const reset = () => {
   fetchRoles(searchParams.value);
 }
 
-const register = () => {
+const onCreate = () => {
   // Logic to handle record registration
   console.log("Register new record");
 }

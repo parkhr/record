@@ -1,5 +1,5 @@
 <template>
-  <a-layout style="height: 100vh; width: 100vw;">
+  <div style="min-height: 100vh; width: 100vw; display: flex; flex-direction: column; overflow-x: hidden;">
     <a-layout-header>
       <a-menu
         theme="dark"
@@ -13,47 +13,42 @@
       </a-menu>
     </a-layout-header>
 
-    <a-layout-content>
-      <a-layout style="padding: 24px 0; background: #fff">
-        <a-layout-sider width="200" style="background: #fff">
-          <a-menu
-            mode="inline"
-            :selectedKeys="[selectedChildMenu]"
-            style="height: 100%"
-          >
+    <div style="background: #fff;">
+      <a-row style="background: #fff;">
+        <a-col :span="2" style="background: #fff;">
+          <!-- 사이드 메뉴 -->
+          <a-menu mode="inline" :selectedKeys="[selectedChildMenu]">
             <a-menu-item v-for="menu in childMenus" :key="menu.link" @click="onChildMenuClick(menu)">
-              <!-- <router-link :to="menu.link">{{ menu.name }}</router-link> -->
-               {{ menu.name }}
+              {{ menu.name }}
             </a-menu-item>
           </a-menu>
-        </a-layout-sider>
-        <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
+        </a-col>
+
+        <a-col :span="22">
+          <!-- 페이지 내용 -->
           <a-row>
             <a-col :span="21">
-              <a-page-header
-                :title="selectedChildMenuName"
-                @back="() => null">              
-              </a-page-header>
+              <!-- <a-page-header :title="selectedChildMenuName" @back="() => null" /> -->
+                <a-page-header :title="selectedChildMenuName"/>
             </a-col>
             <a-col :span="3">
               <div style="display: flex; align-items: center; height: 100%;">
                 <a-breadcrumb>
-                  <a-breadcrumb-item>기록물관리</a-breadcrumb-item>
-                  <a-breadcrumb-item><a href="">임시등록</a></a-breadcrumb-item>
+                  <a-breadcrumb-item>{{selectedMenuName}}</a-breadcrumb-item>
+                  <a-breadcrumb-item>{{selectedChildMenuName}}</a-breadcrumb-item>
                 </a-breadcrumb>
               </div>
             </a-col>
           </a-row>
-        
           <router-view />
-        </a-layout-content>
-      </a-layout>
-    </a-layout-content>
+        </a-col>
+      </a-row>
+    </div>
 
-    <a-layout-footer style="text-align: center">
+    <a-layout-footer style="text-align: center; width: 100%; margin-top: auto;">
       Ant Design ©2018 Created by Ant UED
     </a-layout-footer>
-  </a-layout>
+  </div>
 </template>
 
 <script setup>
@@ -68,12 +63,14 @@ const childMenus = ref([])
 
 // 현재 경로에 따라 selectedKey 설정
 const selectedMenu = ref('')
+const selectedMenuName = ref('')
 const selectedChildMenu = ref('')
 const selectedChildMenuName = ref('')
 
 // 메뉴 클릭 시 key를 기준으로 라우팅
 const onMenuClick = async (menu) => {
   selectedMenu.value = menu.link
+  selectedMenuName.value = menu.name
   
   // child menu 의 가장 첫번째를 찾아 routing
   const params = {
@@ -118,6 +115,7 @@ onMounted(async () => {
 
     menus.value = response.data
     selectedMenu.value = menus.value[menus.value.length - 1].link
+    selectedMenuName.value = menus.value[menus.value.length - 1].name
 
     params = {
       menuLevel : 2,
