@@ -26,7 +26,7 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
     @Override
     public Page<SearchRecordResponse> findPublicRecords(SearchRecordRequest request, Pageable pageable) {
         StringBuilder sql = new StringBuilder("SELECT id, title, content, status, createdAt, updatedAt FROM records WHERE 1=1");
-        StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM records WHERE 1=1");
+        StringBuilder countSql = new StringBuilder("SELECT COUNT(1) FROM records WHERE 1=1");
         Map<String, Object> params = new HashMap<>();
 
         if (request.getTitle() != null && !request.getTitle().isEmpty()) {

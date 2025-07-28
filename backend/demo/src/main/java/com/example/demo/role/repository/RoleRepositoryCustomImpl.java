@@ -23,7 +23,7 @@ public class RoleRepositoryCustomImpl implements RoleRepositoryCustom {
     public Page<SearchRoleResponse> findRoles(SearchRoleRequest request, Pageable pageable) {
 
         StringBuilder sql = new StringBuilder("SELECT id, name, content, createdAt, updatedAt, deletedAt FROM role WHERE 1=1");
-        StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM role WHERE 1=1");
+        StringBuilder countSql = new StringBuilder("SELECT COUNT(1) FROM role WHERE 1=1");
         Map<String, Object> params = new HashMap<>();
 
 //        if (request.getTitle() != null && !request.getTitle().isEmpty()) {
