@@ -1,0 +1,11 @@
+CREATE TABLE `spend` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `amount` int NOT NULL,
+  `place` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `isDeducted` tinyint(1) NOT NULL,
+  `spendAt` datetime NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
