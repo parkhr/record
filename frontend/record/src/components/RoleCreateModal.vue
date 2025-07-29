@@ -43,6 +43,7 @@
 
 <script lang="ts" setup>
 import api from '@/api/axios'
+import { message } from 'ant-design-vue';
 import { reactive, ref } from 'vue';
 
 const formRef = ref()
@@ -73,7 +74,7 @@ const handleOk = async () => {
     
     open.value = false;
     formRef.value.resetFields()
-
+    message.success('권한그룹이 생성되었습니다.');
     callback.value?.(); // 행위 수행
   } catch (error) {
     console.log(error)
