@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class SearchRoleResponse {
 
+    private long id;
     private String name;
     private String content;
 

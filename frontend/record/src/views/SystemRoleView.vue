@@ -43,15 +43,16 @@
       </a-row>
     </template>
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'title'">
-        <a>
-          {{ record.title }}
+      <template v-if="column.key === 'name'">
+        <a @click="onUpdate(record.id)">
+          {{ record.name }}
         </a>
       </template>
     </template>
   </a-table>
 
   <RoleCreateModal ref="roleCreateModal"/>
+  <RoleUpdateModal ref="roleUpdateModal"/>
 </template>
 
 <script lang="ts" setup>
@@ -61,6 +62,7 @@ import type { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons-vue';
 import RoleCreateModal from '@/components/RoleCreateModal.vue';
 import { message } from 'ant-design-vue';
+import RoleUpdateModal from '@/components/RoleUpdateModal.vue';
 type RangeValue = [Dayjs, Dayjs];
 
 const title = ref('');
@@ -108,6 +110,7 @@ const pagination = ref({
 })
 
 const roleCreateModal = ref();
+const roleUpdateModal = ref();
 
 const fetchRoles = async (params) => {
   try {
@@ -179,12 +182,27 @@ const onCreate = () => {
   roleCreateModal.value?.show(
     async () => {
       try {
-        // 모달에서 행위 처리 이후에 데이터 재조회
+        fetchRoles(searchParams.value);
 
       } catch (error) {
         message.error('권한그룹 생성 실패하였습니다.');
       }
     });
+}
+
+const onUpdate = (roleId) => {
+  alert(roleId)
+  roleUpdateModal.value?.show(
+    roleId,
+    async () => {
+      try {
+        fetchRoles(searchParams.value);
+
+      } catch (error) {
+        alert("권한그룹 수정 실패")
+      }
+    }
+  );
 }
 
 const onExport = () => {

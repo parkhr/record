@@ -2,7 +2,7 @@
   <div>
     <a-modal
       v-model:open="open"
-      title="권한그룹생성"
+      title="권한그룹수정"
       @ok="handleOk"
       @cancel="handleCancel"
     >
@@ -43,28 +43,47 @@
 
 <script lang="ts" setup>
 import api from '@/api/axios'
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 
 const formRef = ref()
 const loading = ref(false);
 const open = ref(false);
 const callback = ref(null);
+// const roleId = ref(null);
 
 const formState = reactive({
   name: '',
   content: '',
 })
 
-const show = (cb) => {
+const show = (roleId, cb) => {
   callback.value = cb ?? null;
   open.value = true;
+  // roleId.value = roleId;
+  fetchRoleDetail(roleId);
+};
+
+const fetchRoleDetail = async (roleId) => {
+  try {
+    const response = await api.get('/api/role/' + roleId, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      },
+    });
+
+    console.log(response.data);
+
+  } catch (error) {
+    console.error("Error fetching records:", error);
+  }
 };
 
 const handleOk = async () => {
   try {
     await formRef.value.validate(); // form 검증
 
-    const response = await api.post('/api/role', formState, {
+    const response = await api.put('/api/role', formState, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
