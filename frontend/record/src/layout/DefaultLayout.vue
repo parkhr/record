@@ -53,6 +53,7 @@
 
 <script setup>
 import api from '@/api/axios'
+import { message } from 'ant-design-vue'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -71,38 +72,42 @@ const selectedChildMenuName = ref('')
 
 // 메뉴 클릭 시 key를 기준으로 라우팅
 const onMenuClick = async (menu) => {
-  selectedMenu.value = menu.link
-  selectedMenuId.value = menu.id
-  selectedMenuName.value = menu.name
+  try {
+    selectedMenu.value = menu.link
+    selectedMenuId.value = menu.id
+    selectedMenuName.value = menu.name
 
-  localStorage.setItem('selectedMenu', menu.link)
-  localStorage.setItem('selectedMenuId', menu.id)
-  localStorage.setItem('selectedMenuName', menu.name)
-  
-  // child menu 의 가장 첫번째를 찾아 routing
-  const params = {
-    menuLevel : 2,
-    parentId : menu.id
+    localStorage.setItem('selectedMenu', menu.link)
+    localStorage.setItem('selectedMenuId', menu.id)
+    localStorage.setItem('selectedMenuName', menu.name)
+    
+    // child menu 의 가장 첫번째를 찾아 routing
+    const params = {
+      menuLevel : 2,
+      parentId : menu.id
+    }
+
+    const response = await api.get('/api/menu', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      },
+      params: params
+    });
+
+    childMenus.value = response.data
+    selectedChildMenu.value = childMenus.value[0].link
+    selectedChildMenuId.value = childMenus.value[0].id
+    selectedChildMenuName.value = childMenus.value[0].name
+
+    localStorage.setItem('selectedChildMenu', childMenus.value[0].link)
+    localStorage.setItem('selectedChildMenuId', childMenus.value[0].id)
+    localStorage.setItem('selectedChildMenuName', childMenus.value[0].name)
+
+    router.push(childMenus.value[0].link)
+  } catch(error) {
+    message.error('메뉴를 불러올 수 없습니다.')
   }
-
-  const response = await api.get('/api/menu', {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-    },
-    params: params
-  });
-
-  childMenus.value = response.data
-  selectedChildMenu.value = childMenus.value[0].link
-  selectedChildMenuId.value = childMenus.value[0].id
-  selectedChildMenuName.value = childMenus.value[0].name
-
-  localStorage.setItem('selectedChildMenu', childMenus.value[0].link)
-  localStorage.setItem('selectedChildMenuId', childMenus.value[0].id)
-  localStorage.setItem('selectedChildMenuName', childMenus.value[0].name)
-
-  router.push(childMenus.value[0].link)
 }
 
 const onChildMenuClick = (menu) => {
@@ -146,36 +151,36 @@ onMounted(async () => {
     });
 
     childMenus.value = response.data
+
+    // 메뉴가 있는 경우 이전메뉴 불러오기
+    if(localStorage.getItem('selectedMenu') != null 
+      && localStorage.getItem('selectedMenuId') != null 
+      && localStorage.getItem('selectedMenuName') != null
+      && localStorage.getItem('selectedChildMenu') != null
+      && localStorage.getItem('selectedChildMenuId') != null
+      && localStorage.getItem('selectedChildMenuName') != null){
+      selectedMenu.value = localStorage.getItem('selectedMenu')
+      selectedMenuId.value = localStorage.getItem('selectedMenuId')
+      selectedMenuName.value = localStorage.getItem('selectedMenuName')
+      selectedChildMenu.value = localStorage.getItem('selectedChildMenu')
+      selectedChildMenuId.value = localStorage.getItem('selectedChildMenuId')
+      selectedChildMenuName.value = localStorage.getItem('selectedChildMenuName')
+    }else {
+      selectedMenu.value = menus.value[menus.value.length - 1].link
+      selectedMenuName.value = menus.value[menus.value.length - 1].name
+      localStorage.setItem('selectedMenu', menus.value[menus.value.length - 1].link)
+      localStorage.setItem('selectedMenuId', menus.value[menus.value.length - 1].id)
+      localStorage.setItem('selectedMenuName', menus.value[menus.value.length - 1].name)
+      selectedChildMenu.value = childMenus.value[0].link
+      selectedChildMenuName.value = childMenus.value[0].name
+      localStorage.setItem('selectedChildMenu', childMenus.value[0].link)
+      localStorage.setItem('selectedChildMenuId', childMenus.value[0].id)
+      localStorage.setItem('selectedChildMenuName', childMenus.value[0].name)
+    }
+
+    router.push(selectedChildMenu.value)
   } catch(error) {
-    console.log(error)
+    message.error('메뉴를 불러올 수 없습니다.')
   }
-
-  // 메뉴가 있는 경우 이전메뉴 불러오기
-  if(localStorage.getItem('selectedMenu') != null 
-    && localStorage.getItem('selectedMenuId') != null 
-    && localStorage.getItem('selectedMenuName') != null
-    && localStorage.getItem('selectedChildMenu') != null
-    && localStorage.getItem('selectedChildMenuId') != null
-    && localStorage.getItem('selectedChildMenuName') != null){
-    selectedMenu.value = localStorage.getItem('selectedMenu')
-    selectedMenuId.value = localStorage.getItem('selectedMenuId')
-    selectedMenuName.value = localStorage.getItem('selectedMenuName')
-    selectedChildMenu.value = localStorage.getItem('selectedChildMenu')
-    selectedChildMenuId.value = localStorage.getItem('selectedChildMenuId')
-    selectedChildMenuName.value = localStorage.getItem('selectedChildMenuName')
-  }else {
-    selectedMenu.value = menus.value[menus.value.length - 1].link
-    selectedMenuName.value = menus.value[menus.value.length - 1].name
-    localStorage.setItem('selectedMenu', menus.value[menus.value.length - 1].link)
-    localStorage.setItem('selectedMenuId', menus.value[menus.value.length - 1].id)
-    localStorage.setItem('selectedMenuName', menus.value[menus.value.length - 1].name)
-    selectedChildMenu.value = childMenus.value[0].link
-    selectedChildMenuName.value = childMenus.value[0].name
-    localStorage.setItem('selectedChildMenu', childMenus.value[0].link)
-    localStorage.setItem('selectedChildMenuId', childMenus.value[0].id)
-    localStorage.setItem('selectedChildMenuName', childMenus.value[0].name)
-  }
-
-  router.push(selectedChildMenu.value)
 })
 </script>

@@ -62,6 +62,7 @@ import { onMounted, ref, h } from 'vue'
 import type { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons-vue';
 import CommonModal from './CommonModal.vue';
+import { message } from 'ant-design-vue';
 type RangeValue = [Dayjs, Dayjs];
 
 const title = ref('');
@@ -132,7 +133,7 @@ const fetchRecords = async (params) => {
     });
 
   } catch (error) {
-    console.error("Error fetching records:", error);
+    message.error('기록물을 불러올 수 없습니다.');
   }
 };
 
@@ -210,9 +211,9 @@ const onDelete = (record) => {
           },
         });
 
-        alert("기록물 삭제되었습니다.")
+        message.success('기록물이 삭제되었습니다.');
       } catch (error) {
-        alert("기록물 삭제 실패")
+        message.error('기록물 삭제 실패');
       }
 
       fetchRecords(searchParams.value);

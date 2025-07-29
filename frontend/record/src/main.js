@@ -1,7 +1,7 @@
 import './assets/main.css'
 
 import { createApp } from 'vue'
-import Antd from 'ant-design-vue';
+import Antd, { message } from 'ant-design-vue';
 import App from './App.vue'
 import router from './router'
 import 'ant-design-vue/dist/reset.css';
@@ -18,7 +18,7 @@ api.interceptors.response.use(
     const res = error.response
 
     if (res && (res.status === 403 || res.status === 401)) {
-      alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
+      message.warning('로그인이 만료되었습니다. 다시 로그인해주세요.')
       sessionStorage.removeItem('accessToken')
       router.push('/login')
     }

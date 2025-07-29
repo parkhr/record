@@ -45,6 +45,7 @@
 import api from '@/api/axios'
 import { onMounted, ref, h } from 'vue'
 import type { Dayjs } from 'dayjs';
+import { message } from 'ant-design-vue';
 import { SearchOutlined } from '@ant-design/icons-vue';
 type RangeValue = [Dayjs, Dayjs];
 
@@ -110,7 +111,7 @@ const fetchRoles = async (params) => {
     });
 
   } catch (error) {
-    console.error("Error fetching records:", error);
+    message.error('권한그룹을 불러올 수 없습니다.');
   }
 };
 

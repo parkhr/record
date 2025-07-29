@@ -60,6 +60,7 @@ import { onMounted, ref, h } from 'vue'
 import type { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons-vue';
 import RoleCreateModal from '@/components/RoleCreateModal.vue';
+import { message } from 'ant-design-vue';
 type RangeValue = [Dayjs, Dayjs];
 
 const title = ref('');
@@ -126,7 +127,7 @@ const fetchRoles = async (params) => {
     });
 
   } catch (error) {
-    console.error("Error fetching records:", error);
+    message.error('권한그룹을 불러올 수 없습니다.');
   }
 };
 
@@ -181,7 +182,7 @@ const onCreate = () => {
         // 모달에서 행위 처리 이후에 데이터 재조회
 
       } catch (error) {
-        alert("권한그룹 생성 실패")
+        message.error('권한그룹 생성 실패하였습니다.');
       }
     });
 }
