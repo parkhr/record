@@ -1,10 +1,7 @@
-<script setup>
-</script>
-
 <template>
   <a-row :gutter="[5, 5]" style="margin-bottom: 20px">
     <a-col :span="4">
-      <a-input v-model:value="title" style="width: 100%" placeholder="기록물명을 검색하세요." />
+      <a-input v-model:value="title" style="width: 100%" placeholder="" />
     </a-col>
     <a-col :span="2">
       <a-select
@@ -45,8 +42,16 @@
           {{ record.title }}
         </a>
       </template>
+      <template v-else-if="column.key === 'action'">
+        <span>
+          <a v-if="!record.deducted" @click="onDeduct(record)">차감</a>
+          <a v-else @click="onCancelDeduct(record)">차감취소</a>
+        </span>
+      </template>
     </template>
   </a-table>
+
+  <SpendCreateModal ref="spendCreateModal" />
 </template>
 
 <script lang="ts" setup>
@@ -54,6 +59,9 @@ import api from '@/api/axios'
 import { onMounted, ref, h } from 'vue'
 import type { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons-vue';
+import SpendCreateModal from '@/components/SpendCreateModal.vue';
+import { message } from 'ant-design-vue';
+
 type RangeValue = [Dayjs, Dayjs];
 
 const title = ref('');
@@ -72,24 +80,24 @@ const columns = [
     key: 'key',
   },
   {
-    title: '권한그룹명',
-    dataIndex: 'name',
-    key: 'name',
+    title: '지출금액',
+    dataIndex: 'amount',
+    key: 'amount',
   },
   {
-    title: '권한그룹내용',
-    dataIndex: 'content',
-    key: 'content',
+    title: '장소',
+    dataIndex: 'place',
+    key: 'place',
   },
   {
-    title: '등록일',
-    key: 'createdAt',
-    dataIndex: 'createdAt',
+    title: '지출날짜',
+    key: 'spendAt',
+    dataIndex: 'spendAt',
   },
-//   {
-//     title: 'Action',
-//     key: 'action',
-//   },
+  {
+    title: 'Action',
+    key: 'action',
+  },
 ];
 
 const data = ref([]);
@@ -99,6 +107,30 @@ const pagination = ref({
   position: ['bottomCenter'],
   total: 0,
 })
+
+const spendCreateModal = ref();
+
+const fetchSpends = async (params) => {
+  try {
+    const response = await api.get('/api/economy/spend/search', {
+      headers: {
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      },
+      params: params
+    });
+
+    const totalElements = response.data.totalElements;
+    pagination.value.total = totalElements
+    data.value = response.data.content.map((item, index) => {
+      item.key = totalElements - (params.page * params.pageSize + index);
+      return item;
+    });
+  } catch (error) {
+    console.log(error)
+    message.error('지출내역을 불러올 수 없습니다.');
+  }
+};
 
 const fetchRoles = async (params) => {
   try {
@@ -168,8 +200,10 @@ const reset = () => {
 }
 
 const onCreate = () => {
-  // Logic to handle record registration
-  console.log("Register new record");
+  spendCreateModal.value.show(() => {
+
+    // fetchRoles(searchParams.value);
+  });
 }
 
 const onExport = () => {
@@ -183,6 +217,6 @@ onMounted(() => {
     pageSize: pagination.value.pageSize,
   };
 
-  fetchRoles(params);
+  fetchSpends(params);
 });
 </script>

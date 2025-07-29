@@ -1,8 +1,12 @@
 package com.example.demo.economy;
 
 import com.example.demo.economy.request.CreateSpendRequest;
+import com.example.demo.economy.request.SearchSpendRequest;
+import com.example.demo.record.request.SearchRecordRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +20,17 @@ public class EconomyController {
     private final EconomyService economyService;
 
     // 지출내역 생성
-    @PostMapping
+    @PostMapping("/spend")
 //    @PreAuthorize("hasRole('WRITE_RECORD')")
     public ResponseEntity<Object> createSpend(@RequestBody CreateSpendRequest request) {
 
         economyService.createSpend(request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/spend/search")
+    public ResponseEntity<Object> findSpends(SearchSpendRequest request, Pageable pageable) {
+        return ResponseEntity.ok(economyService.findSpends(request, pageable));
     }
 
     // 지출내역 수정

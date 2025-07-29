@@ -181,26 +181,15 @@ const reset = () => {
 const onCreate = () => {
   roleCreateModal.value?.show(
     async () => {
-      try {
-        fetchRoles(searchParams.value);
-
-      } catch (error) {
-        message.error('권한그룹 생성 실패하였습니다.');
-      }
+      fetchRoles(searchParams.value);
     });
 }
 
 const onUpdate = (roleId) => {
-  alert(roleId)
   roleUpdateModal.value?.show(
     roleId,
     async () => {
-      try {
-        fetchRoles(searchParams.value);
-
-      } catch (error) {
-        alert("권한그룹 수정 실패")
-      }
+      fetchRoles(searchParams.value);
     }
   );
 }
