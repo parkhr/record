@@ -38,9 +38,9 @@
 
 <script setup>
 import { reactive } from 'vue'
-import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
+import api from '@/api/axios'
 const router = useRouter()
 
 const formState = reactive({
@@ -55,7 +55,7 @@ const onFinish = async (values) => {
       password: formState.password
     }
 
-    const response = await axios.post('http://localhost:8081/login', requestBody, {
+    const response = await api.post('/login', requestBody, {
       headers: {
         'Content-Type': 'application/json'
       }
