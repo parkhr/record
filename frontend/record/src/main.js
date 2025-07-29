@@ -18,10 +18,18 @@ api.interceptors.response.use(
     const res = error.response
 
     if (res && (res.status === 403 || res.status === 401)) {
+
+      // 로그인 페이지인 경우 세션 토큰을 제거하지 않음
+      // 로그인 페이지로 리다이렉트하지 않음
+      if (res.config.url === '/login') {
+        return Promise.reject(error)    
+      }
+
       message.warning('로그인이 만료되었습니다. 다시 로그인해주세요.')
       sessionStorage.removeItem('accessToken')
       router.push('/login')
     }
+    
     return Promise.reject(error)
   }
 )
