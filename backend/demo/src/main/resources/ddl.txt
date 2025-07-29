@@ -373,25 +373,40 @@ CREATE TABLE `menu` (
 
 INSERT INTO record.menu
 (id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
-VALUES(1, null, '기록물관리', '기록물관리', '/record', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+VALUES(1, NULL, '기록물관리', '기록물관리', '/record', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
 INSERT INTO record.menu
 (id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
-VALUES(2, null, '계층관리', '계층관리', '/layer', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+VALUES(2, NULL, '계층관리', '계층관리', '/layer', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
 INSERT INTO record.menu
 (id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
-VALUES(3, null, '서고관리', '서고관리', '/storage', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+VALUES(3, NULL, '서고관리', '서고관리', '/stroage', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
 INSERT INTO record.menu
 (id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
-VALUES(4, null, '예약관리', '예약관리', '/reserve', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+VALUES(4, NULL, '예약관리', '예약관리', '/reserve', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
 INSERT INTO record.menu
 (id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
-VALUES(5, null, '시스템관리', '시스템관리', '/system', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+VALUES(5, NULL, '시스템관리', '시스템관리', '/system', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
 INSERT INTO record.menu
 (id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
 VALUES(6, 5, '권한그룹관리', '권한그룹관리', '/system/role', '_self', 2, '2025-07-18 00:00:00.000', NULL, NULL);
 INSERT INTO record.menu
 (id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
 VALUES(7, 5, '메뉴관리', '메뉴관리', '/system/menu', '_self', 2, '2025-07-18 00:00:00.000', NULL, NULL);
+INSERT INTO record.menu
+(id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(10, 1, '기록물현황', '기록물현황', '/record/list', '_self', 2, '2025-07-18 00:00:00.000', NULL, NULL);
+INSERT INTO record.menu
+(id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(11, NULL, '경제시스템', '경제시스템', '/economy', '_self', 1, '2025-07-18 00:00:00.000', NULL, NULL);
+INSERT INTO record.menu
+(id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(12, 11, '지출내역', '지출내역', '/economy/spend', '_self', 2, '2025-07-18 00:00:00.000', NULL, NULL);
+INSERT INTO record.menu
+(id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(13, 11, '활동내역', '활동내역', '/economy/active', '_self', 2, '2025-07-18 00:00:00.000', NULL, NULL);
+INSERT INTO record.menu
+(id, parentId, name, content, link, openType, menuLevel, createdAt, updatedAt, deletedAt)
+VALUES(14, 11, '현황', '현황', '/economy/dashboard', '_self', 2, '2025-07-18 00:00:00.000', NULL, NULL);
 
 CREATE TABLE `role_menu` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -404,6 +419,42 @@ CREATE TABLE `role_menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(1, 1, 1, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(2, 1, 2, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(3, 1, 3, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(4, 1, 4, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(5, 1, 5, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(6, 1, 6, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(7, 1, 7, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(8, 1, 10, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(9, 1, 11, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(10, 1, 12, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(11, 1, 13, '2025-07-22 00:00:00.000', NULL, NULL);
+INSERT INTO record.role_menu
+(id, roleId, menuId, createdAt, updatedAt, deletedAt)
+VALUES(12, 1, 14, '2025-07-22 00:00:00.000', NULL, NULL);
 
 
 -- record.reserve definition

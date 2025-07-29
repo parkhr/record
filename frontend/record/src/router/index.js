@@ -48,6 +48,21 @@ const router = createRouter({
           name: 'systemMenu',
           component: () => import('../views/SystemMenuView.vue'),
         },
+        {
+          path: '/economy/spend',
+          name: 'economySpend',
+          component: () => import('../views/EconomySpend.vue'),
+        },
+        {
+          path: '/economy/active',
+          name: 'economyActive',
+          component: () => import('../views/EconomyActive.vue'),
+        },
+        {
+          path: '/economy/dashboard',
+          name: 'economyDashboard',
+          component: () => import('../views/EconomyDashboard.vue'),
+        },
       ]
     },
   ],
