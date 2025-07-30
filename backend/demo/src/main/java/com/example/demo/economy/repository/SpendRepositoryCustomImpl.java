@@ -27,7 +27,7 @@ public class SpendRepositoryCustomImpl implements SpendRepositoryCustom {
 
     @Override
     public Page<SearchSpendResponse> findSpends(SearchSpendRequest request, Pageable pageable) {
-        StringBuilder sql = new StringBuilder("SELECT id, amount, place, isDeducted, spendAt, createdAt FROM spend WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT id, amount, place, deducted, spendAt, createdAt FROM spend WHERE 1=1");
         StringBuilder countSql = new StringBuilder("SELECT COUNT(1) FROM spend WHERE 1=1");
         Map<String, Object> params = new HashMap<>();
 

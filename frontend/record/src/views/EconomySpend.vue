@@ -37,12 +37,7 @@
       </a-row>
     </template>
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'title'">
-        <a>
-          {{ record.title }}
-        </a>
-      </template>
-      <template v-else-if="column.key === 'action'">
+      <template v-if="column.key === 'action'">
         <span>
           <a v-if="!record.deducted" @click="onDeduct(record)">차감</a>
           <a v-else @click="onCancelDeduct(record)">차감취소</a>
@@ -132,29 +127,6 @@ const fetchSpends = async (params) => {
   }
 };
 
-const fetchRoles = async (params) => {
-  try {
-    const response = await api.get('/api/role/search', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      },
-      params: params
-    });
-
-    const totalElements = response.data.totalElements;
-    pagination.value.total = totalElements
-    data.value = response.data.content.map((item, index) => {
-      item.key = totalElements - (params.page * params.pageSize + index);
-      return item;
-    });
-
-  } catch (error) {
-    console.error("Error fetching records:", error);
-    // message.error('권한그룹을 불러올 수 없습니다.');
-  }
-};
-
 const handleTableChange = (paginationConfig) => {
   const { current, pageSize } = paginationConfig
   pagination.value.current = current
@@ -163,7 +135,7 @@ const handleTableChange = (paginationConfig) => {
   searchParams.value.page = current - 1;
   searchParams.value.pageSize = pageSize;
 
-  fetchRoles(searchParams.value)
+  // fetchRoles(searchParams.value)
 }
 
 const search = () => {
@@ -185,7 +157,7 @@ const search = () => {
 
   searchParams.value = params;
 
-  fetchRoles(params);
+  // fetchRoles(params);
 };
 
 const reset = () => {
@@ -196,7 +168,7 @@ const reset = () => {
 
   pagination.value.current = 1;
 
-  fetchRoles(searchParams.value);
+  // fetchRoles(searchParams.value);
 }
 
 const onCreate = () => {

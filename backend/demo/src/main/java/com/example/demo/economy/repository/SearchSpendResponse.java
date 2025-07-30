@@ -12,7 +12,7 @@ public class SearchSpendResponse {
     private long id;
     private int amount;
     private String place;
-    private boolean isDeducted;
+    private boolean deducted;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime spendAt;

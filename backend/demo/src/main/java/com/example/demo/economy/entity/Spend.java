@@ -31,8 +31,8 @@ public class Spend {
     @Column("place")
     private String place;
 
-    @Column("isDeducted")
-    private boolean isDeducted;
+    @Column("deducted")
+    private boolean deducted;
 
     @Column("spendAt")
     private LocalDateTime spendAt;
@@ -63,7 +63,7 @@ public class Spend {
         return Spend.builder()
             .amount(cardSmsRecord.getAmount())
             .place(cardSmsRecord.getMerchant())
-            .isDeducted(false)
+            .deducted(false)
             .spendAt(LocalDateTime.of(date, time)).build();
     }
 
