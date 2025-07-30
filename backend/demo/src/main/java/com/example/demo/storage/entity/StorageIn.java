@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -26,6 +27,7 @@ public class StorageIn {
     @Column("userId")
     private long userId;
 
+    @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
 
@@ -40,7 +42,6 @@ public class StorageIn {
 
         return StorageIn.builder()
             .recordId(request.getRecordId())
-            .createdAt(LocalDateTime.now())
             .userId(request.getUserId())
             .build();
     }

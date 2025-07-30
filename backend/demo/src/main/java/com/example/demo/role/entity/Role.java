@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -27,6 +28,7 @@ public class Role {
     @Column("content")
     private String content;
 
+    @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
 
@@ -41,7 +43,6 @@ public class Role {
         return Role.builder()
             .name(request.getName())
             .content(request.getContent())
-            .createdAt(LocalDateTime.now())
             .build();
     }
 

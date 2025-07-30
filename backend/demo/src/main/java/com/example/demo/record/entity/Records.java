@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -39,6 +40,7 @@ public class Records {
     @Column("isPublic")
     private boolean isPublic;
 
+    @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
 
@@ -50,7 +52,7 @@ public class Records {
 
     public static Records createTempRecord(CreateRecordRequest request) {
         return Records.builder().title(request.getTitle()).content(request.getContent()).status(request.getStatus()).isPublic(request.getIsPublic())
-            .createdAt(LocalDateTime.now()).build();
+            .build();
     }
 
     public void update(UpdateRecordRequest request) {

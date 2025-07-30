@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -39,6 +40,7 @@ public class Menu {
     @Column("menuLevel")
     private int menuLevel;
 
+    @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
 
@@ -55,7 +57,6 @@ public class Menu {
             .link(request.getLink())
             .openType(request.getOpenType())
             .menuLevel(request.getMenuLevel())
-            .createdAt(LocalDateTime.now())
             .build();
     }
 

@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -30,6 +31,7 @@ public class Collection {
     @Column("isUse")
     private boolean isUse;
 
+    @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
 
@@ -44,7 +46,6 @@ public class Collection {
             .name(request.getName())
             .content(request.getContent())
             .isUse(request.isUse())
-            .createdAt(LocalDateTime.now())
             .build();
     }
 

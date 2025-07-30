@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -36,6 +37,7 @@ public class Spend {
     @Column("spendAt")
     private LocalDateTime spendAt;
 
+    @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
 
@@ -62,8 +64,7 @@ public class Spend {
             .amount(cardSmsRecord.getAmount())
             .place(cardSmsRecord.getMerchant())
             .isDeducted(false)
-            .spendAt(LocalDateTime.of(date, time))
-            .createdAt(LocalDateTime.now()).build();
+            .spendAt(LocalDateTime.of(date, time)).build();
     }
 
     public boolean isDeleted() {

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -29,6 +30,7 @@ public class RecordLocation {
     @Column("locationType")
     private Location locationType;
 
+    @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
 

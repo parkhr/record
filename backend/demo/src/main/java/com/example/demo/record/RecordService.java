@@ -140,7 +140,6 @@ public class RecordService {
             .recordId(request.getRecordId())
             .locationId(request.getLocationId())
             .locationType(request.getLocationType())
-            .createdAt(LocalDateTime.now())
             .build();
 
         return recordLocationRepository.save(recordLocation);

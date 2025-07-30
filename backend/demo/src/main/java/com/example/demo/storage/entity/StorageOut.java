@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -35,6 +36,7 @@ public class StorageOut {
     @Column("delayCount")
     private int delayCount;
 
+    @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
 
@@ -50,7 +52,6 @@ public class StorageOut {
             .userId(request.getUserId())
             .dueDate(LocalDateTime.now().plusDays(7))
             .delayCount(0)
-            .createdAt(LocalDateTime.now())
             .build();
     }
 

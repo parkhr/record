@@ -129,7 +129,6 @@ public class RoleService {
                     rolePermissionRepository.save(RolePermission.builder()
                         .roleId(role.getId())
                         .permissionId(permissionId)
-                        .createdAt(LocalDateTime.now())
                         .build());
                 }
             }
