@@ -17,8 +17,9 @@ public class JwtTokenProvider {
     //    private final long validityInMs = 3600_000;
     private final long validityInMs = 600_000;
 
-    public String createToken(String username, List<PermissionType> permissions, long roleId) {
+    public String createToken(long id, String username, List<PermissionType> permissions, long roleId) {
         Claims claims = Jwts.claims().setSubject(username);
+        claims.put("id", id);
         claims.put("permissions", permissions);
         claims.put("roleId", roleId);
 
@@ -40,6 +41,16 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public long getId(String token) {
+        Claims claims = Jwts.parser()
+            .setSigningKey(secretKey)
+            .parseClaimsJws(token)
+            .getBody();
+
+        Integer id = (int) claims.get("id");
+        return id.longValue();
     }
 
     public String getUsername(String token) {

@@ -64,6 +64,6 @@ public class AuthService {
 
         List<PermissionType> permissionTypes = permissions.stream().filter(item -> !item.isDeleted()).map(Permission::getName).toList();
 
-        return jwtTokenProvider.createToken(admin.getName(), permissionTypes, role.getId());
+        return jwtTokenProvider.createToken(admin.getId(), admin.getName(), permissionTypes, role.getId());
     }
 }

@@ -2,6 +2,7 @@ package com.example.demo.menu;
 
 import com.example.demo.common.CustomUserDetails;
 import com.example.demo.common.exception.ApplicationException;
+import com.example.demo.common.util.UserUtil;
 import com.example.demo.menu.entity.Menu;
 import com.example.demo.menu.entity.RoleMenu;
 import com.example.demo.menu.repository.MenuRepository;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,7 +32,7 @@ public class MenuController {
     @GetMapping
 //    @PreAuthorize("hasRole('READ_MENU')")
     public ResponseEntity<Object> findMenus(SearchMenuRequest request) {
-        Optional<CustomUserDetails> customUserDetails = getCustomUserDetails();
+        Optional<CustomUserDetails> customUserDetails = UserUtil.getCustomUserDetails();
 
         if (customUserDetails.isPresent()) {
             List<Long> menuIds = roleMenuRepository.findByRoleId(customUserDetails.get().getRoleId()).stream().filter(item -> !item.isDeleted())
@@ -55,15 +55,5 @@ public class MenuController {
         }
 
         throw new BadCredentialsException("토큰이 유효하지 않습니다.");
-    }
-
-    private Optional<CustomUserDetails> getCustomUserDetails() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof CustomUserDetails userDetails) {
-            return Optional.of(userDetails);
-        }
-
-        return Optional.empty();
     }
 }

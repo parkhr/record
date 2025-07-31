@@ -16,8 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
+    private long id;
     private String username;
-    private Long roleId;
+    private long roleId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

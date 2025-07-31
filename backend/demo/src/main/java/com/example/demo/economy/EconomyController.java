@@ -1,8 +1,8 @@
 package com.example.demo.economy;
 
 import com.example.demo.economy.request.CreateSpendRequest;
+import com.example.demo.economy.request.MinusAmountRequest;
 import com.example.demo.economy.request.SearchSpendRequest;
-import com.example.demo.record.request.SearchRecordRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +52,13 @@ public class EconomyController {
 //    }
 
     // 금액차감
+    @PostMapping("/minus")
+//    @PreAuthorize("hasRole('WRITE_RECORD')")
+    public ResponseEntity<Object> minusAmount(@RequestBody MinusAmountRequest request) {
+
+        economyService.minusAmount(request);
+        return ResponseEntity.ok().build();
+    }
 
     // 금액차감 취소
 

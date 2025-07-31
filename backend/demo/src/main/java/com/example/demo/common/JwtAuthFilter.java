@@ -31,10 +31,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
+            long id = jwtTokenProvider.getId(token);
             String username = jwtTokenProvider.getUsername(token);
             long roleId = jwtTokenProvider.getRoleId(token);
 
             CustomUserDetails customUserDetails = CustomUserDetails.builder()
+                .id(id)
                 .username(username)
                 .roleId(roleId)
                 .build();
