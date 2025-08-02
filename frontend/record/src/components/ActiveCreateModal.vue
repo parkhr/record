@@ -2,7 +2,7 @@
   <div>
     <a-modal
       v-model:open="open"
-      title="지출내역생성"
+      title="활동내역생성"
       @ok="handleOk"
       @cancel="handleCancel"
     >
@@ -22,11 +22,11 @@
         autocomplete="off"
       >
         <a-form-item
-          label="카드내역"
-          name="message"
-          :rules="[{ required: true, message: '카드내역을 입력하세요.' }]"
+          label="분"
+          name="minutes"
+          :rules="[{ required: true, message: '분을 입력하세요.' }]"
         >
-          <a-textarea v-model:value="formState.message" :rows="5" placeholder="카드내역을 복사 붙여넣기하세요."/>
+          <a-input v-model:value="formState.minutes" placeholder="분을 입력하세요."/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -44,7 +44,7 @@ const open = ref(false);
 const callback = ref(null);
 
 const formState = reactive({
-  message: '',
+  minutes: 0,
 })
 
 const show = (cb) => {
@@ -56,17 +56,28 @@ const handleOk = async () => {
   try {
     await formRef.value.validate(); // form 검증
 
-    const response = await api.post('/api/economy/spend', formState, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    });
-    
-    open.value = false;
-    formRef.value.resetFields()
-    message.success('지출내역이 생성되었습니다.');
-    callback.value?.(); // 행위 수행
+    if (formState.minutes <= 0) {
+      message.error('활동시간은 0분 보다 커야 합니다.');
+      return;
+    } else {
+      const response = await api.post(
+        '/api/economy/active',
+        {
+          minutes: formState.minutes, // 시간도 같이 보내면 좋음
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`,
+          }
+        }
+      );
+
+      open.value = false;
+      formRef.value.resetFields()
+      message.success('활동내역이 생성되었습니다.');
+      callback.value?.(); // 행위 수행
+    }
   } catch (error) {
     console.log(error)
   }

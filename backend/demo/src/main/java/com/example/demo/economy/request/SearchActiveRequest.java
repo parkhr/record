@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SearchSpendRequest {
+public class SearchActiveRequest {
 
     private String status;
     private String startDate;

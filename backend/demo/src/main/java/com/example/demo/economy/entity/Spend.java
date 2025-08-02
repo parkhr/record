@@ -25,6 +25,9 @@ public class Spend {
     @Id
     private long id;
 
+    @Column("adminId")
+    private long adminId;
+
     @Column("amount")
     private int amount;
 
@@ -47,7 +50,7 @@ public class Spend {
     @Column("deletedAt")
     private LocalDateTime deletedAt;
 
-    public static Spend createSpend(CardSmsRecord cardSmsRecord) {
+    public static Spend createSpend(CardSmsRecord cardSmsRecord, long adminId) {
         // 날짜: MonthDay로 먼저 파싱
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd");
         MonthDay monthDay = MonthDay.parse(cardSmsRecord.getDate(), dateFormatter);
@@ -61,6 +64,7 @@ public class Spend {
         LocalTime time = LocalTime.parse(cardSmsRecord.getTime(), timeFormatter);
 
         return Spend.builder()
+            .adminId(adminId)
             .amount(cardSmsRecord.getAmount())
             .place(cardSmsRecord.getMerchant())
             .deducted(false)
@@ -69,5 +73,19 @@ public class Spend {
 
     public boolean isDeleted() {
         return this.deletedAt != null;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public void deduct() {
+        this.deducted = true;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void cancelDeduct() {
+        this.deducted = false;
+        this.updatedAt = LocalDateTime.now();
     }
 }

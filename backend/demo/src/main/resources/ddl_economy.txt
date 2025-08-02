@@ -9,3 +9,13 @@ CREATE TABLE `spend` (
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE record.wallet (
+	id bigint auto_increment NOT NULL,
+	adminId BIGINT NOT NULL,
+	amount INT NOT NULL,
+	createdAt datetime NOT NULL,
+	updatedAt datetime NULL,
+	deletedAt datetime NULL,
+	CONSTRAINT `PRIMARY` PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

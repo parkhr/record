@@ -14,8 +14,8 @@ public class JwtTokenProvider {
 
     //TODO 설정파일로 이동
     private final String secretKey = "mysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykeymysecretkeykey";
-    //    private final long validityInMs = 3600_000;
-    private final long validityInMs = 600_000;
+    private final long validityInMs = 10_800_000;
+//    private final long validityInMs = 600_000;
 
     public String createToken(long id, String username, List<PermissionType> permissions, long roleId) {
         Claims claims = Jwts.claims().setSubject(username);

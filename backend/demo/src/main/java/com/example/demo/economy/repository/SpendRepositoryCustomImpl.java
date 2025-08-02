@@ -26,21 +26,43 @@ public class SpendRepositoryCustomImpl implements SpendRepositoryCustom {
     private final NamedParameterJdbcTemplate jdbc;
 
     @Override
-    public Page<SearchSpendResponse> findSpends(SearchSpendRequest request, Pageable pageable) {
+    public Page<SearchSpendResponse> findSpends(SearchSpendRequest request, long adminId, Pageable pageable) {
         StringBuilder sql = new StringBuilder("SELECT id, amount, place, deducted, spendAt, createdAt FROM spend WHERE 1=1");
         StringBuilder countSql = new StringBuilder("SELECT COUNT(1) FROM spend WHERE 1=1");
         Map<String, Object> params = new HashMap<>();
 
+        sql.append(" AND adminId =:adminId");
+        sql.append(" AND adminId =:adminId");
+        params.put("adminId", adminId);
+
         sql.append(" AND deletedAt IS NULL");
         countSql.append(" AND deletedAt IS NULL");
 
-//        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
-//            sql.append(" AND status = :status");
-//            countSql.append(" AND status = :status");
-//            params.put("status", request.getStatus());
-//        }
+        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+            sql.append(" AND deducted = :status");
+            countSql.append(" AND deducted = :status");
+            params.put("status", request.getStatus());
+        }
 
-        sql.append(" ORDER BY id DESC");
+        if(request.getStartDate() != null && request.getStartDate().isEmpty() && request.getEndDate() != null && request.getEndDate().isEmpty()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            LocalDate startDate = LocalDate.parse(request.getStartDate(), formatter);
+            LocalDate endDate = LocalDate.parse(request.getEndDate(), formatter);
+
+            LocalDateTime startDateTime = startDate.atStartOfDay();
+            LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+            sql.append(" AND spendAt >= :startDate");
+            countSql.append(" AND spendAt >= :startDate");
+            params.put("startDate", startDateTime);
+
+            sql.append(" AND spendAt <= :endDate");
+            countSql.append(" AND spendAt >= :startDate");
+            params.put("endDate", endDateTime);
+        }
+
+        sql.append(" ORDER BY spendAt DESC");
 
         sql.append(" LIMIT :limit OFFSET :offset");
         params.put("limit", pageable.getPageSize());

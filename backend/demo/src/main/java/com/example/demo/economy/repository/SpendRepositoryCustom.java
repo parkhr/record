@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface SpendRepositoryCustom {
 
-    Page<SearchSpendResponse> findSpends(SearchSpendRequest request, Pageable pageable);
+    Page<SearchSpendResponse> findSpends(SearchSpendRequest request, long adminId, Pageable pageable);
 }

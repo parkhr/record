@@ -1,8 +1,5 @@
 <template>
   <a-row :gutter="[5, 5]" style="margin-bottom: 20px">
-    <a-col :span="4">
-      <a-input v-model:value="title" style="width: 100%" placeholder="" />
-    </a-col>
     <a-col :span="2">
       <a-select
         v-model:value="status"
@@ -37,36 +34,54 @@
       </a-row>
     </template>
     <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'amount'">
+        {{ Number(record.amount).toLocaleString() }}
+      </template>
       <template v-if="column.key === 'action'">
         <span>
           <a v-if="!record.deducted" @click="onDeduct(record)">차감</a>
           <a v-else @click="onCancelDeduct(record)">차감취소</a>
+          <a-divider type="vertical" />
+          <a @click="onDelete(record)">Delete</a>
         </span>
       </template>
     </template>
   </a-table>
 
   <SpendCreateModal ref="spendCreateModal" />
+  <CommonModal ref="deleteModalRef"/>
+  <CommonModal ref="deductedModalRef"/>
+  <CommonModal ref="cancelDeductedModalRef"/>
 </template>
 
 <script lang="ts" setup>
 import api from '@/api/axios'
-import { onMounted, ref, h } from 'vue'
+import { onMounted, ref, h, computed } from 'vue'
 import type { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons-vue';
 import SpendCreateModal from '@/components/SpendCreateModal.vue';
 import { message } from 'ant-design-vue';
+import CommonModal from '@/components/CommonModal.vue';
 
 type RangeValue = [Dayjs, Dayjs];
 
-const title = ref('');
 const searchParams = ref({
+  status: '',
+  startDate: null,
+  endDate: null,
   page: 0,
   pageSize: 20
 });
-const statuses = ['전체', 'TEMP', 'REGISTER', 'DELETE'];
+const statuses = ['전체', '차감', '차감취소'];
+// 숫자로 변환된 차감 여부
+const deductedValue = computed(() => status.value === '차감' ? 1 : 0);
 const status = ref(statuses[0]);
 const insertDateRange = ref<RangeValue>();
+
+const deleteModalRef = ref();
+const deductedModalRef = ref();
+const cancelDeductedModalRef = ref();
+const spendCreateModal = ref();
 
 const columns = [
   {
@@ -103,8 +118,6 @@ const pagination = ref({
   total: 0,
 })
 
-const spendCreateModal = ref();
-
 const fetchSpends = async (params) => {
   try {
     const response = await api.get('/api/economy/spend/search', {
@@ -135,7 +148,7 @@ const handleTableChange = (paginationConfig) => {
   searchParams.value.page = current - 1;
   searchParams.value.pageSize = pageSize;
 
-  // fetchRoles(searchParams.value)
+  fetchSpends(searchParams.value)
 }
 
 const search = () => {
@@ -144,11 +157,8 @@ const search = () => {
     pageSize: pagination.value.pageSize,
   };
 
-  if (title.value) {
-    params.title = title.value;
-  }
   if (status.value && status.value !== '전체') {
-    params.status = status.value;
+    params.status = deductedValue.value;
   }
   if (insertDateRange.value) {
     params.startDate = insertDateRange.value[0].format('YYYY-MM-DD');
@@ -157,24 +167,30 @@ const search = () => {
 
   searchParams.value = params;
 
-  // fetchRoles(params);
+  fetchSpends(params);
 };
 
 const reset = () => {
+
+  status.value = statuses[0];
+  insertDateRange.value = null;
+
   searchParams.value = {
+    status: '',
+    startDate: null,
+    endDate: null,
     page: 0,
     pageSize: pagination.value.pageSize
   };
 
   pagination.value.current = 1;
 
-  // fetchRoles(searchParams.value);
+  fetchSpends(searchParams.value);
 }
 
 const onCreate = () => {
   spendCreateModal.value.show(() => {
-
-    // fetchRoles(searchParams.value);
+    fetchSpends(searchParams.value);
   });
 }
 
@@ -182,6 +198,74 @@ const onExport = () => {
   // Logic to handle export functionality
   console.log("Export records to Excel");
 };
+
+const onDeduct = (spend) => {
+
+  deductedModalRef.value.show('지출내역차감', '지출내역을 차감하시겠습니까?', 
+    async () => {
+
+      try {
+        const response = await api.post('/api/economy/minus', {
+          spendId: spend.id
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+          },
+        });
+
+        message.success('지출내역이 차감되었습니다.');
+      } catch (error) {
+        message.error('지출내역 차감 실패');
+      }
+
+      fetchSpends(searchParams.value);
+    });
+} 
+
+const onCancelDeduct = (spend) => {
+  cancelDeductedModalRef.value.show('지출내역차감취소', '지출내역 차감을 취소하시겠습니까?', 
+    async () => {
+
+      try {
+        const response = await api.post('/api/economy/cancel-minus', {
+          spendId: spend.id
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+          },
+        });
+
+        message.success('지출내역 차감이 취소되었습니다.');
+      } catch (error) {
+        message.error('지출내역 차감 취소 실패');
+      }
+
+      fetchSpends(searchParams.value);
+    });
+} 
+
+const onDelete = (spend) => {
+  deleteModalRef.value?.show('지출내역삭제', '지출내역을 삭제하시겠습니까?', 
+    async () => {
+
+      try {
+        const response = await api.delete('/api/economy/spend/' + spend.id, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+          },
+        });
+
+        message.success('지출내역을 삭제되었습니다.');
+      } catch (error) {
+        message.error('지출내역 삭제 실패');
+      }
+
+      fetchSpends(searchParams.value);
+    });
+}
 
 onMounted(() => {
   const params: any = {

@@ -42,7 +42,7 @@ const handleOk = () => {
     loading.value = false;
     open.value = false;
     callback.value?.();
-  }, 2000);
+  }, 500);
 };
 
 const handleCancel = () => {

@@ -1,7 +1,8 @@
-package com.example.demo.record.repository;
+package com.example.demo.economy.repository;
 
-import com.example.demo.record.request.SearchRecordRequest;
-import com.example.demo.record.response.SearchRecordResponse;
+import com.example.demo.economy.request.SearchActiveRequest;
+import com.example.demo.economy.request.SearchSpendRequest;
+import com.example.demo.economy.response.SearchActiveResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,35 +20,30 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
+public class ActiveRepositoryCustomImpl implements ActiveRepositoryCustom {
 
     private final NamedParameterJdbcTemplate jdbc;
 
     @Override
-    public Page<SearchRecordResponse> findPublicRecords(SearchRecordRequest request, Pageable pageable) {
-        StringBuilder sql = new StringBuilder("SELECT id, title, content, status, createdAt, updatedAt FROM records WHERE 1=1");
-        StringBuilder countSql = new StringBuilder("SELECT COUNT(1) FROM records WHERE 1=1");
+    public Page<SearchActiveResponse> findActives(SearchActiveRequest request, long adminId, Pageable pageable) {
+        StringBuilder sql = new StringBuilder("SELECT id, minutes, saved, createdAt FROM active WHERE 1=1");
+        StringBuilder countSql = new StringBuilder("SELECT COUNT(1) FROM active WHERE 1=1");
         Map<String, Object> params = new HashMap<>();
 
-        if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-            sql.append(" AND title LIKE :title");
-            countSql.append(" AND title LIKE :title");
-            params.put("title", "%" + request.getTitle() + "%");
-        }
+        sql.append(" AND adminId =:adminId");
+        sql.append(" AND adminId =:adminId");
+        params.put("adminId", adminId);
 
-        if (request.getContent() != null && !request.getContent().isEmpty()) {
-            sql.append(" AND content LIKE :content");
-            countSql.append(" AND content LIKE :content");
-            params.put("content", "%" + request.getContent() + "%");
-        }
+        sql.append(" AND deletedAt IS NULL");
+        countSql.append(" AND deletedAt IS NULL");
 
         if (request.getStatus() != null && !request.getStatus().isEmpty()) {
-            sql.append(" AND status = :status");
-            countSql.append(" AND status = :status");
+            sql.append(" AND saved = :status");
+            countSql.append(" AND saved = :status");
             params.put("status", request.getStatus());
         }
 
-        if(request.getStartDate() != null && request.getStartDate().isEmpty() && request.getEndDate() != null && request.getEndDate().isEmpty()) {
+        if(request.getStartDate() != null && !request.getStartDate().isEmpty() && request.getEndDate() != null && !request.getEndDate().isEmpty()) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             LocalDate startDate = LocalDate.parse(request.getStartDate(), formatter);
@@ -65,24 +61,15 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
             params.put("endDate", endDateTime);
         }
 
-        sql.append(" AND isPublic = true");
-        countSql.append(" AND isPublic = true");
-
-        sql.append(" AND deletedAt IS NULL");
-        countSql.append(" AND deletedAt IS NULL");
-
-
-        sql.append(" ORDER BY id DESC");
+        sql.append(" ORDER BY createdAt DESC");
 
         sql.append(" LIMIT :limit OFFSET :offset");
         params.put("limit", pageable.getPageSize());
         params.put("offset", pageable.getPageNumber() * pageable.getPageSize());
 
-        List<SearchRecordResponse> result = jdbc.query(sql.toString(), params, new BeanPropertyRowMapper<>(SearchRecordResponse.class));
+        List<SearchActiveResponse> result = jdbc.query(sql.toString(), params, new BeanPropertyRowMapper<>(SearchActiveResponse.class));
         int total = jdbc.queryForObject(countSql.toString(), params, Integer.class);
 
         return new PageImpl<>(result, pageable, total);
     }
-
-
 }

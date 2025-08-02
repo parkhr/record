@@ -1,5 +1,6 @@
 package com.example.demo.economy.entity;
 
+import com.example.demo.economy.request.CreateActiveRequest;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,16 +16,19 @@ import org.springframework.data.relational.core.mapping.Column;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Wallet {
+public class Active {
 
     @Id
     private long id;
 
     @Column("adminId")
-    private int adminId;
+    private long adminId;
 
-    @Column("amount")
-    private int amount;
+    @Column("minutes")
+    private int minutes;
+
+    @Column("saved")
+    private boolean saved;
 
     @CreatedDate
     @Column("createdAt")
@@ -44,23 +48,29 @@ public class Wallet {
         return this.deletedAt != null;
     }
 
-    public void minusAmount(Spend spend) {
-        this.amount = this.amount - spend.getAmount();
+    public static Active createActive(CreateActiveRequest request, long adminId) {
+
+        return Active.builder()
+            .adminId(adminId)
+            .minutes(request.getMinutes())
+            .saved(false)
+            .build();
+    }
+
+    public void save() {
+        this.saved = true;
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void cancelMinusAmount(Spend spend) {
-        this.amount = this.amount + spend.getAmount();
-        this.updatedAt = LocalDateTime.now();
+    public int getAmount() {
+        //TODO 현재 분급 정책을 통해 금액 계산
+        int policyAmount = 1000;
+
+        return policyAmount * this.minutes;
     }
 
-    public void plusAmount(Active active) {
-        this.amount = this.amount + active.getAmount();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void cancelPlusAmount(Active active) {
-        this.amount = this.amount - active.getAmount();
+    public void cancelSave() {
+        this.saved = false;
         this.updatedAt = LocalDateTime.now();
     }
 }
