@@ -6,19 +6,6 @@
         <div style="font-size: 32px; font-weight: bold;">₩ {{ walletData.amount }}</div>
       </a-col>
     </a-row>
-
-    <a-divider />
-
-    <a-row>
-      <a-col :span="12">
-        <div style="color: #52c41a;">+ 최근 적립: ₩ {{ walletData.lastSaved }}</div>
-      </a-col>
-      <a-col :span="12">
-        <div style="color: #f5222d; text-align: right;">- 최근 차감: ₩ {{ walletData.lastSpend }}</div>
-      </a-col>
-    </a-row>
-
-    <a-divider />
   </a-card>
 </template>
 
