@@ -44,12 +44,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EconomyService {
@@ -58,6 +66,9 @@ public class EconomyService {
     private final WalletRepository walletRepository;
     private final SpendRepository spendRepository;
     private final ActiveRepository activeRepository;
+
+    @Value("${push.api.base-url}")
+    private String baseUrl;
 
     public Spend createSpend(CreateSpendRequest request) {
         CardSmsRecord cardSmsRecord = CardSmsParser.parse(request.getMessage());
@@ -102,6 +113,37 @@ public class EconomyService {
 
         wallet.minusAmount(spend);
         walletRepository.save(wallet);
+
+        if (wallet.getAmount() < 0) {
+            try {
+                OkHttpClient client = new OkHttpClient();
+
+                String json = "{"
+                    + "\"title\":\"잔액이 마이너스입니다 ㅠ_ㅠ\","
+                    + "\"body\":\"활동을 열심히 해주세요!!!!!\""
+                    + "}";
+
+                RequestBody body = RequestBody.create(
+                    json,
+                    MediaType.get("application/json; charset=utf-8")
+                );
+
+                Request apiRequest = new Request.Builder()
+                    .url(baseUrl)
+                    .post(body)
+                    .build();
+
+                try (Response response = client.newCall(apiRequest).execute()) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        log.info("푸시전송 성공!");
+                    } else {
+                        throw new ApplicationException("API 호출 실패: " + response.code());
+                    }
+                }
+            } catch (Exception e) {
+                log.info(e.getMessage());
+            }
+        }
 
         //TODO 유저 활동 로깅
     }
