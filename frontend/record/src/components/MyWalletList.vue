@@ -29,13 +29,7 @@ import { message } from 'ant-design-vue';
 import { onMounted, ref } from 'vue';
 
 // 내부 상태로 가진 잔액 데이터
-const balances = ref([
-  { id: 1, amount: 10000, date: '2025-08-02 09:30' },
-  { id: 2, amount: -2000, date: '2025-08-02 09:45' },
-  { id: 3, amount: 3000, date: '2025-08-02 10:00' },
-  { id: 4, amount: 3000, date: '2025-08-02 10:00' },
-  { id: 5, amount: -3000, date: '2025-08-02 10:00' },
-]);
+const balances = ref([]);
 
 const formatNumber = (num) => num?.toLocaleString() ?? '0';
 

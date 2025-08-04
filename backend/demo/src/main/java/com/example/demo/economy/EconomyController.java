@@ -111,4 +111,16 @@ public class EconomyController {
     public ResponseEntity<Object> recent() {
         return ResponseEntity.ok(economyService.recent());
     }
+
+    // 이번주 수입
+    @GetMapping("/dashboard/active")
+    public ResponseEntity<Object> thisWeekActive() {
+        return ResponseEntity.ok(economyService.thisWeekActive());
+    }
+
+    // 이번주 지출
+    @GetMapping("/dashboard/spend")
+    public ResponseEntity<Object> thisWeekSpend() {
+        return ResponseEntity.ok(economyService.thisWeekSpend());
+    }
 }

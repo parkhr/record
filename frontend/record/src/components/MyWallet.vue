@@ -3,7 +3,7 @@
     <a-row justify="space-between">
       <a-col>
         <div style="font-size: 18px; color: #888;">총 잔액</div>
-        <div style="font-size: 32px; font-weight: bold;">₩ {{ walletData.amount }}</div>
+        <div style="font-size: 32px; font-weight: bold;">₩ {{ formatNumber(walletData.amount) }}</div>
       </a-col>
     </a-row>
   </a-card>
@@ -24,6 +24,8 @@ onMounted(() => {
   fetchWallet();
 });
 
+const formatNumber = (num) => num?.toLocaleString() ?? '0';
+
 const fetchWallet = async () => {
   try {
     const response = await api.get('/api/economy/wallet',{
@@ -34,7 +36,6 @@ const fetchWallet = async () => {
     });
 
     walletData.value = response.data;
-    console.log(walletData.value);
   } catch (error) {
     message.error('지갑 정보를 불러오는 데 실패했습니다.');
   }

@@ -25,12 +25,21 @@ import com.example.demo.economy.request.MinusAmountRequest;
 import com.example.demo.economy.request.PlusAmountRequest;
 import com.example.demo.economy.request.SearchActiveRequest;
 import com.example.demo.economy.request.SearchSpendRequest;
+import com.example.demo.economy.response.DashboardActiveResponse;
 import com.example.demo.economy.response.DashboardRecentResponse;
+import com.example.demo.economy.response.DashboardSpendResponse;
 import com.example.demo.economy.response.SearchActiveResponse;
 import com.example.demo.economy.response.WalletResponse;
+import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -281,5 +290,77 @@ public class EconomyService {
             .sorted(Comparator.comparing(DashboardRecentResponse::getDate).reversed())
             .limit(5)
             .collect(Collectors.toList());
+    }
+
+    public DashboardActiveResponse thisWeekActive() {
+
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자 입니다.");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+
+        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
+        LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
+
+        List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, startDateTime, endDateTime);
+
+        // 일별 집계도 포함하고 싶다면:
+        Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values())
+            .collect(Collectors.toMap(d -> d, d -> 0));
+
+        for (Active active : actives) {
+            DayOfWeek dow = active.getCreatedAt().getDayOfWeek();
+            dailyMap.put(dow, dailyMap.get(dow) + active.getAmount());
+        }
+
+        DashboardActiveResponse response = new DashboardActiveResponse();
+        response.setAmounts(Arrays.stream(DayOfWeek.values())
+            .sorted(Comparator.comparingInt(DayOfWeek::getValue)) // 월요일=1 ~ 일요일=7
+            .map(dow -> dailyMap.getOrDefault(dow, 0))
+            .toList());
+
+        return response;
+    }
+
+    public DashboardSpendResponse thisWeekSpend() {
+
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자 입니다.");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+
+        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
+        LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
+
+        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndCreatedAtBetween(admin, startDateTime, endDateTime);
+
+        // 일별 집계도 포함하고 싶다면:
+        Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values())
+            .collect(Collectors.toMap(d -> d, d -> 0));
+
+        for (Spend spend : spends) {
+            DayOfWeek dow = spend.getSpendAt().getDayOfWeek();
+            dailyMap.put(dow, dailyMap.get(dow) + spend.getAmount());
+        }
+
+        DashboardSpendResponse response = new DashboardSpendResponse();
+        response.setAmounts(Arrays.stream(DayOfWeek.values())
+            .sorted(Comparator.comparingInt(DayOfWeek::getValue)) // 월요일=1 ~ 일요일=7
+            .map(dow -> dailyMap.getOrDefault(dow, 0))
+            .toList());
+
+        return response;
     }
 }
