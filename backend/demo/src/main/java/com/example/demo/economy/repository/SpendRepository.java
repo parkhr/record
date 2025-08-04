@@ -1,7 +1,6 @@
 package com.example.demo.economy.repository;
 
 import com.example.demo.admin.entity.Admin;
-import com.example.demo.economy.entity.Active;
 import com.example.demo.economy.entity.Spend;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,5 +10,5 @@ public interface SpendRepository extends CrudRepository<Spend, Long>, SpendRepos
 
     List<Spend> findTop5ByAdminIdAndDeductedTrueOrderBySpendAtDesc(long id);
 
-    List<Spend> findByAdminIdAndDeductedTrueAndCreatedAtBetween(Admin admin, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    List<Spend> findByAdminIdAndDeductedTrueAndSpendAtBetween(Admin admin, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

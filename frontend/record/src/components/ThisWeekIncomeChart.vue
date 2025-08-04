@@ -27,8 +27,6 @@ const chartData = ref({
   ],
 });
 
-const incomes = ref([]);
-
 const fetchThisWeekIncome = async () => {
   try {
     const response = await api.get('/api/economy/dashboard/active', {
@@ -38,8 +36,7 @@ const fetchThisWeekIncome = async () => {
       }
     });
 
-    incomes.value = response.data.amounts;
-    chartData.value.datasets[0].data = incomes.value;
+    chartData.value.datasets[0].data = response.data.amounts;
   } catch (error) {
     message.error('이번주수입을 불러올 수 없습니다.');
   }

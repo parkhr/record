@@ -25,12 +25,13 @@ import com.example.demo.economy.request.MinusAmountRequest;
 import com.example.demo.economy.request.PlusAmountRequest;
 import com.example.demo.economy.request.SearchActiveRequest;
 import com.example.demo.economy.request.SearchSpendRequest;
+import com.example.demo.economy.response.DashboardActiveMonthResponse;
 import com.example.demo.economy.response.DashboardActiveResponse;
 import com.example.demo.economy.response.DashboardRecentResponse;
+import com.example.demo.economy.response.DashboardSpendMonthResponse;
 import com.example.demo.economy.response.DashboardSpendResponse;
 import com.example.demo.economy.response.SearchActiveResponse;
 import com.example.demo.economy.response.WalletResponse;
-import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,6 +42,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -286,10 +288,7 @@ public class EconomyService {
             result.add(item);
         }
 
-        return result.stream()
-            .sorted(Comparator.comparing(DashboardRecentResponse::getDate).reversed())
-            .limit(5)
-            .collect(Collectors.toList());
+        return result.stream().sorted(Comparator.comparing(DashboardRecentResponse::getDate).reversed()).limit(5).collect(Collectors.toList());
     }
 
     public DashboardActiveResponse thisWeekActive() {
@@ -311,8 +310,7 @@ public class EconomyService {
         List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, startDateTime, endDateTime);
 
         // 일별 집계도 포함하고 싶다면:
-        Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values())
-            .collect(Collectors.toMap(d -> d, d -> 0));
+        Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values()).collect(Collectors.toMap(d -> d, d -> 0));
 
         for (Active active : actives) {
             DayOfWeek dow = active.getCreatedAt().getDayOfWeek();
@@ -320,10 +318,8 @@ public class EconomyService {
         }
 
         DashboardActiveResponse response = new DashboardActiveResponse();
-        response.setAmounts(Arrays.stream(DayOfWeek.values())
-            .sorted(Comparator.comparingInt(DayOfWeek::getValue)) // 월요일=1 ~ 일요일=7
-            .map(dow -> dailyMap.getOrDefault(dow, 0))
-            .toList());
+        response.setAmounts(Arrays.stream(DayOfWeek.values()).sorted(Comparator.comparingInt(DayOfWeek::getValue)) // 월요일=1 ~ 일요일=7
+            .map(dow -> dailyMap.getOrDefault(dow, 0)).toList());
 
         return response;
     }
@@ -344,11 +340,10 @@ public class EconomyService {
         LocalDateTime startDateTime = startOfWeek.atStartOfDay();
         LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
 
-        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndCreatedAtBetween(admin, startDateTime, endDateTime);
+        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, startDateTime, endDateTime);
 
         // 일별 집계도 포함하고 싶다면:
-        Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values())
-            .collect(Collectors.toMap(d -> d, d -> 0));
+        Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values()).collect(Collectors.toMap(d -> d, d -> 0));
 
         for (Spend spend : spends) {
             DayOfWeek dow = spend.getSpendAt().getDayOfWeek();
@@ -356,11 +351,74 @@ public class EconomyService {
         }
 
         DashboardSpendResponse response = new DashboardSpendResponse();
-        response.setAmounts(Arrays.stream(DayOfWeek.values())
-            .sorted(Comparator.comparingInt(DayOfWeek::getValue)) // 월요일=1 ~ 일요일=7
-            .map(dow -> dailyMap.getOrDefault(dow, 0))
-            .toList());
+        response.setAmounts(Arrays.stream(DayOfWeek.values()).sorted(Comparator.comparingInt(DayOfWeek::getValue)) // 월요일=1 ~ 일요일=7
+            .map(dow -> dailyMap.getOrDefault(dow, 0)).toList());
 
+        return response;
+    }
+
+    public DashboardSpendMonthResponse thisMonthSpend() {
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = today.withDayOfMonth(today.lengthOfMonth());
+
+        LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
+        LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
+
+        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, startDateTime, endDateTime);
+
+        int daysInMonth = today.lengthOfMonth();
+        Map<Integer, Integer> dailyMap = IntStream.rangeClosed(1, daysInMonth).boxed().collect(Collectors.toMap(day -> day, day -> 0));
+
+        for (Spend spend : spends) {
+            int dayOfMonth = spend.getSpendAt().getDayOfMonth();
+            dailyMap.put(dayOfMonth, dailyMap.get(dayOfMonth) + spend.getAmount());
+        }
+
+        List<Integer> dailyAmounts = IntStream.rangeClosed(1, daysInMonth).mapToObj(d -> dailyMap.getOrDefault(d, 0)).toList();
+
+        DashboardSpendMonthResponse response = new DashboardSpendMonthResponse();
+        response.setAmounts(dailyAmounts);
+        return response;
+    }
+
+    public DashboardActiveMonthResponse thisMonthActive() {
+
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
+        LocalDate lastDayOfMonth = today.withDayOfMonth(today.lengthOfMonth());
+
+        LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
+        LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
+
+        List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, startDateTime, endDateTime);
+
+        int daysInMonth = today.lengthOfMonth();
+        Map<Integer, Integer> dailyMap = IntStream.rangeClosed(1, daysInMonth).boxed().collect(Collectors.toMap(day -> day, day -> 0));
+
+        for (Active active : actives) {
+            int dayOfMonth = active.getCreatedAt().getDayOfMonth();
+            dailyMap.put(dayOfMonth, dailyMap.get(dayOfMonth) + active.getAmount());
+        }
+
+        List<Integer> dailyAmounts = IntStream.rangeClosed(1, daysInMonth).mapToObj(d -> dailyMap.getOrDefault(d, 0)).toList();
+
+        DashboardActiveMonthResponse response = new DashboardActiveMonthResponse();
+        response.setAmounts(dailyAmounts);
         return response;
     }
 }

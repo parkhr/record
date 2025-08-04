@@ -1,44 +1,57 @@
 <template>
   <a-card title="이번달 지출" bordered hoverable>
-    <LineChart :chartData="testData" />
+    <LineChart :chartData="chartData" />
   </a-card>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { onMounted, ref } from 'vue';
 import { LineChart } from 'vue-chart-3';
 import { Chart, registerables } from "chart.js";
+import api from '@/api/axios';
+import { message } from 'ant-design-vue';
 
 Chart.register(...registerables);
 
-export default defineComponent({
-  name: 'Home',
-  components: { LineChart },
-  setup() {
-    const testData = {
-      labels: [
-        '1', '2', '3', '4', '5', 
-        '6', '7', '8', '9', '10', 
-        '11', '12', '13', '14', '15', 
-        '16', '17', '18', '19', '20',
-        '21', '22', '23', '24', '25',
-        '26', '27', '28', '29', '30'],
-      datasets: [
-        {
-          label: '지출',
-          data: [30, 40, 60, 70, 5,
-            30, 40, 60, 70, 5,
-            30, 40, 60, 70, 5,
-            30, 40, 60, 70, 5,
-            30, 40, 60, 70, 5,
-            30, 40, 60, 70, 5
-          ],
-          // backgroundColor: ['#77CEFF', '#0079AF', '#123E6B', '#97B0C4', '#A5C8ED'],
-        },
-      ],
-    };
+const chartData = ref({
+  labels: ['1', '2', '3', '4', '5', 
+           '6', '7', '8', '9', '10', 
+           '11', '12', '13', '14', '15', 
+           '16', '17', '18', '19', '20',
+           '21', '22', '23', '24', '25',
+           '26', '27', '28', '29', '30'],
+  datasets: [
+    {
+      label: '지출',
+      data: [],
+      borderColor: '#f44336',
+      backgroundColor: 'rgba(244, 67, 54, 0.2)',
+      fill: true,
+      tension: 0.3,
+    },
+  ],
+})
 
-    return { testData };
-  },
-});
+const fetchThisMonthSpend = async () => {
+  try {
+    const response = await api.get('/api/economy/dashboard/spend/month', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
+
+    console.log(response.data);
+
+    chartData.value.datasets[0].data = response.data.amounts;
+
+    
+  } catch (error) {
+    message.error('이번달지출을 불러올 수 없습니다.');
+  }
+}
+
+onMounted(() => {
+  fetchThisMonthSpend();
+})
 </script>

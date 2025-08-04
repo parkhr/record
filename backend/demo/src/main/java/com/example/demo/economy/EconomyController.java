@@ -123,4 +123,17 @@ public class EconomyController {
     public ResponseEntity<Object> thisWeekSpend() {
         return ResponseEntity.ok(economyService.thisWeekSpend());
     }
+
+    // 이번달 수입
+    @GetMapping("/dashboard/active/month")
+    public ResponseEntity<Object> thisMonthActive() {
+        return ResponseEntity.ok(economyService.thisMonthActive());
+    }
+
+    // 이번달 지출
+    @GetMapping("/dashboard/spend/month")
+    public ResponseEntity<Object> thisMonthSpend() {
+        return ResponseEntity.ok(economyService.thisMonthSpend());
+    }
+
 }
