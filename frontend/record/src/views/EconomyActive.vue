@@ -138,8 +138,7 @@ const fetchActives = async (params) => {
     });
 
   } catch (error) {
-    console.error("Error fetching records:", error);
-    // message.error('권한그룹을 불러올 수 없습니다.');
+    message.error('활동내역을 불러올 수 없습니다.');
   }
 };
 

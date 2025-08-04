@@ -25,8 +25,13 @@ import com.example.demo.economy.request.MinusAmountRequest;
 import com.example.demo.economy.request.PlusAmountRequest;
 import com.example.demo.economy.request.SearchActiveRequest;
 import com.example.demo.economy.request.SearchSpendRequest;
+import com.example.demo.economy.response.DashboardRecentResponse;
 import com.example.demo.economy.response.SearchActiveResponse;
 import com.example.demo.economy.response.WalletResponse;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -241,5 +246,40 @@ public class EconomyService {
         walletResponse.setLastSpend(2300);
 
         return walletResponse;
+    }
+
+    public List<DashboardRecentResponse> recent() {
+
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자 입니다.");
+        }
+
+        List<Spend> top5Spends = spendRepository.findTop5ByAdminIdAndDeductedTrueOrderBySpendAtDesc(admin.getId());
+
+        List<Active> top5ByActives = activeRepository.findTop5ByAdminIdAndSavedTrueOrderByCreatedAtDesc(admin.getId());
+
+        List<DashboardRecentResponse> result = new ArrayList<>();
+
+        for (Spend spend : top5Spends) {
+            DashboardRecentResponse item = new DashboardRecentResponse();
+            item.setAmount(spend.getAmount() * -1);
+            item.setDate(spend.getSpendAt());
+            result.add(item);
+        }
+
+        for (Active active : top5ByActives) {
+            DashboardRecentResponse item = new DashboardRecentResponse();
+            item.setAmount(active.getAmount());
+            item.setDate(active.getCreatedAt());
+            result.add(item);
+        }
+
+        return result.stream()
+            .sorted(Comparator.comparing(DashboardRecentResponse::getDate).reversed())
+            .limit(5)
+            .collect(Collectors.toList());
     }
 }

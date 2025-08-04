@@ -11,6 +11,17 @@ CREATE TABLE `spend` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `active` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  adminId BIGINT NOT NULL,
+  `minutes` int NOT NULL,
+  `saved` tinyint(1) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE record.wallet (
 	id bigint auto_increment NOT NULL,
 	adminId BIGINT NOT NULL,

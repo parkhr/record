@@ -105,4 +105,10 @@ public class EconomyController {
     public ResponseEntity<Object> findWallet() {
         return ResponseEntity.ok(economyService.findMyWallet());
     }
+
+    // 최근 리스트
+    @GetMapping("/dashboard/recent")
+    public ResponseEntity<Object> recent() {
+        return ResponseEntity.ok(economyService.recent());
+    }
 }

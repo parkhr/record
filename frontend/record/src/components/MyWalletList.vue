@@ -1,12 +1,12 @@
 <template>
-  <a-card title="잔액 목록" bordered>
+  <a-card title="최근 리스트" bordered>
     <a-table
       :columns="columns"
       :data-source="balances"
       :row-key="record => record.id"
       size="middle"
       bordered
-      pagination={false}
+      :pagination="false"
     >
       <template #amount="{ record }">
         <span :style="{ color: record.amount >= 0 ? '#52c41a' : '#f5222d' }">
@@ -24,23 +24,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import api from '@/api/axios';
+import { message } from 'ant-design-vue';
+import { onMounted, ref } from 'vue';
 
 // 내부 상태로 가진 잔액 데이터
 const balances = ref([
-  { id: 1, title: '출근 활동', amount: 10000, date: '2025-08-02 09:30' },
-  { id: 2, title: '지각 페널티', amount: -2000, date: '2025-08-02 09:45' },
-  { id: 3, title: '청소 참여', amount: 3000, date: '2025-08-02 10:00' },
+  { id: 1, amount: 10000, date: '2025-08-02 09:30' },
+  { id: 2, amount: -2000, date: '2025-08-02 09:45' },
+  { id: 3, amount: 3000, date: '2025-08-02 10:00' },
+  { id: 4, amount: 3000, date: '2025-08-02 10:00' },
+  { id: 5, amount: -3000, date: '2025-08-02 10:00' },
 ]);
 
 const formatNumber = (num) => num?.toLocaleString() ?? '0';
 
 const columns = [
-  {
-    title: '항목',
-    dataIndex: 'title',
-    key: 'title',
-  },
   {
     title: '잔액',
     key: 'amount',
@@ -58,4 +57,23 @@ const columns = [
     key: 'date',
   }
 ];
+
+const fetchRecent = async () => {
+  try {
+    const response = await api.get('/api/economy/dashboard/recent', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
+
+    balances.value = response.data;
+  } catch (error) {
+    message.error('최근리스트를 불러올 수 없습니다.');
+  }
+}
+
+onMounted(() => {
+  fetchRecent();
+})
 </script>
