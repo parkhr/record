@@ -48,11 +48,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -124,7 +119,7 @@ public class EconomyService {
 
             pushAppSender.send(PushMessage.builder()
                 .title("잔액이 마이너스입니다 ㅠ_ㅠ")
-                .content("활동을 열심히 해주세요!!!!!")
+                .body("활동을 열심히 해주세요!!!!!")
                 .build());
         }
 

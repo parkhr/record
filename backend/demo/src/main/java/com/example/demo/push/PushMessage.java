@@ -14,5 +14,5 @@ import lombok.Setter;
 public class PushMessage {
 
     private String title;
-    private String content;
+    private String body;
 }
