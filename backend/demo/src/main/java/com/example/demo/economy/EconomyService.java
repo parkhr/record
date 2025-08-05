@@ -32,6 +32,9 @@ import com.example.demo.economy.response.DashboardSpendMonthResponse;
 import com.example.demo.economy.response.DashboardSpendResponse;
 import com.example.demo.economy.response.SearchActiveResponse;
 import com.example.demo.economy.response.WalletResponse;
+import com.example.demo.push.PushMessage;
+import com.example.demo.push.PushSendResolver;
+import com.example.demo.push.PushSender;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,11 +48,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -66,6 +64,8 @@ public class EconomyService {
     private final WalletRepository walletRepository;
     private final SpendRepository spendRepository;
     private final ActiveRepository activeRepository;
+
+    private final PushSendResolver pushSendResolver;
 
     @Value("${push.api.base-url}")
     private String baseUrl;
@@ -115,34 +115,12 @@ public class EconomyService {
         walletRepository.save(wallet);
 
         if (wallet.getAmount() < 0) {
-            try {
-                OkHttpClient client = new OkHttpClient();
+            PushSender pushAppSender = pushSendResolver.resolve();
 
-                String json = "{"
-                    + "\"title\":\"잔액이 마이너스입니다 ㅠ_ㅠ\","
-                    + "\"body\":\"활동을 열심히 해주세요!!!!!\""
-                    + "}";
-
-                RequestBody body = RequestBody.create(
-                    json,
-                    MediaType.get("application/json; charset=utf-8")
-                );
-
-                Request apiRequest = new Request.Builder()
-                    .url(baseUrl)
-                    .post(body)
-                    .build();
-
-                try (Response response = client.newCall(apiRequest).execute()) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        log.info("푸시전송 성공!");
-                    } else {
-                        throw new ApplicationException("API 호출 실패: " + response.code());
-                    }
-                }
-            } catch (Exception e) {
-                log.info(e.getMessage());
-            }
+            pushAppSender.send(PushMessage.builder()
+                .title("잔액이 마이너스입니다 ㅠ_ㅠ")
+                .body("활동을 열심히 해주세요!!!!!")
+                .build());
         }
 
         //TODO 유저 활동 로깅
