@@ -31,3 +31,7 @@ CREATE TABLE record.wallet (
 	deletedAt datetime NULL,
 	CONSTRAINT `PRIMARY` PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO record.wallet
+(id, adminId, amount, createdAt, updatedAt, deletedAt)
+VALUES(1, 1, 0, '2025-08-06 00:00:00.000', NULL, NULL);
