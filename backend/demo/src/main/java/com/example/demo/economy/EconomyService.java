@@ -118,8 +118,8 @@ public class EconomyService {
             PushSender pushAppSender = pushSendResolver.resolve();
 
             pushAppSender.send(PushMessage.builder()
-                .title("잔액이 마이너스입니다 ㅠ_ㅠ")
-                .body("활동을 열심히 해주세요!!!!!")
+                .title("현재 잔액이 부족해요")
+                .body("가벼운 활동 하나로도 잔액을 다시 채울 수 있어요. 화이팅!")
                 .build());
         }
 
