@@ -34,4 +34,21 @@ public class Scheduler {
             pushAppSender.send(pushMessage);
         }
     }
+
+    @Scheduled(cron = "0 0 11 * * *", zone = "Asia/Seoul")
+    public void checkUserActive() {
+        PushSender pushAppSender = pushSendResolver.resolve();
+        List<Admin> admins = adminRepository.findAdminsWithTodayNoActive();
+
+        PushMessage pushMessage = PushMessage.builder()
+            .title("오늘 활동, 아직 등록 안 하셨어요?")
+            .body("기록은 작은 습관에서 시작돼요.  \n"
+                + "오늘 어떤 활동을 하셨는지 떠오를 때 바로 등록해보세요!")
+            .build();
+
+        for (Admin admin : admins) {
+            //TODO 유저별 푸시 링크 다름
+            pushAppSender.send(pushMessage);
+        }
+    }
 }
