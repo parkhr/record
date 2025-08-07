@@ -15,10 +15,13 @@ import org.springframework.data.relational.core.mapping.Column;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Wallet {
+public class WalletLog {
 
     @Id
     private long id;
+
+    @Column("status")
+    private String status;
 
     @Column("adminId")
     private long adminId;
@@ -30,11 +33,16 @@ public class Wallet {
     @Column("createdAt")
     private LocalDateTime createdAt;
 
-    @Column("updatedAt")
-    private LocalDateTime updatedAt;
-
     @Column("deletedAt")
     private LocalDateTime deletedAt;
+
+    public static WalletLog createWalletLog(String status, long adminId, int amount) {
+        return WalletLog.builder()
+            .status(status)
+            .adminId(adminId)
+            .amount(amount)
+            .build();
+    }
 
     public void delete() {
         this.deletedAt = LocalDateTime.now();
@@ -42,25 +50,5 @@ public class Wallet {
 
     public boolean isDeleted() {
         return this.deletedAt != null;
-    }
-
-    public void minusAmount(Spend spend) {
-        this.amount = this.amount - spend.getAmount();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void cancelMinusAmount(Spend spend) {
-        this.amount = this.amount + spend.getAmount();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void plusAmount(Active active) {
-        this.amount = this.amount + active.getAmount();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void cancelPlusAmount(Active active) {
-        this.amount = this.amount - active.getAmount();
-        this.updatedAt = LocalDateTime.now();
     }
 }
