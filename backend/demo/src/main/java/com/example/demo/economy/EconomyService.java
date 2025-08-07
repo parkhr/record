@@ -12,9 +12,11 @@ import com.example.demo.economy.domain.CardSmsRecord;
 import com.example.demo.economy.entity.Active;
 import com.example.demo.economy.entity.Spend;
 import com.example.demo.economy.entity.Wallet;
+import com.example.demo.economy.entity.WalletLog;
 import com.example.demo.economy.repository.ActiveRepository;
 import com.example.demo.economy.repository.SearchSpendResponse;
 import com.example.demo.economy.repository.SpendRepository;
+import com.example.demo.economy.repository.WalletLogRepository;
 import com.example.demo.economy.repository.WalletRepository;
 import com.example.demo.economy.request.CancelMinusAmountRequest;
 import com.example.demo.economy.request.CancelPlusAmountRequest;
@@ -62,6 +64,7 @@ public class EconomyService {
 
     private final AdminRepository adminRepository;
     private final WalletRepository walletRepository;
+    private final WalletLogRepository walletLogRepository;
     private final SpendRepository spendRepository;
     private final ActiveRepository activeRepository;
 
@@ -114,16 +117,13 @@ public class EconomyService {
         wallet.minusAmount(spend);
         walletRepository.save(wallet);
 
+        walletLogRepository.save(WalletLog.createWalletLog("SPEND", admin.getId(), spend.getAmount() * -1));
+
         if (wallet.getAmount() < 0) {
             PushSender pushAppSender = pushSendResolver.resolve();
 
-            pushAppSender.send(PushMessage.builder()
-                .title("현재 잔액이 부족해요")
-                .body("가벼운 활동 하나로도 잔액을 다시 채울 수 있어요. 화이팅!")
-                .build());
+            pushAppSender.send(PushMessage.builder().title("현재 잔액이 부족해요").body("가벼운 활동 하나로도 잔액을 다시 채울 수 있어요. 화이팅!").build());
         }
-
-        //TODO 유저 활동 로깅
     }
 
     @Transactional
@@ -157,7 +157,7 @@ public class EconomyService {
         wallet.cancelMinusAmount(spend);
         walletRepository.save(wallet);
 
-        //TODO 유저 활동 로깅
+        walletLogRepository.save(WalletLog.createWalletLog("CANCEL_SPEND", admin.getId(), spend.getAmount()));
     }
 
     @Transactional
@@ -227,6 +227,8 @@ public class EconomyService {
 
         wallet.plusAmount(active);
         walletRepository.save(wallet);
+
+        walletLogRepository.save(WalletLog.createWalletLog("ACTIVE", admin.getId(), active.getAmount()));
     }
 
     public void cancelPlusAmount(CancelPlusAmountRequest request) {
@@ -258,6 +260,8 @@ public class EconomyService {
 
         wallet.cancelPlusAmount(active);
         walletRepository.save(wallet);
+
+        walletLogRepository.save(WalletLog.createWalletLog("CANCEL_ACTIVE", admin.getId(), active.getAmount() * -1));
     }
 
     public WalletResponse findMyWallet() {

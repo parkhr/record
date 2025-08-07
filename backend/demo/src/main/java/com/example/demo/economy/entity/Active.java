@@ -1,5 +1,6 @@
 package com.example.demo.economy.entity;
 
+import com.example.demo.economy.domain.PayPolicy;
 import com.example.demo.economy.request.CreateActiveRequest;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -64,7 +65,7 @@ public class Active {
 
     public int getAmount() {
         //TODO 현재 분급 정책을 통해 금액 계산
-        int policyAmount = 1000;
+        int policyAmount = PayPolicy.VERSION_1.getPayPerMinute();
 
         return policyAmount * this.minutes;
     }
