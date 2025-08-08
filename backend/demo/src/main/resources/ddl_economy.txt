@@ -35,3 +35,13 @@ CREATE TABLE record.wallet (
 INSERT INTO record.wallet
 (id, adminId, amount, createdAt, updatedAt, deletedAt)
 VALUES(1, 1, 0, '2025-08-06 00:00:00.000', NULL, NULL);
+
+CREATE TABLE `wallet_log` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `status` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `adminId` bigint NOT NULL,
+  `amount` int NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

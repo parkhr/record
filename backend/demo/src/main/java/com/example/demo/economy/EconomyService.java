@@ -73,6 +73,7 @@ public class EconomyService {
     @Value("${push.api.base-url}")
     private String baseUrl;
 
+    @Transactional
     public Spend createSpend(CreateSpendRequest request) {
         CardSmsRecord cardSmsRecord = CardSmsParser.parse(request.getMessage());
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
@@ -198,6 +199,7 @@ public class EconomyService {
         return activeRepository.findActives(request, userDetails.getId(), pageable);
     }
 
+    @Transactional
     public void plusAmount(PlusAmountRequest request) {
         Active active = activeRepository.findById(request.getActiveId()).orElseThrow(() -> new ApplicationException("활동내역을 찾을 수 없습니다."));
 
@@ -231,6 +233,7 @@ public class EconomyService {
         walletLogRepository.save(WalletLog.createWalletLog("ACTIVE", admin.getId(), active.getAmount()));
     }
 
+    @Transactional
     public void cancelPlusAmount(CancelPlusAmountRequest request) {
         Active active = activeRepository.findById(request.getActiveId()).orElseThrow(() -> new ApplicationException("활동내역을 찾을 수 없습니다."));
 
