@@ -38,7 +38,7 @@ const fetchThisWeekSpend = async () => {
 
     chartData.value.datasets[0].data = response.data.amounts;
   } catch (error) {
-    message.error('이번주수입을 불러올 수 없습니다.');
+    message.error('이번주지출을 불러올 수 없습니다.');
   }
 }
 
