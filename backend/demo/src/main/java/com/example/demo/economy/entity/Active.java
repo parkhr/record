@@ -31,6 +31,9 @@ public class Active {
     @Column("saved")
     private boolean saved;
 
+    @Column("payPolicy")
+    private PayPolicy payPolicy;
+
     @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
@@ -60,12 +63,12 @@ public class Active {
 
     public void save() {
         this.saved = true;
+        this.payPolicy = PayPolicy.VERSION_1; // 적립 시점 정책으로 반영
         this.updatedAt = LocalDateTime.now();
     }
 
     public int getAmount() {
-        //TODO 현재 분급 정책을 통해 금액 계산
-        int policyAmount = PayPolicy.VERSION_1.getPayPerMinute();
+        int policyAmount = this.payPolicy.getPayPerMinute();
 
         return policyAmount * this.minutes;
     }
