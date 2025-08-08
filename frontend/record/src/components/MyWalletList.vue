@@ -15,8 +15,8 @@
       </template>
 
       <template #status="{ record }">
-        <a-tag :color="record.amount >= 0 ? 'green' : 'red'">
-          {{ record.amount >= 0 ? '적립' : '차감' }}
+        <a-tag :color="record.status == 'ACTIVE' || record.status == 'SPEND' ? 'green' : 'red'">
+          {{ getStatusLabel(record.status) }}
         </a-tag>
       </template>
     </a-table>
@@ -51,6 +51,21 @@ const columns = [
     key: 'date',
   }
 ];
+
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 'ACTIVE':
+      return '적립'
+    case 'SPEND':
+      return '차감'
+    case 'CANCEL_ACTIVE':
+      return '적립 취소'
+    case 'CANCEL_SPEND':
+      return '차감 취소'
+    default:
+      return status
+  }
+}
 
 const fetchRecent = async () => {
   try {

@@ -10,6 +10,8 @@ import lombok.Setter;
 public class DashboardRecentResponse {
 
     private int amount;
+    private String status;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;
 }

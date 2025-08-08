@@ -295,27 +295,19 @@ public class EconomyService {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        List<Spend> top5Spends = spendRepository.findTop5ByAdminIdAndDeductedTrueOrderBySpendAtDesc(admin.getId());
-
-        List<Active> top5ByActives = activeRepository.findTop5ByAdminIdAndSavedTrueOrderByCreatedAtDesc(admin.getId());
+        List<WalletLog> top5WalletLogs = walletLogRepository.findTop5ByAdminIdOrderByCreatedAtDesc(admin.getId());
 
         List<DashboardRecentResponse> result = new ArrayList<>();
 
-        for (Spend spend : top5Spends) {
+        for (WalletLog walletLog : top5WalletLogs) {
             DashboardRecentResponse item = new DashboardRecentResponse();
-            item.setAmount(spend.getAmount() * -1);
-            item.setDate(spend.getSpendAt());
+            item.setAmount(walletLog.getAmount());
+            item.setStatus(walletLog.getStatus());
+            item.setDate(walletLog.getCreatedAt());
             result.add(item);
         }
 
-        for (Active active : top5ByActives) {
-            DashboardRecentResponse item = new DashboardRecentResponse();
-            item.setAmount(active.getAmount());
-            item.setDate(active.getCreatedAt());
-            result.add(item);
-        }
-
-        return result.stream().sorted(Comparator.comparing(DashboardRecentResponse::getDate).reversed()).limit(5).collect(Collectors.toList());
+        return result;
     }
 
     public DashboardActiveResponse thisWeekActive() {
