@@ -3,7 +3,9 @@ package com.example.demo.admin;
 import static com.example.demo.common.ErrorMessage.ADMIN_NOT_FOUND;
 
 import com.example.demo.admin.entity.Admin;
+import com.example.demo.admin.entity.LoginLog;
 import com.example.demo.admin.repository.AdminRepository;
+import com.example.demo.admin.repository.LoginLogRepository;
 import com.example.demo.common.JwtTokenProvider;
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.menu.repository.MenuRepository;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,9 +33,11 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final RolePermissionRepository rolePermissionRepository;
     private final PermissionRepository permissionRepository;
+    private final LoginLogRepository loginLogRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Transactional
     public String login(LoginRequest request) {
         Admin admin = adminRepository.findByName(request.getName()).orElseThrow(() -> new BadCredentialsException(ADMIN_NOT_FOUND));
 
@@ -63,6 +68,8 @@ public class AuthService {
         }
 
         List<PermissionType> permissionTypes = permissions.stream().filter(item -> !item.isDeleted()).map(Permission::getName).toList();
+        
+        loginLogRepository.save(LoginLog.createLoginLog(admin.getId()));
 
         return jwtTokenProvider.createToken(admin.getId(), admin.getName(), permissionTypes, role.getId());
     }
