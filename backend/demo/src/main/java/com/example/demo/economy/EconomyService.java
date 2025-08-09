@@ -9,6 +9,7 @@ import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.common.util.UserUtil;
 import com.example.demo.economy.domain.CardSmsParser;
 import com.example.demo.economy.domain.CardSmsRecord;
+import com.example.demo.economy.domain.PayPolicy;
 import com.example.demo.economy.entity.Active;
 import com.example.demo.economy.entity.Spend;
 import com.example.demo.economy.entity.Wallet;
@@ -29,6 +30,7 @@ import com.example.demo.economy.request.SearchActiveRequest;
 import com.example.demo.economy.request.SearchSpendRequest;
 import com.example.demo.economy.response.DashboardActiveMonthResponse;
 import com.example.demo.economy.response.DashboardActiveResponse;
+import com.example.demo.economy.response.DashboardBreakEvenTimeResponse;
 import com.example.demo.economy.response.DashboardRecentResponse;
 import com.example.demo.economy.response.DashboardSpendMonthResponse;
 import com.example.demo.economy.response.DashboardSpendResponse;
@@ -343,6 +345,42 @@ public class EconomyService {
         return response;
     }
 
+    public DashboardActiveResponse lastWeekActive() {
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자 입니다.");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+
+        // 저번주 월~일
+        LocalDate startOfLastWeek = startOfWeek.minusWeeks(1);
+        LocalDate endOfLastWeek = endOfWeek.minusWeeks(1);
+
+        LocalDateTime startDateTime = startOfLastWeek.atStartOfDay();
+        LocalDateTime endDateTime = startOfLastWeek.atTime(LocalTime.MAX);
+
+        List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, startDateTime, endDateTime);
+
+        // 일별 집계도 포함하고 싶다면:
+        Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values()).collect(Collectors.toMap(d -> d, d -> 0));
+
+        for (Active active : actives) {
+            DayOfWeek dow = active.getCreatedAt().getDayOfWeek();
+            dailyMap.put(dow, dailyMap.get(dow) + active.getAmount());
+        }
+
+        DashboardActiveResponse response = new DashboardActiveResponse();
+        response.setAmounts(Arrays.stream(DayOfWeek.values()).sorted(Comparator.comparingInt(DayOfWeek::getValue)) // 월요일=1 ~ 일요일=7
+            .map(dow -> dailyMap.getOrDefault(dow, 0)).toList());
+
+        return response;
+    }
+
     public DashboardSpendResponse thisWeekSpend() {
 
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
@@ -358,6 +396,43 @@ public class EconomyService {
 
         LocalDateTime startDateTime = startOfWeek.atStartOfDay();
         LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
+
+        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, startDateTime, endDateTime);
+
+        // 일별 집계도 포함하고 싶다면:
+        Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values()).collect(Collectors.toMap(d -> d, d -> 0));
+
+        for (Spend spend : spends) {
+            DayOfWeek dow = spend.getSpendAt().getDayOfWeek();
+            dailyMap.put(dow, dailyMap.get(dow) + spend.getAmount());
+        }
+
+        DashboardSpendResponse response = new DashboardSpendResponse();
+        response.setAmounts(Arrays.stream(DayOfWeek.values()).sorted(Comparator.comparingInt(DayOfWeek::getValue)) // 월요일=1 ~ 일요일=7
+            .map(dow -> dailyMap.getOrDefault(dow, 0)).toList());
+
+        return response;
+    }
+
+    public DashboardSpendResponse lastWeekSpend() {
+
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자 입니다.");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+
+        // 저번주 월~일
+        LocalDate startOfLastWeek = startOfWeek.minusWeeks(1);
+        LocalDate endOfLastWeek = endOfWeek.minusWeeks(1);
+
+        LocalDateTime startDateTime = startOfLastWeek.atStartOfDay();
+        LocalDateTime endDateTime = endOfLastWeek.atTime(LocalTime.MAX);
 
         List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, startDateTime, endDateTime);
 
@@ -438,6 +513,27 @@ public class EconomyService {
 
         DashboardActiveMonthResponse response = new DashboardActiveMonthResponse();
         response.setAmounts(dailyAmounts);
+        return response;
+    }
+
+    public DashboardBreakEvenTimeResponse getBreakEvenTime() {
+
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException("해당 관리자의 지갑을 찾을 수 없습니다."));
+
+        if(wallet.getAmount() >= 0) {
+            log.info("이미 활동을 안해도 됨");
+        }
+
+        int requiredMinutes = (int) Math.ceil(Math.abs(wallet.getAmount()) / (double) PayPolicy.VERSION_1.getPayPerMinute());
+        int hours = requiredMinutes / 60;
+        int minutes = requiredMinutes % 60;
+
+        DashboardBreakEvenTimeResponse response = new DashboardBreakEvenTimeResponse();
+        response.setHour(hours);
+        response.setMinutes(minutes);
+
         return response;
     }
 }

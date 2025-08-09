@@ -41,8 +41,6 @@ const fetchThisMonthSpend = async () => {
       }
     });
 
-    console.log(response.data);
-
     chartData.value.datasets[0].data = response.data.amounts;
 
     
