@@ -1,5 +1,5 @@
 <template>
-  <a-card title="이번주 수입" bordered hoverable>
+  <a-card title="주간 수입" bordered hoverable>
     <LineChart :chartData="chartData" />
   </a-card>
 </template>
@@ -24,6 +24,14 @@ const chartData = ref({
       fill: true,
       tension: 0.3,
     },
+    {
+      label: '저번주 수입',
+      data: [],
+      borderColor: '#2196f3',
+      backgroundColor: 'rgba(33, 150, 243, 0.2)',
+      fill: true,
+      tension: 0.3,
+    },
   ],
 });
 
@@ -42,8 +50,23 @@ const fetchThisWeekIncome = async () => {
   }
 }
 
+const fetchLastWeekIncome = async () => {
+  try {
+    const response = await api.get('/api/economy/dashboard/active/last-week', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
+    chartData.value.datasets[1].data = response.data.amounts;
+  } catch (error) {
+    message.error('저번주수입을 불러올 수 없습니다.');
+  }
+}
+
 onMounted(() => {
   fetchThisWeekIncome();
+  fetchLastWeekIncome();
 })
 
 

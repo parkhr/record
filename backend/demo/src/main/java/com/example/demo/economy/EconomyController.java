@@ -118,10 +118,22 @@ public class EconomyController {
         return ResponseEntity.ok(economyService.thisWeekActive());
     }
 
+    //저번주 수입
+    @GetMapping("/dashboard/active/last-week")
+    public ResponseEntity<Object> lastWeekActive() {
+        return ResponseEntity.ok(economyService.lastWeekActive());
+    }
+
     // 이번주 지출
     @GetMapping("/dashboard/spend")
     public ResponseEntity<Object> thisWeekSpend() {
         return ResponseEntity.ok(economyService.thisWeekSpend());
+    }
+
+    // 저번주 지출
+    @GetMapping("/dashboard/spend/last-week")
+    public ResponseEntity<Object> lastWeekSpend() {
+        return ResponseEntity.ok(economyService.lastWeekSpend());
     }
 
     // 이번달 수입
@@ -134,6 +146,12 @@ public class EconomyController {
     @GetMapping("/dashboard/spend/month")
     public ResponseEntity<Object> thisMonthSpend() {
         return ResponseEntity.ok(economyService.thisMonthSpend());
+    }
+
+    // 손익분기점
+    @GetMapping("/dashboard/break-even-time")
+    public ResponseEntity<Object> getBreakEvenTime() {
+        return ResponseEntity.ok(economyService.getBreakEvenTime());
     }
 
 }
