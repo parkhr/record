@@ -4,6 +4,24 @@
       <a-col>
         <div style="font-size: 18px; color: #888;">총 잔액</div>
         <div style="font-size: 32px; font-weight: bold;">₩ {{ formatNumber(walletData.amount) }}</div>
+        <a-row :gutter="[50, 10]">
+          <a-col :span="12">
+            <div style="font-size: 14px; color: #888;">이번주 총 수입</div>
+            <div style="font-size: 23px; color: #4caf50; font-weight: bold;">₩ {{ formatNumber(totalThisWeekIncome) }}</div>
+          </a-col>
+          <a-col :span="12">
+            <div style="font-size: 14px; color: #888;">이번주 총 지출</div>
+            <div style="font-size: 23px; color: #f44336; font-weight: bold;">₩ {{ formatNumber(totalThisWeekSpend) }}</div>
+          </a-col>
+          <a-col :span="12">
+            <div style="font-size: 14px; color: #888;">이번달 총 수입</div>
+            <div style="font-size: 23px; color: #4caf50; font-weight: bold;">₩ {{ formatNumber(totalThisMonthIncome) }}</div>
+          </a-col>
+          <a-col :span="12">
+            <div style="font-size: 14px; color: #888;">이번달 총 지출</div>
+            <div style="font-size: 23px; color: #f44336; font-weight: bold;">₩ {{ formatNumber(totalThisMonthSpend) }}</div>
+          </a-col>
+        </a-row>
 
         <div v-if="walletData.amount < 0" style="margin-top: 12px; padding: 10px; background: #fff8f0; border-radius: 8px; color: #d46b08; font-size: 14px;">
           <span style="font-weight: bold;">💡 목표까지 남은 시간:</span><br>
@@ -35,6 +53,11 @@ const breakData = ref({
   hour: 0,
   minutes: 0
 });
+
+const totalThisWeekIncome = ref(0);
+const totalThisWeekSpend = ref(0);
+const totalThisMonthIncome = ref(0);
+const totalThisMonthSpend = ref(0);
 
 const formatNumber = (num) => num?.toLocaleString() ?? '0';
 
@@ -69,8 +92,79 @@ const fetchBreakEvenTime = async () => {
   }
 }
 
+const fetchThisWeekSpend = async () => {
+  try {
+    const response = await api.get('/api/economy/dashboard/spend', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
+
+    const total = response.data.amounts.reduce((sum, value) => sum + value, 0);
+    totalThisWeekSpend.value = total;
+  } catch (error) {
+    message.error('이번주지출을 불러올 수 없습니다.');
+  }
+}
+
+const fetchThisWeekIncome = async () => {
+  try {
+    const response = await api.get('/api/economy/dashboard/active', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
+
+    const total = response.data.amounts.reduce((sum, value) => sum + value, 0);
+    totalThisWeekIncome.value = total;
+  } catch (error) {
+    message.error('이번주수입을 불러올 수 없습니다.');
+  }
+}
+
+const fetchThisMonthIncome = async () => {
+  try {
+    const response = await api.get('/api/economy/dashboard/active/month', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
+
+    const total = response.data.amounts.reduce((sum, value) => sum + value, 0);
+    totalThisMonthIncome.value = total;
+    
+  } catch (error) {
+    message.error('이번달수입을 불러올 수 없습니다.');
+  }
+}
+
+const fetchThisMonthSpend = async () => {
+  try {
+    const response = await api.get('/api/economy/dashboard/spend/month', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
+
+    const total = response.data.amounts.reduce((sum, value) => sum + value, 0);
+    totalThisMonthSpend.value = total;
+    
+  } catch (error) {
+    message.error('이번달지출을 불러올 수 없습니다.');
+  }
+}
+
+
 onMounted(() => {
   fetchWallet();
   fetchBreakEvenTime();
+  fetchThisWeekSpend();
+  fetchThisWeekIncome();
+  fetchThisMonthIncome();
+  fetchThisMonthSpend();
 });
 </script>
