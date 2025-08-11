@@ -55,16 +55,56 @@ const onFinish = async (values) => {
       password: formState.password
     }
 
-    const response = await api.post('/login', requestBody, {
+    let response = await api.post('/login', requestBody, {
       headers: {
         'Content-Type': 'application/json'
       }
     })
 
     sessionStorage.setItem('accessToken', response.data)
+
+    // 로그인 시, 지정된 메뉴로 이동
+    //TODO API 연동 코드 중복제거
+    let params = {
+      menuLevel : 1,
+    }
+    response = await api.get('/api/menu', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      },
+      params: params
+    });
+
+    const menus = response.data;
+
+    params = {
+      menuLevel : 2,
+      parentId : localStorage.getItem('selectedMenuId') || menus.value[menus.value.length - 1].id
+    }
+
+    response = await api.get('/api/menu', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      },
+      params: params
+    });
+
+    const childMenus = response.data
+
+    localStorage.setItem('selectedMenu', menus[menus.length - 1].link)
+    localStorage.setItem('selectedMenuId', menus[menus.length - 1].id)
+    localStorage.setItem('selectedMenuName', menus[menus.length - 1].name)
+
+    localStorage.setItem('selectedChildMenu', childMenus[0].link)
+    localStorage.setItem('selectedChildMenuId', childMenus[0].id)
+    localStorage.setItem('selectedChildMenuName', childMenus[0].name)
+
     router.push('/')
 
   } catch (error) {
+    console.log(error)
     message.error('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
   }
 }

@@ -183,4 +183,18 @@ onMounted(async () => {
     message.error('메뉴를 불러올 수 없습니다.')
   }
 })
+
+// 뒤로가기, 앞으로가기 시 메뉴 설정
+watch(
+  () => router.currentRoute.value.fullPath,
+  async (newPath, oldPath) => {
+    console.log('라우트 변경 감지:', oldPath, '→', newPath)
+
+    try {
+      //TODO url 로 메뉴를 조회화여 현재메뉴 세팅
+    } catch (error) {
+      message.error('메뉴를 불러올 수 없습니다.')
+    }
+  }
+)
 </script>
