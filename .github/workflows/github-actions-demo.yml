@@ -24,10 +24,24 @@ jobs:
       # 3. application.yml 세팅
       - name: Create application.yml from secret
         run: |
+          echo "=== 기존 파일 확인 ==="
+          ls -la backend/demo/src/main/resources/ 2>/dev/null || echo "resources 디렉토리가 없습니다"
+          
+          echo "=== 기존 application.yml 제거 (있는 경우) ==="
+          rm -f backend/demo/src/main/resources/application.yml
+          
+          echo "=== 디렉토리 생성 ==="
           mkdir -p backend/demo/src/main/resources
-          cat <<EOF > backend/demo/src/main/resources/application.yml
-          ${{ secrets.APPLICATION_YML }}
-          EOF
+          
+          echo "=== 새로운 application.yml 생성 ==="
+          echo "${{ secrets.APPLICATION_YML }}" > backend/demo/src/main/resources/application.yml
+          
+          echo "=== application.yml 파일 생성 확인 ==="
+          ls -la backend/demo/src/main/resources/
+          echo "=== application.yml 파일 크기 확인 ==="
+          wc -l backend/demo/src/main/resources/application.yml
+          echo "=== application.yml 첫 3줄 확인 (디버깅용) ==="
+          head -3 backend/demo/src/main/resources/application.yml | sed 's/password:.*/password: [HIDDEN]/' || echo "파일을 읽을 수 없습니다"
 
       # 4. 빌드
       - name: Build with Gradle
