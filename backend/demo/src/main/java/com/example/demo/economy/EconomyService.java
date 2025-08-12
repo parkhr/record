@@ -6,6 +6,7 @@ import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
 import com.example.demo.common.CustomUserDetails;
 import com.example.demo.common.exception.ApplicationException;
+import com.example.demo.common.util.DateUtil;
 import com.example.demo.common.util.UserUtil;
 import com.example.demo.economy.domain.CardSmsParser;
 import com.example.demo.economy.domain.CardSmsRecord;
@@ -345,14 +346,8 @@ public class EconomyService {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
-
-        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
-        LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
-
-        List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, startDateTime, endDateTime);
+        List<LocalDateTime> weekRange = DateUtil.getWeekRange(LocalDate.now());
+        List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, weekRange.get(0), weekRange.get(1));
 
         // 일별 집계도 포함하고 싶다면:
         Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values()).collect(Collectors.toMap(d -> d, d -> 0));
@@ -377,18 +372,8 @@ public class EconomyService {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
-
-        // 저번주 월~일
-        LocalDate startOfLastWeek = startOfWeek.minusWeeks(1);
-        LocalDate endOfLastWeek = endOfWeek.minusWeeks(1);
-
-        LocalDateTime startDateTime = startOfLastWeek.atStartOfDay();
-        LocalDateTime endDateTime = startOfLastWeek.atTime(LocalTime.MAX);
-
-        List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, startDateTime, endDateTime);
+        List<LocalDateTime> weekRange = DateUtil.getWeekRange(LocalDate.now().minusWeeks(1));
+        List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, weekRange.get(0), weekRange.get(1));
 
         // 일별 집계도 포함하고 싶다면:
         Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values()).collect(Collectors.toMap(d -> d, d -> 0));
@@ -414,14 +399,8 @@ public class EconomyService {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
-
-        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
-        LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
-
-        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, startDateTime, endDateTime);
+        List<LocalDateTime> weekRange = DateUtil.getWeekRange(LocalDate.now());
+        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, weekRange.get(0), weekRange.get(1));
 
         // 일별 집계도 포함하고 싶다면:
         Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values()).collect(Collectors.toMap(d -> d, d -> 0));
@@ -447,18 +426,8 @@ public class EconomyService {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
-
-        // 저번주 월~일
-        LocalDate startOfLastWeek = startOfWeek.minusWeeks(1);
-        LocalDate endOfLastWeek = endOfWeek.minusWeeks(1);
-
-        LocalDateTime startDateTime = startOfLastWeek.atStartOfDay();
-        LocalDateTime endDateTime = endOfLastWeek.atTime(LocalTime.MAX);
-
-        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, startDateTime, endDateTime);
+        List<LocalDateTime> weekRange = DateUtil.getWeekRange(LocalDate.now().minusWeeks(1));
+        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, weekRange.get(0), weekRange.get(1));
 
         // 일별 집계도 포함하고 싶다면:
         Map<DayOfWeek, Integer> dailyMap = Arrays.stream(DayOfWeek.values()).collect(Collectors.toMap(d -> d, d -> 0));
@@ -484,13 +453,9 @@ public class EconomyService {
         }
 
         LocalDate today = LocalDate.now();
-        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
-        LocalDate lastDayOfMonth = today.withDayOfMonth(today.lengthOfMonth());
+        List<LocalDateTime> monthRange = DateUtil.getMonthRange(today);
 
-        LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
-        LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
-
-        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, startDateTime, endDateTime);
+        List<Spend> spends = spendRepository.findByAdminIdAndDeductedTrueAndSpendAtBetween(admin, monthRange.get(0), monthRange.get(1));
 
         int daysInMonth = today.lengthOfMonth();
         Map<Integer, Integer> dailyMap = IntStream.rangeClosed(1, daysInMonth).boxed().collect(Collectors.toMap(day -> day, day -> 0));
@@ -517,13 +482,9 @@ public class EconomyService {
         }
 
         LocalDate today = LocalDate.now();
-        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
-        LocalDate lastDayOfMonth = today.withDayOfMonth(today.lengthOfMonth());
+        List<LocalDateTime> monthRange = DateUtil.getMonthRange(today);
 
-        LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
-        LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
-
-        List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, startDateTime, endDateTime);
+        List<Active> actives = activeRepository.findByAdminIdAndSavedTrueAndCreatedAtBetween(admin, monthRange.get(0), monthRange.get(1));
 
         int daysInMonth = today.lengthOfMonth();
         Map<Integer, Integer> dailyMap = IntStream.rangeClosed(1, daysInMonth).boxed().collect(Collectors.toMap(day -> day, day -> 0));
