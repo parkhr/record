@@ -25,6 +25,7 @@ jobs:
       - name: Build with Gradle
         run: |
           cd backend/demo
+          chmod +x gradlew
           ./gradlew clean build -x test
 
       # 4. EC2에 JAR 파일 전송
