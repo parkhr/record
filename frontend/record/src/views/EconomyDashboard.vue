@@ -21,12 +21,12 @@
   </a-row>
 </template>
 <script setup>
-import Mywallet from '@/components/Mywallet.vue';
+import Mywallet from '@/components/MyWallet.vue';
 import MyWalletList from '@/components/MyWalletList.vue';
 import ThisMonthIncomeChart from '@/components/ThisMonthIncomeChart.vue';
 import ThisMonthSpendChart from '@/components/ThisMonthSpendChart.vue';
 import ThisWeekIncomeChart from '@/components/ThisWeekIncomeChart.vue';
-import ThisWeekSpendChart from '@/components/thisWeekSpendChart.vue';
+import ThisWeekSpendChart from '@/components/ThisWeekSpendChart.vue';
 
 
 </script>
