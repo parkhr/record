@@ -41,7 +41,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: backend/demo/build/libs/*.jar
+          source: backend/build/libs/!(*-plain).jar
           target: /home/ec2-user
 
       # 5. EC2에서 실행
@@ -53,4 +53,4 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             pkill -f 'java -jar' || true
-            nohup java -jar /home/ec2-user/*.jar > /home/ec2-user/app.log 2>&1 &
+            nohup java -jar /home/ec2-user/backend/demo/build/libs/*.jar > /home/ec2-user/app.log 2>&1 &
