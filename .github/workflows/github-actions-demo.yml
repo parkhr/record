@@ -71,6 +71,29 @@ jobs:
           timeout: 60s
           command_timeout: 5m
           script: |
+            echo "=== 기존 프로세스 종료 시도 ==="
+            pid=$(pgrep -f "demo-0.0.1-SNAPSHOT.jar" || true)
+            
+            if [ -n "$pid" ]; then
+              echo "기존 프로세스 발견, PID: $pid"
+              kill -TERM $pid
+              echo "종료 신호 보냄. 종료 대기 중..."
+              for i in {1..20}; do
+                if ps -p $pid > /dev/null; then
+                  sleep 1
+                else
+                  echo "프로세스 종료 완료"
+                  break
+                fi
+              done
+              if ps -p $pid > /dev/null; then
+                echo "프로세스 강제 종료"
+                kill -9 $pid
+              fi
+            else
+              echo "기존 프로세스 없음"
+            fi
+            
             echo "=== JAR 파일 존재 확인 ==="
             if [ ! -f "/home/ec2-user/backend/demo/build/libs/demo-0.0.1-SNAPSHOT.jar" ]; then
               echo "ERROR: JAR 파일이 존재하지 않습니다"
