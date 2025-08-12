@@ -1,5 +1,5 @@
 <template>
-  <a-card title="내 지갑" bordered hoverable>
+  <a-card title="내 지갑 테스트" bordered hoverable>
     <a-row justify="space-between">
       <a-col>
         <div style="font-size: 18px; color: #888;">총 잔액</div>
