@@ -25,7 +25,9 @@ jobs:
       - name: Create application.yml from secret
         run: |
           mkdir -p backend/src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" > backend/src/main/resources/application.yml
+          cat <<EOF > backend/src/main/resources/application.yml
+          ${{ secrets.APPLICATION_YML }}
+          EOF
 
       # 3. 빌드
       - name: Build with Gradle
@@ -41,8 +43,9 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: backend/demo/build/libs/*.jar
+          source: backend/demo/build/libs/demo-0.0.1-SNAPSHOT.jar
           target: /home/ec2-user
+          overwrite: true
 
       # 5. EC2에서 실행
       - name: Execute deploy script on EC2
@@ -53,4 +56,4 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             pkill -f 'java -jar' || true
-            nohup java -jar /home/ec2-user/backend/demo/build/libs/*.jar > /home/ec2-user/app.log 2>&1 &
+            nohup java -jar /home/ec2-user/demo-0.0.1-SNAPSHOT.jar > /home/ec2-user/app.log 2>&1 &
