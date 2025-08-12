@@ -21,6 +21,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # YML 세팅
+      - name: Create application.yml from secret
+        run: |
+          mkdir -p backend/src/main/resources
+          echo "${{ secrets.APPLICATION_YML }}" > backend/src/main/resources/application.yml
+
       # 3. 빌드
       - name: Build with Gradle
         run: |
