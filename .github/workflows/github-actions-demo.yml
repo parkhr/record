@@ -21,22 +21,22 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # YML 세팅
+      # 3. application.yml 세팅
       - name: Create application.yml from secret
         run: |
-          mkdir -p backend/src/main/resources
-          cat <<EOF > backend/src/main/resources/application.yml
+          mkdir -p backend/demo/src/main/resources
+          cat <<EOF > backend/demo/src/main/resources/application.yml
           ${{ secrets.APPLICATION_YML }}
           EOF
 
-      # 3. 빌드
+      # 4. 빌드
       - name: Build with Gradle
         run: |
           cd backend/demo
           chmod +x gradlew
           ./gradlew clean build -x test
 
-      # 4. EC2에 JAR 파일 전송
+      # 5. EC2에 JAR 파일 전송
       - name: Copy jar to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -44,10 +44,10 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: backend/demo/build/libs/demo-0.0.1-SNAPSHOT.jar
-          target: /home/ec2-user
+          target: /home/ec2-user/
           overwrite: true
 
-      # 5. EC2에서 실행
+      # 6. EC2에서 실행
       - name: Execute deploy script on EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -55,5 +55,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            pkill -f 'java -jar' || true
+            pkill -f 'demo-0.0.1-SNAPSHOT.jar' || true
+            sleep 3
             nohup java -jar /home/ec2-user/demo-0.0.1-SNAPSHOT.jar > /home/ec2-user/app.log 2>&1 &
