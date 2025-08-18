@@ -63,6 +63,11 @@ const router = createRouter({
           name: 'economyDashboard',
           component: () => import('../views/EconomyDashboard.vue'),
         },
+        {
+          path: '/economy/todo',
+          name: 'todo',
+          component: () => import('../views/TodoView.vue'),
+        },
       ]
     },
   ],
