@@ -54,13 +54,19 @@
                   <template #item="{ element: todo }">
                     <a-list-item>
                       <template #actions>
-                        <div v-if="todo.isCompleted">
-                          <a @click="cancelCompleteItem(todo)">미완료</a>
+                        <div style="display: flex; flex-direction: row; gap: 8px;">
+                          <div v-if="todo.isCompleted" style="display: flex; flex-direction: column; gap: 4px;">
+                            <a @click="cancelCompleteItem(todo)">미완료</a>
+                            <!-- <a @click="addAlert(todo)">알림</a> -->
+                          </div>
+                          <div v-else style="display: flex; flex-direction: column; gap: 4px;">
+                            <a @click="completeItem(todo)">완료</a>
+                            <!-- <a @click="addAlert(todo)">알림</a> -->
+                          </div>
+                          <div style="display: flex; flex-direction: row; gap: 8px;">
+                            <a @click="deleteTodo(epic, todo)" style="color: red; cursor: pointer;">삭제</a>
+                          </div>
                         </div>
-                        <div v-else>
-                          <a @click="completeItem(todo)">완료</a>
-                        </div>
-                        <a @click="deleteTodo(epic, todo)" style="color: red; cursor: pointer;">삭제</a>
                       </template>
 
                       <a-list-item-meta>
@@ -98,9 +104,30 @@
                                 <s>{{ todo.description }}</s>
                               </div>
                               <div v-else>
-                                {{ todo.description }}
+                                <div v-if="todo.description === ''">
+                                  세부내용이 없습니다
+                                </div>
+                                <div v-else>
+                                  {{ todo.description }}
+                                </div> 
                               </div>
                             </span>
+                          </div>
+                          
+                          <div
+                            v-if="isToday(todo.dueDate)"
+                            style="color: red; font-weight: bold; cursor: pointer;"
+                            @click="openDatePicker(todo.id)"
+                          >
+                            오늘
+                          </div>
+                          <div style="margin-top: 4px;" v-else>
+                            <a-date-picker
+                              v-model:value="todo.dueDate"
+                              format="YYYY-MM-DD"
+                              style="width: 50%;"
+                              placeholder="마감일"
+                            />
                           </div>
                         </template>
                       </a-list-item-meta>
@@ -119,40 +146,42 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue';
 import draggable from 'vuedraggable';
+import dayjs from 'dayjs';
 
 const titleInput = ref(null)
 const descriptionInput = ref(null)
+const datePickerRefs = ref({});
 
 const epics = ref([
   { id: 1, title: '진행중', todo: [
-    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false },
-    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false },
-    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false },
-    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false }
+    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null }
   ]},
   { id: 2, title: '완료', todo: [
-    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false },
-    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false },
-    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false },
-    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false }
+    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null }
   ]},
   { id: 3, title: '보류', todo: [
-    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false },
-    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false },
-    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false },
-    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false }
+    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null }
   ]},
   { id: 4, title: '취소됨', todo: [
-    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false },
-    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false },
-    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false },
-    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false }
+    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null },
+    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null }
   ]}
 ])
 
 const addTodo = (epic) => {
   const newId = epic.todo.length + 1;
-  epic.todo.push({ id: newId, title: `새로운 할 일 ${newId}`, description: `새로운 할 일 ${newId}`, isTitleEditing: false, isCompleted: false });
+  epic.todo.push({ id: newId, title: `새로운 할 일 ${newId}`, description: '', isTitleEditing: false, isCompleted: false });
 };
 
 const addCard = () => {
@@ -194,6 +223,24 @@ const deleteTodo = (epic, item) => {
 
 const deleteEpic = (epic) => {
   epics.value = epics.value.filter(e => e.id !== epic.id);
+}
+
+function setDatePickerRef(id) {
+  return (el) => {
+    if (el) datePickerRefs.value[id] = el;
+  };
+}
+
+const isToday = (date) => {
+  if (!date) return false
+  return dayjs(date).isSame(dayjs(), "day")
+}
+
+const openDatePicker = (id) => {
+  const picker = datePickerRefs.value[id];
+  if (picker) {
+    picker.focus(); // 포커스 주면 바로 달력 펼쳐짐
+  }
 }
 
 </script>
