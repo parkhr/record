@@ -24,7 +24,23 @@
             >
               <!-- 카드 제목 -->
               <template #title>
-                <span style="font-size: 20px" >{{ epic.title }}</span>
+                <div @click="startEpicTitleEdit(epic)">
+                  <a-input
+                    v-if="epic.isTitleEditing"
+                    ref="epicTitleInput"
+                    v-model:value="epic.title"
+                    @blur="epic.isTitleEditing = false"
+                    @pressEnter="epic.isTitleEditing = false"
+                  />
+                  <span style="font-size: 20px" v-else>
+                    <div v-if="epic.title === ''">
+                      제목이 없습니다
+                    </div>
+                    <div v-else>
+                      {{ epic.title }}
+                    </div>
+                  </span>
+                </div>
               </template>
 
               <!-- 카드 헤더 오른쪽 삭제 버튼 -->
@@ -81,10 +97,20 @@
                             />
                             <span style="font-size: 16px" v-else>
                               <div v-if="todo.isCompleted">
-                                <s>{{ todo.title }}</s>
+                                <div v-if="todo.title === ''">
+                                  <s>제목이 없습니다</s>
+                                </div>
+                                <div v-else>
+                                  <s>{{ todo.title }}</s>
+                                </div>
                               </div>
                               <div v-else>
-                                {{ todo.title }}
+                                <div v-if="todo.title === ''">
+                                  제목이 없습니다
+                                </div>
+                                <div v-else>
+                                  {{ todo.title }}
+                                </div>
                               </div>
                             </span>
                           </div>
@@ -101,7 +127,12 @@
                             />
                             <span v-else>
                               <div v-if="todo.isCompleted">
-                                <s>{{ todo.description }}</s>
+                                <div v-if="todo.description === ''">
+                                  <s>세부내용이 없습니다</s>
+                                </div>
+                                <div v-else>
+                                  <s>{{ todo.description }}</s>
+                                </div>
                               </div>
                               <div v-else>
                                 <div v-if="todo.description === ''">
@@ -148,30 +179,31 @@ import { nextTick, ref } from 'vue';
 import draggable from 'vuedraggable';
 import dayjs from 'dayjs';
 
+const epicTitleInput = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
 const datePickerRefs = ref({});
 
 const epics = ref([
-  { id: 1, title: '진행중', todo: [
+  { id: 1, title: '진행중', isTitleEditing: false, todo: [
     { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null }
   ]},
-  { id: 2, title: '완료', todo: [
+  { id: 2, title: '완료', isTitleEditing: false, todo: [
     { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null }
   ]},
-  { id: 3, title: '보류', todo: [
+  { id: 3, title: '보류', isTitleEditing: false, todo: [
     { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null }
   ]},
-  { id: 4, title: '취소됨', todo: [
+  { id: 4, title: '취소됨', isTitleEditing: false, todo: [
     { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null },
     { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null },
@@ -179,14 +211,23 @@ const epics = ref([
   ]}
 ])
 
+const addCard = () => {
+  const newEpicId = epics.value.length + 1;
+  epics.value.push({ id: newEpicId, title: `새로운 카드 ${newEpicId}`, todo: [] });
+}
+
 const addTodo = (epic) => {
   const newId = epic.todo.length + 1;
   epic.todo.push({ id: newId, title: `새로운 할 일 ${newId}`, description: '', isTitleEditing: false, isCompleted: false });
 };
 
-const addCard = () => {
-  const newEpicId = epics.value.length + 1;
-  epics.value.push({ id: newEpicId, title: `새로운 카드 ${newEpicId}`, todo: [] });
+const startEpicTitleEdit = (epic) => {
+  epic.isTitleEditing = true;
+  nextTick(() => {
+    if (epicTitleInput.value?.focus) {
+      epicTitleInput.value.focus()
+    }
+  })
 }
 
 const startTitleEdit = (element) => {
@@ -223,12 +264,6 @@ const deleteTodo = (epic, item) => {
 
 const deleteEpic = (epic) => {
   epics.value = epics.value.filter(e => e.id !== epic.id);
-}
-
-function setDatePickerRef(id) {
-  return (el) => {
-    if (el) datePickerRefs.value[id] = el;
-  };
 }
 
 const isToday = (date) => {
