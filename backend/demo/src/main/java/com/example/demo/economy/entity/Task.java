@@ -22,6 +22,9 @@ public class Task {
     @Id
     private long id;
 
+    @Column("epicId")
+    private long epicId;
+
     @Column("adminId")
     private long adminId;
 
@@ -33,6 +36,9 @@ public class Task {
 
     @Column("startAt")
     private LocalDateTime startAt;
+
+    @Column("completed")
+    private boolean completed;
 
     @CreatedDate
     @Column("createdAt")
@@ -46,10 +52,12 @@ public class Task {
 
     public static Task createTask(CreateTaskRequest request, long adminId) {
         return Task.builder()
+            .epicId(request.getEpicId())
             .adminId(adminId)
             .title(request.getTitle())
             .content(request.getContent())
             .startAt(request.getStartAt())
+            .completed(false)
             .build();
     }
 
@@ -62,6 +70,11 @@ public class Task {
     }
 
     public void update(UpdateTaskRequest request) {
-
+        this.epicId = request.getEpicId();
+        this.title = request.getTitle();
+        this.content = request.getContent();
+        this.startAt = request.getStartAt();
+        this.completed = request.isCompleted();
+        this.updatedAt = LocalDateTime.now();
     }
 }

@@ -24,8 +24,7 @@ public class TodoController {
     @PostMapping("/epic")
     public ResponseEntity<Object> createEpic(@RequestBody CreateEpicRequest request) {
 
-        todoService.createEpic(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(todoService.createEpic(request));
     }
 
     @PutMapping("/epic")
@@ -45,8 +44,7 @@ public class TodoController {
     @PostMapping("/task")
     public ResponseEntity<Object> createTask(@RequestBody CreateTaskRequest request) {
 
-        todoService.createTask(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(todoService.createTask(request));
     }
 
     @PutMapping("/task")

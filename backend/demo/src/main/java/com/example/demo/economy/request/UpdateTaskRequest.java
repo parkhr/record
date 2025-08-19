@@ -8,8 +8,10 @@ import lombok.Setter;
 @Setter
 public class UpdateTaskRequest {
 
-    private long taskId;
+    private Long taskId;
+    private Long epicId;
     private String title;
     private String content;
     private LocalDateTime startAt;
+    private boolean completed;
 }

@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class CreateTaskRequest {
 
+    private long epicId;
     private String title;
     private String content;
     private LocalDateTime startAt;

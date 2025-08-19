@@ -15,6 +15,7 @@ import com.example.demo.economy.request.CreateEpicRequest;
 import com.example.demo.economy.request.CreateTaskRequest;
 import com.example.demo.economy.request.UpdateEpicRequest;
 import com.example.demo.economy.request.UpdateTaskRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,10 +32,10 @@ public class TodoService {
     private final AdminRepository adminRepository;
 
     @Transactional
-    public void createEpic(CreateEpicRequest request) {
+    public Epic createEpic(CreateEpicRequest request) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
-        epicRepository.save(Epic.createEpic(request, admin.getId()));
+        return epicRepository.save(Epic.createEpic(request, admin.getId()));
     }
 
     @Transactional
@@ -51,6 +52,7 @@ public class TodoService {
         epicRepository.save(epic);
     }
 
+    @Transactional
     public void deleteEpic(long epicId) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
@@ -62,14 +64,22 @@ public class TodoService {
 
         epic.delete();
         epicRepository.save(epic);
+
+        List<Task> tasks = taskRepository.findByEpicId(epic.getId());
+
+        for (Task task : tasks) {
+            task.delete();
+        }
+
+        taskRepository.saveAll(tasks);
     }
 
     @Transactional
-    public void createTask(CreateTaskRequest request) {
+    public Task createTask(CreateTaskRequest request) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
-        taskRepository.save(Task.createTask(request, admin.getId()));
+        return taskRepository.save(Task.createTask(request, admin.getId()));
     }
 
     @Transactional
@@ -86,6 +96,7 @@ public class TodoService {
         taskRepository.save(task);
     }
 
+    @Transactional
     public void deleteTask(long taskId) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
@@ -96,6 +107,6 @@ public class TodoService {
         }
 
         task.delete();
-        taskRepository.delete(task);
+        taskRepository.save(task);
     }
 }

@@ -3,7 +3,7 @@
     <a-row :gutter="16">
       <a-col></a-col>
       <a-col :span="3" style="margin-bottom: 16px;">
-        <a-button type="primary" block size="large" @click="addCard()" style="margin-bottom: 12px;">
+        <a-button type="primary" block size="large" @click="addEpic()" style="margin-bottom: 12px;">
           카드 추가
         </a-button>
       </a-col>
@@ -72,11 +72,11 @@
                       <template #actions>
                         <div style="display: flex; flex-direction: row; gap: 8px;">
                           <div v-if="todo.isCompleted" style="display: flex; flex-direction: column; gap: 4px;">
-                            <a @click="cancelCompleteItem(todo)">미완료</a>
+                            <a @click="cancelCompleteTodo(epic, todo)">미완료</a>
                             <!-- <a @click="addAlert(todo)">알림</a> -->
                           </div>
                           <div v-else style="display: flex; flex-direction: column; gap: 4px;">
-                            <a @click="completeItem(todo)">완료</a>
+                            <a @click="completeTodo(epic, todo)">완료</a>
                             <!-- <a @click="addAlert(todo)">알림</a> -->
                           </div>
                           <div style="display: flex; flex-direction: row; gap: 8px;">
@@ -178,6 +178,8 @@
 import { nextTick, ref } from 'vue';
 import draggable from 'vuedraggable';
 import dayjs from 'dayjs';
+import { message } from 'ant-design-vue';
+import api from '@/api/axios';
 
 const epicTitleInput = ref(null)
 const titleInput = ref(null)
@@ -211,14 +213,49 @@ const epics = ref([
   ]}
 ])
 
-const addCard = () => {
-  const newEpicId = epics.value.length + 1;
-  epics.value.push({ id: newEpicId, title: `새로운 카드 ${newEpicId}`, todo: [] });
+const addEpic = async () => {
+  try {
+    const requestBody = {
+      title: `새로운 카드`,
+    }
+
+    let response = await api.post('/api/economy/epic', requestBody, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    })
+
+    const epic = response.data;
+    epics.value.push({ id: epic.id, title: epic.title, isTitleEditing: false, todo: [] });
+    
+  } catch (error) {
+    message.error('카드 추가에 실패했습니다.');
+  }
 }
 
-const addTodo = (epic) => {
-  const newId = epic.todo.length + 1;
-  epic.todo.push({ id: newId, title: `새로운 할 일 ${newId}`, description: '', isTitleEditing: false, isCompleted: false });
+const addTodo = async (epic) => {
+  try {
+    const requestBody = {
+      epicId: epic.id,
+      title: `새로운 할 일`,
+      content: '',
+      startAt: null
+    }
+
+    let response = await api.post('/api/economy/task', requestBody, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    })
+
+    const todo = response.data;
+    epic.todo.push({ id: todo.id, title: todo.title, description: todo.content, isTitleEditing: false, isCompleted: false });
+    
+  } catch (error) {
+    message.error('할 일 추가에 실패했습니다.');
+  }
 };
 
 const startEpicTitleEdit = (epic) => {
@@ -250,20 +287,87 @@ const startDescriptionEdit = (element) => {
   })
 }
 
-const completeItem = (item) => {
-  item.isCompleted = true;
+const completeTodo = async (epic, todo) => {
+  try {
+    let requestBody = {
+      taskId: todo.id,
+      epicId: epic.id,
+      title: todo.title,
+      content: todo.description,
+      startAt: todo.dueDate,
+      completed: true
+    }
+    
+    const response = await api.put('/api/economy/task', requestBody, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
+
+    todo.isCompleted = true;
+  } catch (error) {
+    message.error('할 일 완료에 실패했습니다.');
+    return;
+  }
 }
 
-const cancelCompleteItem = (item) => {
-  item.isCompleted = false;
+const cancelCompleteTodo = async (epic, todo) => {
+
+  try {
+    let requestBody = {
+      taskId: todo.id,
+      epicId: epic.id,
+      title: todo.title,
+      content: todo.description,
+      startAt: todo.dueDate,
+      completed: false
+    }
+
+    const response = await api.put('/api/economy/task', requestBody, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
+    
+    todo.isCompleted = false;
+  } catch (error) {
+    message.error('할 일 완료 취소에 실패했습니다.');
+    return;
+  }
 }
 
-const deleteTodo = (epic, item) => {
-  epic.todo = epic.todo.filter(todoItem => todoItem.id !== item.id);
+const deleteTodo = async (epic, todo) => {
+  try {
+    const response = await api.delete('/api/economy/task/' + todo.id, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      },
+    });
+
+    epic.todo = epic.todo.filter(t => t.id !== todo.id);
+    
+  } catch (error) {
+    message.error('할 일 삭제에 실패했습니다.');
+  }
 }
 
-const deleteEpic = (epic) => {
-  epics.value = epics.value.filter(e => e.id !== epic.id);
+const deleteEpic = async (epic) => {
+  try {
+    const response = await api.delete('/api/economy/epic/' + epic.id, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      },
+    });
+
+    epics.value = epics.value.filter(e => e.id !== epic.id);
+    
+  } catch (error) {
+    message.error('카드 삭제에 실패했습니다.');
+  }
 }
 
 const isToday = (date) => {
