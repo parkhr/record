@@ -80,7 +80,7 @@ const onFinish = async (values) => {
 
     params = {
       menuLevel : 2,
-      parentId : localStorage.getItem('selectedMenuId') || menus.value[menus.value.length - 1].id
+      parentId : localStorage.getItem('selectedMenuId') || menus[menus.length - 1].id
     }
 
     response = await api.get('/api/menu', {
