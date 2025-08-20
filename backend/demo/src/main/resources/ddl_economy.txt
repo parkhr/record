@@ -45,3 +45,29 @@ CREATE TABLE `wallet_log` (
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `epic` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `adminId` bigint(20) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `task` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `epicId` bigint(20) NOT NULL,
+  `adminId` bigint(20) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `content` varchar(100) NOT NULL,
+  `startAt` datetime DEFAULT NULL,
+  `completed` tinyint(1) NOT NULL,
+  `sortOrder` int(11) NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `deletedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -13,9 +13,14 @@ import com.example.demo.economy.repository.EpicRepository;
 import com.example.demo.economy.repository.TaskRepository;
 import com.example.demo.economy.request.CreateEpicRequest;
 import com.example.demo.economy.request.CreateTaskRequest;
+import com.example.demo.economy.request.SortTaskRequest;
 import com.example.demo.economy.request.UpdateEpicRequest;
 import com.example.demo.economy.request.UpdateTaskRequest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -108,5 +113,43 @@ public class TodoService {
 
         task.delete();
         taskRepository.save(task);
+    }
+
+    @Transactional
+    public void sortTask(SortTaskRequest request) {
+
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+        Epic epic = epicRepository.findById(request.getEpicId()).orElseThrow(() -> new ApplicationException("에픽을 찾을 수 없습니다."));
+
+        if (admin.getId() != epic.getAdminId()) {
+            throw new ApplicationException("계정이 없습니다.");
+        }
+
+        List<Task> tasks = taskRepository.findByEpicId(request.getEpicId());
+
+        if (tasks.size() != request.getTaskIds().size()) {
+            throw new ApplicationException("task 개수가 맞지 않습니다.");
+        }
+
+        // id → Task 매핑
+        Map<Long, Task> taskMap = tasks.stream()
+            .collect(Collectors.toMap(Task::getId, Function.identity()));
+
+        List<Task> updatedTasks = new ArrayList<>();
+
+        for (int i = 0; i < request.getTaskIds().size(); i++) {
+            Long taskId = request.getTaskIds().get(i);
+            Task task = taskMap.get(taskId);
+
+            if (task == null) {
+                throw new ApplicationException("잘못된 taskId: " + taskId);
+            }
+
+            task.setSortOrder(i);
+            updatedTasks.add(task);
+        }
+
+        taskRepository.saveAll(updatedTasks); // 배치 저장
     }
 }

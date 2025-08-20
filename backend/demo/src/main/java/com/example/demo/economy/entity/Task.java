@@ -40,6 +40,9 @@ public class Task {
     @Column("completed")
     private boolean completed;
 
+    @Column("sortOrder")
+    private int sortOrder;
+
     @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
@@ -58,6 +61,7 @@ public class Task {
             .content(request.getContent())
             .startAt(request.getStartAt())
             .completed(false)
+            .sortOrder(0)
             .build();
     }
 
@@ -75,6 +79,7 @@ public class Task {
         this.content = request.getContent();
         this.startAt = request.getStartAt();
         this.completed = request.isCompleted();
+        this.sortOrder = request.getSortOrder();
         this.updatedAt = LocalDateTime.now();
     }
 }

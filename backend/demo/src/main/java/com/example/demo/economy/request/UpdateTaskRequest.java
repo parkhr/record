@@ -14,4 +14,5 @@ public class UpdateTaskRequest {
     private String content;
     private LocalDateTime startAt;
     private boolean completed;
+    private Integer sortOrder;
 }

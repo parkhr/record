@@ -2,6 +2,7 @@ package com.example.demo.economy;
 
 import com.example.demo.economy.request.CreateEpicRequest;
 import com.example.demo.economy.request.CreateTaskRequest;
+import com.example.demo.economy.request.SortTaskRequest;
 import com.example.demo.economy.request.UpdateEpicRequest;
 import com.example.demo.economy.request.UpdateTaskRequest;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,14 @@ public class TodoController {
     public ResponseEntity<Object> deleteTask(@PathVariable("taskId") Long taskId) {
 
         todoService.deleteTask(taskId);
+        return ResponseEntity.ok().build();
+    }
+
+    // task 정렬
+    @PostMapping("/task/sort")
+    public ResponseEntity<Object> sortTask(@RequestBody SortTaskRequest request) {
+
+        todoService.sortTask(request);
         return ResponseEntity.ok().build();
     }
 }

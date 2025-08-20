@@ -52,5 +52,6 @@ public class Epic {
 
     public void update(UpdateEpicRequest request) {
         this.title = request.getTitle();
+        this.updatedAt = LocalDateTime.now();
     }
 }
