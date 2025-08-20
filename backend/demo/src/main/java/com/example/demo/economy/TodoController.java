@@ -8,6 +8,7 @@ import com.example.demo.economy.request.UpdateTaskRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class TodoController {
 
     private final TodoService todoService;
+
+    @GetMapping("/epic")
+    public ResponseEntity<Object> findEpic() {
+
+        return ResponseEntity.ok().body(todoService.findEpic());
+    }
 
     @PostMapping("/epic")
     public ResponseEntity<Object> createEpic(@RequestBody CreateEpicRequest request) {

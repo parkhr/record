@@ -32,7 +32,7 @@ public class SpendRepositoryCustomImpl implements SpendRepositoryCustom {
         Map<String, Object> params = new HashMap<>();
 
         sql.append(" AND adminId =:adminId");
-        sql.append(" AND adminId =:adminId");
+        countSql.append(" AND adminId =:adminId");
         params.put("adminId", adminId);
 
         sql.append(" AND deletedAt IS NULL");

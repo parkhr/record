@@ -16,6 +16,7 @@ import com.example.demo.economy.request.CreateTaskRequest;
 import com.example.demo.economy.request.SortTaskRequest;
 import com.example.demo.economy.request.UpdateEpicRequest;
 import com.example.demo.economy.request.UpdateTaskRequest;
+import com.example.demo.economy.response.EpicResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,13 @@ public class TodoService {
     private final EpicRepository epicRepository;
     private final TaskRepository taskRepository;
     private final AdminRepository adminRepository;
+
+    public List<EpicResponse> findEpic() {
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        return epicRepository.findTodo(admin.getId());
+    }
 
     @Transactional
     public Epic createEpic(CreateEpicRequest request) {
