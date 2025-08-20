@@ -47,8 +47,8 @@ CREATE TABLE `wallet_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `epic` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `adminId` bigint(20) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `adminId` bigint NOT NULL,
   `title` varchar(100) NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime DEFAULT NULL,
@@ -56,16 +56,14 @@ CREATE TABLE `epic` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
 CREATE TABLE `task` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `epicId` bigint(20) NOT NULL,
-  `adminId` bigint(20) NOT NULL,
-  `title` varchar(100) NOT NULL,
-  `content` varchar(100) NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `epicId` bigint NOT NULL,
+  `adminId` bigint NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `startAt` datetime DEFAULT NULL,
-  `completed` tinyint(1) NOT NULL,
-  `sortOrder` int(11) NOT NULL,
+  `completed` tinyint NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
