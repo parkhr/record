@@ -3,7 +3,7 @@
     <a-row :gutter="16">
       <a-col></a-col>
       <a-col :span="3" style="margin-bottom: 16px;">
-        <a-button type="primary" block size="large" @click="addEpic()" style="margin-bottom: 12px;">
+        <a-button type="primary" block size="large" @click="onAddEpic()" style="margin-bottom: 12px;">
           카드 추가
         </a-button>
       </a-col>
@@ -24,7 +24,7 @@
             >
               <!-- 카드 제목 -->
               <template #title>
-                <div @click="startEpicTitleEdit(epic)">
+                <div @click="setEpicTitleEdit(epic)">
                   <a-input
                     v-if="epic.isTitleEditing"
                     ref="epicTitleInput"
@@ -45,14 +45,14 @@
 
               <!-- 카드 헤더 오른쪽 삭제 버튼 -->
               <template #extra>
-                <a @click="deleteEpic(epic)" style="color: red; cursor: pointer;">삭제</a>
+                <a @click="onDeleteEpic(epic)" style="color: red; cursor: pointer;">삭제</a>
               </template>
 
               <a-button
                 type="primary"
                 block
                 size="large"
-                @click="addTodo(epic)"
+                @click="onAddTodo(epic)"
                 style="margin-bottom: 12px;"
               >
                 할일 추가
@@ -77,18 +77,18 @@
                             <!-- <a @click="addAlert(todo)">알림</a> -->
                           </div>
                           <div v-else style="display: flex; flex-direction: column; gap: 4px;">
-                            <a @click="completeTodo(epic, todo)">완료</a>
+                            <a @click="onToggleTodoComplete(epic, todo)">완료</a>
                             <!-- <a @click="addAlert(todo)">알림</a> -->
                           </div>
                           <div style="display: flex; flex-direction: row; gap: 8px;">
-                            <a @click="deleteTodo(epic, todo)" style="color: red; cursor: pointer;">삭제</a>
+                            <a @click="onDeleteTodo(epic, todo)" style="color: red; cursor: pointer;">삭제</a>
                           </div>
                         </div>
                       </template>
 
                       <a-list-item-meta>
                         <template #title>
-                          <div @click="startTitleEdit(todo)">
+                          <div @click="setTitleEdit(todo)">
                             <a-input
                               v-if="todo.isTitleEditing"
                               ref="titleInput"
@@ -118,7 +118,7 @@
                         </template>
 
                         <template #description>
-                          <div @click="startDescriptionEdit(todo)">
+                          <div @click="setDescriptionEdit(todo)">
                             <a-textarea
                               v-if="todo.isDescriptionEditing"
                               ref="descriptionInput"
@@ -173,29 +173,22 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue';
 import draggable from 'vuedraggable';
-import dayjs from 'dayjs';
 import { message } from 'ant-design-vue';
-import api from '@/api/axios';
+import { createEpic, createTask, deleteEpic, deleteTask, fetchEpics, sortTask, updateEpic, updateTask } from '@/api/todoApi';
 
 const epicTitleInput = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
-const datePickerRefs = ref({});
 
 const epics = ref([])
 
-const addEpic = async () => {
+const onAddEpic = async () => {
   try {
     const requestBody = {
       title: `새로운 카드`,
     }
 
-    let response = await api.post('/api/economy/epic', requestBody, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    })
+    const response = await createEpic(requestBody);
 
     const epic = response.data;
     epics.value.push({ id: epic.id, title: epic.title, isTitleEditing: false, todo: [] });
@@ -205,7 +198,7 @@ const addEpic = async () => {
   }
 }
 
-const addTodo = async (epic) => {
+const onAddTodo = async (epic) => {
   try {
     const requestBody = {
       epicId: epic.id,
@@ -215,12 +208,7 @@ const addTodo = async (epic) => {
       sortOrder: 0,
     }
 
-    let response = await api.post('/api/economy/task', requestBody, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    })
+    const response = await createTask(requestBody);
 
     const todo = response.data;
     epic.todo.push({ id: todo.id, title: todo.title, description: todo.content, isTitleEditing: false, completed: false, sortOrder: 0 });
@@ -230,7 +218,7 @@ const addTodo = async (epic) => {
   }
 };
 
-const startEpicTitleEdit = (epic) => {
+const setEpicTitleEdit = (epic) => {
   epic.isTitleEditing = true;
   nextTick(() => {
     if (epicTitleInput.value?.focus) {
@@ -247,12 +235,7 @@ const endEpicTitleEdit = async (epic) => {
       title: epic.title
     }
     
-    const response = await api.put('/api/economy/epic', requestBody, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    });
+    await updateEpic(requestBody);
 
     epic.isTitleEditing = false
   } catch (error) {
@@ -261,8 +244,7 @@ const endEpicTitleEdit = async (epic) => {
   }
 }
 
-const startTitleEdit = (todo) => {
-  // 제목 편집 모드로 진입
+const setTitleEdit = (todo) => {
   todo.isTitleEditing = true
   nextTick(() => {
     if (titleInput.value?.focus) {
@@ -284,12 +266,7 @@ const endTitleEdit = async (epic, todo) => {
       completed: todo.completed
     }
     
-    const response = await api.put('/api/economy/task', requestBody, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    });
+    await updateTask(requestBody);
 
     todo.isTitleEditing = false
 
@@ -299,8 +276,7 @@ const endTitleEdit = async (epic, todo) => {
   }
 }
 
-const startDescriptionEdit = (todo) => {
-  // 설명 편집 모드로 진입
+const setDescriptionEdit = (todo) => {
   todo.isDescriptionEditing = true
   nextTick(() => {
     if (descriptionInput.value?.focus) {
@@ -322,12 +298,7 @@ const endDescriptionEdit = async (epic, todo) => {
       completed: todo.completed
     }
     
-    const response = await api.put('/api/economy/task', requestBody, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    });
+    await updateTask(requestBody);
 
     todo.isDescriptionEditing = false
 
@@ -349,12 +320,7 @@ const onDueDateChange = async (epic, todo) => {
       completed: todo.completed
     }
     
-    const response = await api.put('/api/economy/task', requestBody, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    });
+    await updateTask(requestBody);
 
   } catch (error) {
     message.error('할 일 수정에 실패했습니다.');
@@ -362,7 +328,7 @@ const onDueDateChange = async (epic, todo) => {
   }
 }
 
-const completeTodo = async (epic, todo) => {
+const onToggleTodoComplete = async (epic, todo) => {
   try {
     let requestBody = {
       taskId: todo.id,
@@ -374,12 +340,7 @@ const completeTodo = async (epic, todo) => {
       completed: true
     }
     
-    const response = await api.put('/api/economy/task', requestBody, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    });
+    await updateTask(requestBody);
 
     todo.completed = true;
   } catch (error) {
@@ -401,12 +362,7 @@ const cancelCompleteTodo = async (epic, todo) => {
       completed: false
     }
 
-    const response = await api.put('/api/economy/task', requestBody, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    });
+    await updateTask(requestBody);
     
     todo.completed = false;
   } catch (error) {
@@ -415,14 +371,9 @@ const cancelCompleteTodo = async (epic, todo) => {
   }
 }
 
-const deleteTodo = async (epic, todo) => {
+const onDeleteTodo = async (epic, todo) => {
   try {
-    const response = await api.delete('/api/economy/task/' + todo.id, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      },
-    });
+    await deleteTask(todo.id);
 
     epic.todo = epic.todo.filter(t => t.id !== todo.id);
     
@@ -431,14 +382,9 @@ const deleteTodo = async (epic, todo) => {
   }
 }
 
-const deleteEpic = async (epic) => {
+const onDeleteEpic = async (epic) => {
   try {
-    const response = await api.delete('/api/economy/epic/' + epic.id, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      },
-    });
+    await deleteEpic(epic.id);
 
     epics.value = epics.value.filter(e => e.id !== epic.id);
     
@@ -466,12 +412,7 @@ const onTaskChange = async (targetEpic, evt) => {
         completed: todo.completed
       }
       
-      const response = await api.put('/api/economy/task', requestBody, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-      });
+      await updateTask(requestBody);
     } catch (error) {
       message.error('할 일 정렬에 실패했습니다.');
       return;
@@ -484,12 +425,7 @@ const onTaskChange = async (targetEpic, evt) => {
         taskIds: targetEpic.todo.map(todo => todo.id),
       }
       
-      const response = await api.post('/api/economy/task/sort', requestBody, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-      });
+      await sortTask(requestBody);
     } catch (error) {
       message.error('할 일 정렬에 실패했습니다.');
       return;
@@ -507,12 +443,7 @@ const onTaskChange = async (targetEpic, evt) => {
         taskIds: targetEpic.todo.map(todo => todo.id),
       }
       
-      const response = await api.post('/api/economy/task/sort', requestBody, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-      });
+      await sortTask(requestBody);
     } catch (error) {
       message.error('할 일 정렬에 실패했습니다.');
       return;
@@ -522,16 +453,9 @@ const onTaskChange = async (targetEpic, evt) => {
 
 const fetchTodos = async () => {
   try {
-    const response = await api.get('/api/economy/epic', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-      }
-    });
+    const response = await fetchEpics();
 
     epics.value = response.data
-
-    console.log(response.data)
 
   } catch (error) {
     message.error('목록을 불러올 수 없습니다.');
