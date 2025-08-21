@@ -14,10 +14,13 @@ import com.example.demo.economy.repository.TaskRepository;
 import com.example.demo.economy.request.CreateEpicRequest;
 import com.example.demo.economy.request.CreateTaskRequest;
 import com.example.demo.economy.request.SortTaskRequest;
+import com.example.demo.economy.request.TaskResponse;
 import com.example.demo.economy.request.UpdateEpicRequest;
 import com.example.demo.economy.request.UpdateTaskRequest;
 import com.example.demo.economy.response.EpicResponse;
+import com.example.demo.role.entity.RolePermission;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,13 +44,44 @@ public class TodoService {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
-        return epicRepository.findTodo(admin.getId());
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        return epicRepository.findByAdminId(admin.getId()).stream()
+            .filter(epic -> !epic.isDeleted())
+            .map(epic -> EpicResponse.builder()
+                .id(epic.getId())
+                .title(epic.getTitle())
+                .todo(
+                    taskRepository.findByEpicId(epic.getId()).stream()
+                        .filter(task -> !task.isDeleted())
+                        .map(task -> TaskResponse.builder()
+                            .id(task.getId())
+                            .title(task.getTitle())
+                            .description(task.getContent())
+                            .completed(task.isCompleted())
+                            .dueDate(task.getStartAt())
+                            .sortOrder(task.getSortOrder())
+                            .build()
+                        )
+                        .sorted(Comparator.comparing(TaskResponse::getSortOrder, Comparator.nullsLast(Integer::compareTo)))
+                        .toList()
+                )
+                .build()
+            )
+            .toList();
     }
 
     @Transactional
     public Epic createEpic(CreateEpicRequest request) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
         return epicRepository.save(Epic.createEpic(request, admin.getId()));
     }
 
@@ -55,7 +89,16 @@ public class TodoService {
     public void updateEpic(UpdateEpicRequest request) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
-        Epic epic = epicRepository.findById(request.getEpicId()).orElseThrow(() -> new ApplicationException("에픽을 찾을 수 없습니다."));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        Epic epic = epicRepository.findById(request.getEpicId()).orElseThrow(() -> new ApplicationException("카드를 찾을 수 없습니다."));
+
+        if (epic.isDeleted()) {
+            throw new ApplicationException("삭제된 카드 입니다.");
+        }
 
         if (admin.getId() != epic.getAdminId()) {
             throw new ApplicationException("계정이 없습니다.");
@@ -69,7 +112,16 @@ public class TodoService {
     public void deleteEpic(long epicId) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
-        Epic epic = epicRepository.findById(epicId).orElseThrow(() -> new ApplicationException("에픽을 찾을 수 없습니다."));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        Epic epic = epicRepository.findById(epicId).orElseThrow(() -> new ApplicationException("카드를 찾을 수 없습니다."));
+
+        if (epic.isDeleted()) {
+            throw new ApplicationException("삭제된 카드 입니다.");
+        }
 
         if (admin.getId() != epic.getAdminId()) {
             throw new ApplicationException("계정이 없습니다.");
@@ -92,6 +144,10 @@ public class TodoService {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
         return taskRepository.save(Task.createTask(request, admin.getId()));
     }
 
@@ -99,7 +155,16 @@ public class TodoService {
     public void updateTask(UpdateTaskRequest request) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
-        Task task = taskRepository.findById(request.getTaskId()).orElseThrow(() -> new ApplicationException("작업을 찾을 수 없습니다."));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        Task task = taskRepository.findById(request.getTaskId()).orElseThrow(() -> new ApplicationException("할 일을 찾을 수 없습니다."));
+
+        if (task.isDeleted()) {
+            throw new ApplicationException("삭제된 할 일 입니다.");
+        }
 
         if (admin.getId() != task.getAdminId()) {
             throw new ApplicationException("계정이 없습니다.");
@@ -113,7 +178,16 @@ public class TodoService {
     public void deleteTask(long taskId) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ApplicationException("작업을 찾을 수 없습니다."));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ApplicationException("할 일을 찾을 수 없습니다."));
+
+        if (task.isDeleted()) {
+            throw new ApplicationException("삭제된 할일 입니다.");
+        }
 
         if (admin.getId() != task.getAdminId()) {
             throw new ApplicationException("계정이 없습니다.");
@@ -128,6 +202,11 @@ public class TodoService {
 
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
         Epic epic = epicRepository.findById(request.getEpicId()).orElseThrow(() -> new ApplicationException("에픽을 찾을 수 없습니다."));
 
         if (admin.getId() != epic.getAdminId()) {
@@ -137,7 +216,7 @@ public class TodoService {
         List<Task> tasks = taskRepository.findByEpicId(request.getEpicId());
 
         if (tasks.size() != request.getTaskIds().size()) {
-            throw new ApplicationException("task 개수가 맞지 않습니다.");
+            throw new ApplicationException("할일 개수가 맞지 않습니다.");
         }
 
         // id → Task 매핑

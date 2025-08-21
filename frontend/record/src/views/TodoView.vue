@@ -72,7 +72,7 @@
                     <a-list-item>
                       <template #actions>
                         <div style="display: flex; flex-direction: row; gap: 8px;">
-                          <div v-if="todo.isCompleted" style="display: flex; flex-direction: column; gap: 4px;">
+                          <div v-if="todo.completed" style="display: flex; flex-direction: column; gap: 4px;">
                             <a @click="cancelCompleteTodo(epic, todo)">미완료</a>
                             <!-- <a @click="addAlert(todo)">알림</a> -->
                           </div>
@@ -97,7 +97,7 @@
                               @pressEnter="todo.isTitleEditing = false"
                             />
                             <span style="font-size: 16px" v-else>
-                              <div v-if="todo.isCompleted">
+                              <div v-if="todo.completed">
                                 <div v-if="todo.title === ''">
                                   <s>제목이 없습니다</s>
                                 </div>
@@ -127,7 +127,7 @@
                               @blur="endDescriptionEdit(epic, todo)"
                             />
                             <span v-else>
-                              <div v-if="todo.isCompleted">
+                              <div v-if="todo.completed">
                                 <div v-if="todo.description === ''">
                                   <s>세부내용이 없습니다</s>
                                 </div>
@@ -146,16 +146,10 @@
                             </span>
                           </div>
                           
-                          <div
-                            v-if="isToday(todo.dueDate)"
-                            style="color: red; font-weight: bold; cursor: pointer;"
-                            @click="openDatePicker(todo.id)"
-                          >
-                            오늘
-                          </div>
-                          <div style="margin-top: 4px;" v-else>
+                          <div style="margin-top: 4px;">
                             <a-date-picker
                               v-model:value="todo.dueDate"
+                              value-format="YYYY-MM-DDTHH:mm:ss"
                               format="YYYY-MM-DD"
                               style="width: 50%;"
                               placeholder="마감일"
@@ -177,7 +171,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import draggable from 'vuedraggable';
 import dayjs from 'dayjs';
 import { message } from 'ant-design-vue';
@@ -188,32 +182,7 @@ const titleInput = ref(null)
 const descriptionInput = ref(null)
 const datePickerRefs = ref({});
 
-const epics = ref([
-  { id: 1, title: '진행중', isTitleEditing: false, todo: [
-    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 }
-  ]},
-  { id: 2, title: '완료', isTitleEditing: false, todo: [
-    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 }
-  ]},
-  { id: 3, title: '보류', isTitleEditing: false, todo: [
-    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 }
-  ]},
-  { id: 4, title: '취소됨', isTitleEditing: false, todo: [
-    { id: 1, title: 'API 설계2', description: 'API 설계 및 문서화', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 2, title: 'UI 디자인2', description: '사용자 인터페이스 디자인', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 3, title: '백엔드 개발2', description: '서버 및 데이터베이스 개발', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 },
-    { id: 4, title: '테스트 및 배포2', description: '애플리케이션 테스트 및 배포', isTitleEditing: false, isCompleted: false, dueDate: null, sortOrder: 0 }
-  ]}
-])
+const epics = ref([])
 
 const addEpic = async () => {
   try {
@@ -254,7 +223,7 @@ const addTodo = async (epic) => {
     })
 
     const todo = response.data;
-    epic.todo.push({ id: todo.id, title: todo.title, description: todo.content, isTitleEditing: false, isCompleted: false, sortOrder: 0 });
+    epic.todo.push({ id: todo.id, title: todo.title, description: todo.content, isTitleEditing: false, completed: false, sortOrder: 0 });
     
   } catch (error) {
     message.error('할 일 추가에 실패했습니다.');
@@ -412,7 +381,7 @@ const completeTodo = async (epic, todo) => {
       }
     });
 
-    todo.isCompleted = true;
+    todo.completed = true;
   } catch (error) {
     message.error('할 일 완료에 실패했습니다.');
     return;
@@ -439,7 +408,7 @@ const cancelCompleteTodo = async (epic, todo) => {
       }
     });
     
-    todo.isCompleted = false;
+    todo.completed = false;
   } catch (error) {
     message.error('할 일 완료 취소에 실패했습니다.');
     return;
@@ -504,7 +473,7 @@ const onTaskChange = async (targetEpic, evt) => {
         }
       });
     } catch (error) {
-      message.error('할 일 수정에 실패했습니다.');
+      message.error('할 일 정렬에 실패했습니다.');
       return;
     }
 
@@ -551,17 +520,28 @@ const onTaskChange = async (targetEpic, evt) => {
   }
 }
 
-const isToday = (date) => {
-  if (!date) return false
-  return dayjs(date).isSame(dayjs(), "day")
-}
+const fetchTodos = async () => {
+  try {
+    const response = await api.get('/api/economy/epic', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+      }
+    });
 
-const openDatePicker = (id) => {
-  const picker = datePickerRefs.value[id];
-  if (picker) {
-    picker.focus(); // 포커스 주면 바로 달력 펼쳐짐
+    epics.value = response.data
+
+    console.log(response.data)
+
+  } catch (error) {
+    message.error('목록을 불러올 수 없습니다.');
   }
 }
+
+onMounted(() => {
+  
+  fetchTodos();
+});
 
 </script>
 
