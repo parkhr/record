@@ -1,5 +1,5 @@
 <configuration>
-  <property name="LOG_PATH" value="/var/log/myapp"/>
+  <property name="LOG_PATH" value="/home/ec2-user/log"/>
   <springProperty scope="context" name="PID" source="PID"/>
 
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
