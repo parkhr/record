@@ -8,7 +8,7 @@
     >
       <template #footer>
         <a-button key="back" @click="handleCancel">Return</a-button>
-        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">Submit</a-button>
+        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">수정</a-button>
       </template>
 
       

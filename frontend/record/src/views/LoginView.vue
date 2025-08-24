@@ -28,7 +28,7 @@
             </a-form-item>
 
             <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
-              <a-button type="primary" html-type="submit">Submit</a-button>
+              <a-button type="primary" html-type="submit">로그인</a-button>
             </a-form-item>
           </a-form>
       </div>
