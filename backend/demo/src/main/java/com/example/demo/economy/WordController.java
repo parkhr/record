@@ -1,9 +1,12 @@
 package com.example.demo.economy;
 
 import com.example.demo.economy.request.CreateWordRequest;
+import com.example.demo.economy.request.SearchWordRequest;
 import com.example.demo.economy.request.UpdateWordRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,16 +21,21 @@ public class WordController {
     private final WordService wordService;
 
     @PostMapping("/word")
-    public ResponseEntity<Object> createTask(@RequestBody CreateWordRequest request) {
+    public ResponseEntity<Object> createWord(@RequestBody CreateWordRequest request) {
 
         return ResponseEntity.ok().body(wordService.createWord(request));
     }
 
     @PutMapping("/word")
-    public ResponseEntity<Object> updateTask(@RequestBody UpdateWordRequest request) {
+    public ResponseEntity<Object> updateWord(@RequestBody UpdateWordRequest request) {
 
         wordService.updateWord(request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/word/search")
+    public ResponseEntity<Object> findWords(SearchWordRequest request, Pageable pageable) {
+        return ResponseEntity.ok(wordService.findWords(request, pageable));
     }
 
 }

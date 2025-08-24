@@ -68,6 +68,11 @@ const router = createRouter({
           name: 'todo',
           component: () => import('../views/TodoView.vue'),
         },
+        {
+          path: '/economy/word',
+          name: 'word',
+          component: () => import('../views/WordView.vue'),
+        },
       ]
     },
   ],

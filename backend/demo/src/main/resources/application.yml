@@ -16,3 +16,7 @@ server:
       charset: UTF-8
       force: true
   port: 8081
+
+push:
+  api:
+    base-url: https://puuu.sh/notify/vnAwM9Dwxq

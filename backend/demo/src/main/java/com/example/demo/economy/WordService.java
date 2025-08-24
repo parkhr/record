@@ -10,10 +10,14 @@ import com.example.demo.common.util.UserUtil;
 import com.example.demo.economy.entity.Word;
 import com.example.demo.economy.repository.WordRepository;
 import com.example.demo.economy.request.CreateWordRequest;
+import com.example.demo.economy.request.SearchWordRequest;
 import com.example.demo.economy.request.UpdateWordRequest;
+import com.example.demo.economy.response.SearchWordResponse;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,5 +68,12 @@ public class WordService {
 
         word.update(request);
         wordRepository.save(word);
+    }
+
+    public Page<SearchWordResponse> findWords(SearchWordRequest request, Pageable pageable) {
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        return wordRepository.findWords(request, userDetails.getId(), pageable);
     }
 }
