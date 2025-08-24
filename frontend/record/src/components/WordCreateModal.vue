@@ -50,7 +50,6 @@
 </template>
 
 <script lang="ts" setup>
-import api from '@/api/axios'
 import { message } from 'ant-design-vue';
 import { reactive, ref } from 'vue';
 import { createWord } from '@/api/wordApi.js';

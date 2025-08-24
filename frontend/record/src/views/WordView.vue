@@ -26,7 +26,7 @@
     <template #title>
       <a-row :gutter="5" justify="end">
         <a-col>
-          <a-button @click="onExport">엑셀 다운로드</a-button>
+          <a-button @click="onGame">단어외우기</a-button>
         </a-col>
         <a-col>
           <a-button type="primary" @click="onCreate">등록</a-button>
@@ -46,6 +46,7 @@
   </a-table>
 
   <WordCreateModal ref="wordCreateModal" />
+  <Word ref="word" />
   <CommonModal ref="deleteModalRef"/>
   <CommonModal ref="deductedModalRef"/>
   <CommonModal ref="cancelDeductedModalRef"/>
@@ -58,6 +59,7 @@ import { SearchOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import CommonModal from '@/components/CommonModal.vue';
 import WordCreateModal from '@/components/WordCreateModal.vue';
+import Word from '@/components/Word.vue';
 import { fetchWords } from '@/api/wordApi.js';
 
 type RangeValue = [Dayjs, Dayjs];
@@ -79,6 +81,7 @@ const deleteModalRef = ref();
 const deductedModalRef = ref();
 const cancelDeductedModalRef = ref();
 const wordCreateModal = ref();
+const word = ref();
 
 const columns = [
   {
@@ -182,6 +185,12 @@ const reset = () => {
 const onCreate = () => {
   wordCreateModal.value.show(() => {
     getWords(searchParams.value);
+  });
+}
+
+const onGame = () => {
+  word.value.show(() => {
+
   });
 }
 
