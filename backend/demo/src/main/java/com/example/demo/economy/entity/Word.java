@@ -32,7 +32,10 @@ public class Word {
     private String mean;
 
     @Column("completed")
-    private boolean completed;
+    private int completed;
+
+    @Column("view")
+    private int view;
 
     @Column("sentence")
     private String sentence;
@@ -60,14 +63,16 @@ public class Word {
             .adminId(adminId)
             .name(request.getName())
             .mean(request.getMean())
-            .completed(false)
+            .completed(0)
+            .view(0)
             .sentence(request.getSentence())
             .build();
     }
 
     public void update(UpdateWordRequest request) {
         this.mean = request.getMean();
-        this.completed = request.isCompleted();
+        this.completed = request.getCompleted();
+        this.view = request.getView();
         this.sentence = request.getSentence();
         this.updatedAt = LocalDateTime.now();
     }

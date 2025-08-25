@@ -38,4 +38,9 @@ public class WordController {
         return ResponseEntity.ok(wordService.findWords(request, pageable));
     }
 
+    @GetMapping("/word/game")
+    public ResponseEntity<Object> startWordGame() {
+        return ResponseEntity.ok(wordService.startWordGame());
+    }
+
 }

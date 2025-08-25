@@ -9,6 +9,7 @@ public class UpdateWordRequest {
 
     private Long wordId;
     private String mean;
-    private boolean completed;
+    private int completed;
+    private int view;
     private String sentence;
 }

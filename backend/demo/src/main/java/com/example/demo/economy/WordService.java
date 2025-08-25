@@ -13,12 +13,12 @@ import com.example.demo.economy.request.CreateWordRequest;
 import com.example.demo.economy.request.SearchWordRequest;
 import com.example.demo.economy.request.UpdateWordRequest;
 import com.example.demo.economy.response.SearchWordResponse;
+import com.example.demo.economy.response.WordGameResponse;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -86,7 +86,7 @@ public class WordService {
         return wordRepository.findWords(request, userDetails.getId(), pageable);
     }
 
-    public List<Word> startSession() {
+    public List<WordGameResponse> startWordGame() {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
@@ -94,21 +94,27 @@ public class WordService {
             throw new ApplicationException("삭제된 관리자입니다.");
         }
 
-        // 외우지 못한 단어 전체
-        List<Word> unCompletedWord = wordRepository.findByAdminIdAndCompletedIsFalse(admin.getId());
+        // 외우지 못한 단어 전체 (최신 등록순)
+        List<Word> unCompletedWord = wordRepository.findByAdminIdAndCompletedLessThan(admin.getId(), 5).stream()
+            .sorted(Comparator.comparingLong(Word::getId).reversed()).toList();
 
-        // 외운 단어 랜덤 100단어 까지
-        List<Word> completedWord = wordRepository.findByAdminIdAndCompletedIsTrue(admin.getId());
-        Collections.shuffle(completedWord);
-
-        List<Word> random20 = completedWord.stream()
-            .limit(100)
-            .toList();
+        // 외운 단어 조회수 적은 순서대로 100개
+        List<Word> completedWord = wordRepository.findByAdminIdAndCompletedGreaterThanEqual(admin.getId(), 5).stream()
+            .sorted(Comparator.comparingInt(Word::getView)).limit(100).toList();
 
         List<Word> sessionWords = new ArrayList<>();
         sessionWords.addAll(unCompletedWord);
-        sessionWords.addAll(random20);
+        sessionWords.addAll(completedWord);
 
-        return sessionWords;
+        return sessionWords.stream().map(item -> {
+            WordGameResponse wordGameResponse = new WordGameResponse();
+            wordGameResponse.setWordId(item.getId());
+            wordGameResponse.setWord(item.getName());
+            wordGameResponse.setMeaning(item.getMean());
+            wordGameResponse.setExample(item.getSentence());
+            wordGameResponse.setCompleted(item.getCompleted());
+            wordGameResponse.setView(item.getView());
+            return wordGameResponse;
+        }).collect(Collectors.toList());
     }
 }

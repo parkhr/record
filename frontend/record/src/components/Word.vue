@@ -69,27 +69,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { game, updateWord } from "@/api/wordApi";
+import { message } from "ant-design-vue";
+import { onMounted, ref } from "vue";
 
 const open = ref(false);
 const callback = ref<null | Function>(null);
 
-// 단어 + 뜻 + 예문
-const words = [
-  { word: "earn", meaning: "벌다, 얻다", example: "He earned the respect of his teammates." },
-  { word: "admission", meaning: "입학, 입장, 인정", example: "The college admission process is competitive." },
-  { word: "outstanding", meaning: "뛰어난, 두드러진", example: "She gave an outstanding performance on stage." },
-  { word: "matter", meaning: "문제, 일 / 중요하다", example: "It doesn’t matter to me." },
-  { word: "fitness", meaning: "건강, 체력, 적합성", example: "He goes to the gym to improve his fitness." },
-  { word: "assessment", meaning: "평가, 판단", example: "The teacher made an assessment of the students’ work." },
-  { word: "slightly", meaning: "약간, 조금", example: "She looked slightly tired." },
-  { word: "admit", meaning: "인정하다, 입장시키다", example: "He admitted his mistake." },
-  { word: "enroll", meaning: "등록하다, 입학하다", example: "She enrolled in a cooking class." },
-  { word: "nearly", meaning: "거의, 대략", example: "It’s nearly midnight." },
-  { word: "athlete", meaning: "운동선수", example: "The athlete won a gold medal." },
-  { word: "remarkable", meaning: "주목할 만한, 놀라운", example: "The invention was a remarkable achievement." },
-  { word: "substantial", meaning: "상당한, 중요한", example: "They made a substantial profit last year." },
-];
+const words = ref([]);
 
 const currentIndex = ref(0);
 const learned = ref<string[]>([]);
@@ -97,11 +84,16 @@ const notLearned = ref<string[]>([]);
 const showMeaning = ref(false);
 const loading = ref(false);
 
-const show = (cb?: Function) => {
+const show = async (cb?: Function) => {
   callback.value = cb ?? null;
   open.value = true;
 
-
+  try{
+    const response = await game();
+    words.value = response.data;
+  } catch (error) {
+    message.error('단어를 불러오는데 실패했습니다.');
+  }
 };
 
 const handleOk = async () => {
@@ -119,13 +111,46 @@ const handleCancel = () => {
   showMeaning.value = false;
 };
 
-const handleCheck = (isKnown: boolean) => {
-  const word = words[currentIndex.value].word;
+const handleCheck = async (isKnown: boolean) => {
+  const word = words.value[currentIndex.value];
+
   if (isKnown) {
-    learned.value.push(word);
+    try {
+      const requestData = {
+        wordId: word.wordId,
+        mean: word.meaning,
+        completed: word.completed + 1,
+        view : word.view + 1,
+        sentence: word.example
+      }
+
+      await updateWord(requestData);
+
+      learned.value.push(word);
+    } catch (error) {
+      message.error('단어 업데이트에 실패했습니다.');
+      return;
+    }
+
   } else {
-    notLearned.value.push(word);
+    try {
+      const requestData = {
+        wordId: word.wordId,
+        mean: word.meaning,
+        completed: word.completed >= 5 ? 0 : word.completed,
+        view : word.view + 1,
+        sentence: word.example
+      }
+
+      await updateWord(requestData);
+
+      notLearned.value.push(word);
+    } catch (error) {
+      message.error('단어 업데이트에 실패했습니다.');
+      return;
+    }
   }
+
   currentIndex.value++;
   showMeaning.value = false; // 다음 단어는 뜻 숨김
 };
@@ -136,5 +161,6 @@ const handleCheck = (isKnown: boolean) => {
 //     learned.value.push(word);
 //   }
 // };
+
 defineExpose({ show });
 </script>

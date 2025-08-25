@@ -9,7 +9,7 @@ public interface WordRepository extends CrudRepository<Word, Long>, WordReposito
 
     Optional<Word> findByAdminIdAndName(long id, String name);
 
-    List<Word> findByAdminIdAndCompletedIsTrue(long id);
+    List<Word> findByAdminIdAndCompletedLessThan(long id, int completed);
 
-    List<Word> findByAdminIdAndCompletedIsFalse(long id);
+    List<Word> findByAdminIdAndCompletedGreaterThanEqual(long id, int completed);
 }
