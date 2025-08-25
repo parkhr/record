@@ -24,7 +24,6 @@ import com.example.demo.economy.request.CancelMinusAmountRequest;
 import com.example.demo.economy.request.CancelPlusAmountRequest;
 import com.example.demo.economy.request.CreateActiveRequest;
 import com.example.demo.economy.request.CreateSpendRequest;
-//import com.example.demo.economy.request.UpdateSpendRequest;
 import com.example.demo.economy.request.MinusAmountRequest;
 import com.example.demo.economy.request.PlusAmountRequest;
 import com.example.demo.economy.request.SearchActiveRequest;
@@ -43,7 +42,6 @@ import com.example.demo.push.PushSender;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -80,8 +78,13 @@ public class EconomyService {
     public Spend createSpend(CreateSpendRequest request) {
         CardSmsRecord cardSmsRecord = CardSmsParser.parse(request.getMessage());
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
-        return spendRepository.save(Spend.createSpend(cardSmsRecord, userDetails.getId()));
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        return spendRepository.save(Spend.createSpend(cardSmsRecord, admin.getId()));
     }
 
     public Page<SearchSpendResponse> findSpends(SearchSpendRequest request, Pageable pageable) {
@@ -176,6 +179,10 @@ public class EconomyService {
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
         Spend spend = spendRepository.findById(spendId).orElseThrow(() -> new ApplicationException("지출내역을 찾을 수 없습니다."));
 
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
         if (spend.getAdminId() != admin.getId()) {
             throw new ApplicationException("권한이 없습니다.");
         }
@@ -191,7 +198,12 @@ public class EconomyService {
     @Transactional
     public Active createActive(CreateActiveRequest request) {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
         Active active = Active.createActive(request, userDetails.getId());
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
 
         return activeRepository.save(active);
     }
@@ -201,6 +213,10 @@ public class EconomyService {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
         Active active = activeRepository.findById(activeId).orElseThrow(() -> new ApplicationException("활동내역을 찾을 수 없습니다."));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
 
         if (active.getAdminId() != admin.getId()) {
             throw new ApplicationException("권한이 없습니다.");
@@ -506,6 +522,10 @@ public class EconomyService {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
         Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException("해당 관리자의 지갑을 찾을 수 없습니다."));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자 입니다.");
+        }
 
         if (wallet.getAmount() >= 0) {
             DashboardBreakEvenTimeResponse response = new DashboardBreakEvenTimeResponse();
