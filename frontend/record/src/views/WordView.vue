@@ -130,7 +130,7 @@ const getWords = async (params) => {
     });
   } catch (error) {
     console.log(error)
-    message.error('지출내역을 불러올 수 없습니다.');
+    message.error('단어를 불러올 수 없습니다.');
   }
 };
 

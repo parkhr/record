@@ -80,6 +80,7 @@ const handleOk = async () => {
     }
   } catch (error) {
     console.log(error)
+    message.error('활동내역이 생성되었습니다.');
   }
 };
 

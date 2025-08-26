@@ -86,6 +86,7 @@ const handleOk = async () => {
     callback.value?.(); // 행위 수행
   } catch (error) {
     console.log(error)
+    message.error('단어 등록 실패하였습니다.');
   }
 };
 
