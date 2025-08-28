@@ -105,11 +105,10 @@ public class WordService {
 
         List<Word> sessionWords = new ArrayList<>();
 
-        Collections.shuffle(unCompletedWord);
         sessionWords.addAll(unCompletedWord);
-
-        Collections.shuffle(completedWord);
         sessionWords.addAll(completedWord);
+
+        Collections.shuffle(sessionWords);
 
         return sessionWords.stream().map(item -> {
             WordGameResponse wordGameResponse = new WordGameResponse();
