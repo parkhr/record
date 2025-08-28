@@ -58,10 +58,17 @@
           </p>
         </div>
 
-        <!-- 통계 -->
-        <div style="margin-top: 30px; display: flex; justify-content: center; gap: 40px;">
-          <a-statistic title="✅ 외운 단어" :value="learned.length" />
-          <a-statistic title="❌ 못 외운 단어" :value="notLearned.length" />
+        <div style="display: flex; justify-content: center; gap: 40px">
+          <div>
+            ✅ 외운 단어
+          </div>
+          <div>
+            ❌ 못 외운 단어
+          </div>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 100px;">
+          <a-statistic :value="learned.length" />
+          <a-statistic :value="notLearned.length" />
         </div>
       </div>
     </a-modal>
