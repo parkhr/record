@@ -15,6 +15,7 @@ import com.example.demo.economy.request.UpdateWordRequest;
 import com.example.demo.economy.response.SearchWordResponse;
 import com.example.demo.economy.response.WordGameResponse;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -103,7 +104,11 @@ public class WordService {
             .sorted(Comparator.comparingInt(Word::getView)).limit(100).toList();
 
         List<Word> sessionWords = new ArrayList<>();
+
+        Collections.shuffle(unCompletedWord);
         sessionWords.addAll(unCompletedWord);
+
+        Collections.shuffle(completedWord);
         sessionWords.addAll(completedWord);
 
         return sessionWords.stream().map(item -> {
