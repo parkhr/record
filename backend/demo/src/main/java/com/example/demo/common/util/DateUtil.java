@@ -4,10 +4,15 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DateUtil {
+
+    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     /**
      * 특정 날짜가 속한 주의 시작과 종료 반환
@@ -51,5 +56,17 @@ public class DateUtil {
         monthRange.add(endDateTime);
 
         return monthRange;
+    }
+
+    /** KST 기준 LocalDateTime → UTC LocalDateTime 변환 */
+    public static LocalDateTime kstToUtc(LocalDateTime kstTime) {
+        ZonedDateTime zdt = kstTime.atZone(KST);
+        return zdt.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+    }
+
+    /** UTC 기준 LocalDateTime → KST LocalDateTime 변환 */
+    public static LocalDateTime utcToKst(LocalDateTime utcTime) {
+        ZonedDateTime zdt = utcTime.atZone(ZoneOffset.UTC);
+        return zdt.withZoneSameInstant(KST).toLocalDateTime();
     }
 }

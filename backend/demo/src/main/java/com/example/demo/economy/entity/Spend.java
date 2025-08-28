@@ -1,10 +1,14 @@
 package com.example.demo.economy.entity;
 
+import com.example.demo.common.util.DateUtil;
 import com.example.demo.economy.domain.CardSmsRecord;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.MonthDay;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,7 +72,7 @@ public class Spend {
             .amount(cardSmsRecord.getAmount())
             .place(cardSmsRecord.getMerchant())
             .deducted(false)
-            .spendAt(LocalDateTime.of(date, time)).build();
+            .spendAt(DateUtil.utcToKst(LocalDateTime.of(date, time))).build();
     }
 
     public boolean isDeleted() {
