@@ -129,11 +129,12 @@ public class EconomyService {
 
         walletLogRepository.save(WalletLog.createWalletLog("SPEND", admin.getId(), spend.getAmount() * -1));
 
-        if (wallet.getAmount() < 0) {
-            PushSender pushAppSender = pushSendResolver.resolve();
-
-            pushAppSender.send(PushMessage.builder().title("현재 잔액이 부족해요").body("가벼운 활동 하나로도 잔액을 다시 채울 수 있어요. 화이팅!").build());
-        }
+        //TODO schedule 로 이동
+//        if (wallet.getAmount() < 0) {
+//            PushSender pushAppSender = pushSendResolver.resolve();
+//
+//            pushAppSender.send(PushMessage.builder().title("현재 잔액이 부족해요").body("가벼운 활동 하나로도 잔액을 다시 채울 수 있어요. 화이팅!").build());
+//        }
     }
 
     @Transactional
