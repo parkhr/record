@@ -98,6 +98,8 @@ const show = async (cb?: Function) => {
   try{
     const response = await game();
     words.value = response.data;
+    callback.value?.();
+    
   } catch (error) {
     message.error('단어를 불러오는데 실패했습니다.');
   }

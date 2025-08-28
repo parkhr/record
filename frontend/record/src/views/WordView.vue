@@ -26,6 +26,31 @@
     <template #title>
       <a-row :gutter="5" justify="end">
         <a-col>
+          <!-- 0번일 때 -->
+          <div
+            v-if="gameAttempts === 0"
+            style="padding: 5px; background: #fff1f0; border-radius: 8px; color: #cf1322; font-size: 14px;"
+          >
+            아직 단어를 외우지 않으셨네요! 😢
+          </div>
+
+          <!-- 1~3번일 때 -->
+          <div
+            v-else-if="gameAttempts > 0 && gameAttempts < 4"
+            style="padding: 5px; background: #fffbe6; border-radius: 8px; color: #d48806; font-size: 14px;"
+          >
+            좋은 시작이에요! 지금까지 {{ gameAttempts }}번 도전했네요 💪
+          </div>
+
+          <!-- 4번 이상일 때 -->
+          <div
+            v-else
+            style="padding: 5px; background: #f6ffed; border-radius: 8px; color: #389e0d; font-size: 14px;"
+          >
+            멋져요! 벌써 {{ gameAttempts }}번 도전했어요! 🚀
+          </div>
+        </a-col>
+        <a-col>
           <a-button @click="onGame">단어외우기</a-button>
         </a-col>
         <a-col>
@@ -60,7 +85,7 @@ import { message } from 'ant-design-vue';
 import CommonModal from '@/components/CommonModal.vue';
 import WordCreateModal from '@/components/WordCreateModal.vue';
 import Word from '@/components/Word.vue';
-import { fetchWords } from '@/api/wordApi.js';
+import { fetchAttempts, fetchWords } from '@/api/wordApi.js';
 
 type RangeValue = [Dayjs, Dayjs];
 
@@ -82,6 +107,7 @@ const deductedModalRef = ref();
 const cancelDeductedModalRef = ref();
 const wordCreateModal = ref();
 const word = ref();
+const gameAttempts = ref(0);
 
 const columns = [
   {
@@ -133,6 +159,17 @@ const getWords = async (params) => {
     message.error('단어를 불러올 수 없습니다.');
   }
 };
+
+const getAttempts = async () => {
+  try {
+    const count = await fetchAttempts();
+    gameAttempts.value = count.data;
+  } catch (error) {
+    console.log(error)
+    message.error('도전 횟수를 불러올 수 없습니다.');
+    return 0;
+  }
+}
 
 const handleTableChange = (paginationConfig) => {
   const { current, pageSize } = paginationConfig
@@ -190,7 +227,7 @@ const onCreate = () => {
 
 const onGame = () => {
   word.value.show(() => {
-
+    getAttempts();
   });
 }
 
@@ -274,5 +311,7 @@ onMounted(() => {
   };
 
   getWords(params);
+
+  getAttempts();
 });
 </script>

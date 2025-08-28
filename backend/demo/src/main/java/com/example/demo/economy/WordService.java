@@ -16,6 +16,9 @@ import com.example.demo.economy.request.SearchWordRequest;
 import com.example.demo.economy.request.UpdateWordRequest;
 import com.example.demo.economy.response.SearchWordResponse;
 import com.example.demo.economy.response.WordGameResponse;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -126,5 +129,22 @@ public class WordService {
             wordGameResponse.setView(item.getView());
             return wordGameResponse;
         }).collect(Collectors.toList());
+    }
+
+    public int getTodayAttempts() {
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+        List<WordLog> wordLogs = wordLogRepository.findByAdminIdAndCreatedAtBetween(admin.getId(), startOfDay, endOfDay);
+
+        return wordLogs.size();
     }
 }

@@ -43,4 +43,10 @@ public class WordController {
         return ResponseEntity.ok(wordService.startWordGame());
     }
 
+    @GetMapping("/word/attempts")
+    public ResponseEntity<Object> getAttempts() {
+
+        return ResponseEntity.ok(wordService.getTodayAttempts());
+    }
+
 }
