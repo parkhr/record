@@ -129,6 +129,7 @@ const fetchActives = async (params) => {
       },
       params: params
     });
+    if(response.status !== 200) throw new Error();
 
     const totalElements = response.data.totalElements;
     pagination.value.total = totalElements
@@ -213,6 +214,7 @@ const onSave = (active) => {
             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
           },
         });
+        if(response.status !== 200) throw new Error();
 
         message.success('활동내역이 적립되었습니다.');
       } catch (error) {
@@ -236,6 +238,7 @@ const onCancelSave = (active) => {
             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
           },
         });
+        if(response.status !== 200) throw new Error();
 
         message.success('활동내역 적립이 취소되었습니다.');
       } catch (error) {
@@ -257,6 +260,7 @@ const onDelete = (active) => {
             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
           },
         });
+        if(response.status !== 200) throw new Error();
 
         message.success('활동내역을 삭제되었습니다.');
       } catch (error) {

@@ -127,6 +127,7 @@ const onMenuClick = async (menu) => {
       },
       params: params
     });
+    if(response.status !== 200) throw new Error();
 
     childMenus.value = response.data
     selectedChildMenu.value = childMenus.value[0].link
@@ -168,6 +169,7 @@ onMounted(async () => {
       },
       params: params
     });
+    if(response.status !== 200) throw new Error();
 
     menus.value = response.data
 

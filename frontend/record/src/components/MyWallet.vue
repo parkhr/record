@@ -69,6 +69,7 @@ const fetchWallet = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       },
     });
+    if(response.status !== 200) throw new Error();
 
     walletData.value = response.data;
   } catch (error) {
@@ -84,6 +85,7 @@ const fetchBreakEvenTime = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
 
     breakData.value.hour = response.data.hour;
     breakData.value.minutes = response.data.minutes;
@@ -100,6 +102,7 @@ const fetchThisWeekSpend = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
 
     const total = response.data.amounts.reduce((sum, value) => sum + value, 0);
     totalThisWeekSpend.value = total;
@@ -116,6 +119,7 @@ const fetchThisWeekIncome = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
 
     const total = response.data.amounts.reduce((sum, value) => sum + value, 0);
     totalThisWeekIncome.value = total;
@@ -132,6 +136,7 @@ const fetchThisMonthIncome = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
 
     const total = response.data.amounts.reduce((sum, value) => sum + value, 0);
     totalThisMonthIncome.value = total;
@@ -149,6 +154,7 @@ const fetchThisMonthSpend = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
 
     const total = response.data.amounts.reduce((sum, value) => sum + value, 0);
     totalThisMonthSpend.value = total;

@@ -72,8 +72,7 @@ const fetchRoleDetail = async (roleId) => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       },
     });
-
-    console.log(response.data);
+    if(response.status !== 200) throw new Error();
 
   } catch (error) {
     console.error("Error fetching records:", error);
@@ -90,6 +89,7 @@ const handleOk = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
     
     open.value = false;
     formRef.value.resetFields()
@@ -97,6 +97,7 @@ const handleOk = async () => {
     callback.value?.(); // 행위 수행
   } catch (error) {
     console.log(error)
+    message.error('권한그룹 수정 실패하였습니다.');
   }
 };
 

@@ -71,6 +71,7 @@ const handleOk = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
     
     open.value = false;
     formRef.value.resetFields()

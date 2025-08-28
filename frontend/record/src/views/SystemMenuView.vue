@@ -109,6 +109,7 @@ const fetchRoles = async (params) => {
       },
       params: params
     });
+    if(response.status !== 200) throw new Error();
 
     const totalElements = response.data.totalElements;
     pagination.value.total = totalElements

@@ -60,6 +60,7 @@ const onFinish = async (values) => {
         'Content-Type': 'application/json'
       }
     })
+    if(response.status !== 200) throw new Error();
 
     sessionStorage.setItem('accessToken', response.data)
 

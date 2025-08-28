@@ -75,6 +75,7 @@ const fetchRecent = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
 
     balances.value = response.data;
   } catch (error) {

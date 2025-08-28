@@ -147,6 +147,7 @@ const pagination = ref({
 const getWords = async (params) => {
   try {
     const response = await fetchWords(params);
+    if(response.status !== 200) throw new Error();
 
     const totalElements = response.data.totalElements;
     pagination.value.total = totalElements
@@ -155,17 +156,18 @@ const getWords = async (params) => {
       return item;
     });
   } catch (error) {
-    console.log(error)
     message.error('단어를 불러올 수 없습니다.');
   }
 };
 
 const getAttempts = async () => {
   try {
-    const count = await fetchAttempts();
-    gameAttempts.value = count.data;
+    const response = await fetchAttempts();
+    if(response.status !== 200) throw new Error();
+
+    console.log(response.status)
+    gameAttempts.value = response.data;
   } catch (error) {
-    console.log(error)
     message.error('도전 횟수를 불러올 수 없습니다.');
     return 0;
   }
@@ -230,79 +232,6 @@ const onGame = () => {
     getAttempts();
   });
 }
-
-const onExport = () => {
-  // Logic to handle export functionality
-  console.log("Export records to Excel");
-};
-
-// const onDeduct = (spend) => {
-
-//   deductedModalRef.value.show('지출내역차감', '지출내역을 차감하시겠습니까?', 
-//     async () => {
-
-//       try {
-//         const response = await api.post('/api/economy/minus', {
-//           spendId: spend.id
-//         }, {
-//           headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-//           },
-//         });
-
-//         message.success('지출내역이 차감되었습니다.');
-//       } catch (error) {
-//         message.error('지출내역 차감 실패');
-//       }
-
-//       getWords(searchParams.value);
-//     });
-// } 
-
-// const onCancelDeduct = (spend) => {
-//   cancelDeductedModalRef.value.show('지출내역차감취소', '지출내역 차감을 취소하시겠습니까?', 
-//     async () => {
-
-//       try {
-//         const response = await api.post('/api/economy/cancel-minus', {
-//           spendId: spend.id
-//         }, {
-//           headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-//           },
-//         });
-
-//         message.success('지출내역 차감이 취소되었습니다.');
-//       } catch (error) {
-//         message.error('지출내역 차감 취소 실패');
-//       }
-
-//       getWords(searchParams.value);
-//     });
-// } 
-
-// const onDelete = (spend) => {
-//   deleteModalRef.value?.show('지출내역삭제', '지출내역을 삭제하시겠습니까?', 
-//     async () => {
-
-//       try {
-//         const response = await api.delete('/api/economy/spend/' + spend.id, {
-//           headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
-//           },
-//         });
-
-//         message.success('지출내역을 삭제되었습니다.');
-//       } catch (error) {
-//         message.error('지출내역 삭제 실패');
-//       }
-
-//       getWords(searchParams.value);
-//     });
-// }
 
 onMounted(() => {
   const params: any = {

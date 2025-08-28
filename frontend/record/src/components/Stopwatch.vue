@@ -87,6 +87,7 @@ const onCreate = async () => {
           }
         }
       );
+      if(response.status !== 200) throw new Error();
 
       // 등록 후 타이머 초기화
       resetTimer();

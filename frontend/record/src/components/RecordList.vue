@@ -124,6 +124,7 @@ const fetchRecords = async (params) => {
       },
       params: params
     });
+    if(response.status !== 200) throw new Error();
 
     const totalElements = response.data.totalElements;
     pagination.value.total = totalElements
@@ -210,6 +211,7 @@ const onDelete = (record) => {
             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
           },
         });
+        if(response.status !== 200) throw new Error();
 
         message.success('기록물이 삭제되었습니다.');
       } catch (error) {

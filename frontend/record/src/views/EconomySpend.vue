@@ -127,6 +127,7 @@ const fetchSpends = async (params) => {
       },
       params: params
     });
+    if(response.status !== 200) throw new Error();
 
     const totalElements = response.data.totalElements;
     pagination.value.total = totalElements
@@ -213,6 +214,7 @@ const onDeduct = (spend) => {
             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
           },
         });
+        if(response.status !== 200) throw new Error();
 
         message.success('지출내역이 차감되었습니다.');
       } catch (error) {
@@ -236,6 +238,7 @@ const onCancelDeduct = (spend) => {
             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
           },
         });
+        if(response.status !== 200) throw new Error();
 
         message.success('지출내역 차감이 취소되었습니다.');
       } catch (error) {
@@ -257,6 +260,7 @@ const onDelete = (spend) => {
             'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
           },
         });
+        if(response.status !== 200) throw new Error();
 
         message.success('지출내역을 삭제되었습니다.');
       } catch (error) {

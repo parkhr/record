@@ -79,6 +79,7 @@ const handleOk = async () => {
       mean: formState.mean,
       sentence: formState.sentence
     });
+    if(response.status !== 200) throw new Error();
 
     open.value = false;
     formRef.value.resetFields()

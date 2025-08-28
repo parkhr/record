@@ -62,6 +62,7 @@ const handleOk = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
     
     open.value = false;
     formRef.value.resetFields()
@@ -69,6 +70,7 @@ const handleOk = async () => {
     callback.value?.(); // 행위 수행
   } catch (error) {
     console.log(error)
+    message.error('지출내역 생성 실패하였습니다.');
   }
 };
 

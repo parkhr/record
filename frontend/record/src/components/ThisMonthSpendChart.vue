@@ -40,6 +40,7 @@ const fetchThisMonthSpend = async () => {
         'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
       }
     });
+    if(response.status !== 200) throw new Error();
 
     chartData.value.datasets[0].data = response.data.amounts;
 

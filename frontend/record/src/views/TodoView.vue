@@ -189,6 +189,7 @@ const onAddEpic = async () => {
     }
 
     const response = await createEpic(requestBody);
+    if(response.status !== 200) throw new Error();
 
     const epic = response.data;
     epics.value.push({ id: epic.id, title: epic.title, isTitleEditing: false, todo: [] });
@@ -209,6 +210,7 @@ const onAddTodo = async (epic) => {
     }
 
     const response = await createTask(requestBody);
+    if(response.status !== 200) throw new Error();
 
     const todo = response.data;
     epic.todo.push({ id: todo.id, title: todo.title, description: todo.content, isTitleEditing: false, completed: false, sortOrder: 0 });
@@ -235,7 +237,8 @@ const endEpicTitleEdit = async (epic) => {
       title: epic.title
     }
     
-    await updateEpic(requestBody);
+    const response = await updateEpic(requestBody);
+    if(response.status !== 200) throw new Error();
 
     epic.isTitleEditing = false
   } catch (error) {
@@ -266,7 +269,8 @@ const endTitleEdit = async (epic, todo) => {
       completed: todo.completed
     }
     
-    await updateTask(requestBody);
+    const response = await updateTask(requestBody);
+    if(response.status !== 200) throw new Error();
 
     todo.isTitleEditing = false
 
@@ -298,7 +302,8 @@ const endDescriptionEdit = async (epic, todo) => {
       completed: todo.completed
     }
     
-    await updateTask(requestBody);
+    const response = await updateTask(requestBody);
+    if(response.status !== 200) throw new Error();
 
     todo.isDescriptionEditing = false
 
@@ -320,7 +325,8 @@ const onDueDateChange = async (epic, todo) => {
       completed: todo.completed
     }
     
-    await updateTask(requestBody);
+    const response = await updateTask(requestBody);
+    if(response.status !== 200) throw new Error();
 
   } catch (error) {
     message.error('할 일 수정에 실패했습니다.');
@@ -340,7 +346,8 @@ const onToggleTodoComplete = async (epic, todo) => {
       completed: true
     }
     
-    await updateTask(requestBody);
+    const response = await updateTask(requestBody);
+    if(response.status !== 200) throw new Error();
 
     todo.completed = true;
   } catch (error) {
@@ -362,7 +369,8 @@ const cancelCompleteTodo = async (epic, todo) => {
       completed: false
     }
 
-    await updateTask(requestBody);
+    const response = await updateTask(requestBody);
+    if(response.status !== 200) throw new Error();
     
     todo.completed = false;
   } catch (error) {
@@ -373,7 +381,8 @@ const cancelCompleteTodo = async (epic, todo) => {
 
 const onDeleteTodo = async (epic, todo) => {
   try {
-    await deleteTask(todo.id);
+    const response = await deleteTask(todo.id);
+    if(response.status !== 200) throw new Error();
 
     epic.todo = epic.todo.filter(t => t.id !== todo.id);
     
@@ -412,7 +421,8 @@ const onTaskChange = async (targetEpic, evt) => {
         completed: todo.completed
       }
       
-      await updateTask(requestBody);
+      const response = await updateTask(requestBody);
+      if(response.status !== 200) throw new Error();
     } catch (error) {
       message.error('할 일 정렬에 실패했습니다.');
       return;
@@ -425,7 +435,8 @@ const onTaskChange = async (targetEpic, evt) => {
         taskIds: targetEpic.todo.map(todo => todo.id),
       }
       
-      await sortTask(requestBody);
+      const response = await sortTask(requestBody);
+      if(response.status !== 200) throw new Error();
     } catch (error) {
       message.error('할 일 정렬에 실패했습니다.');
       return;
@@ -443,10 +454,11 @@ const onTaskChange = async (targetEpic, evt) => {
         taskIds: targetEpic.todo.map(todo => todo.id),
       }
       
-      await sortTask(requestBody);
+      const response = await sortTask(requestBody);
+      if(response.status !== 200) throw new Error();
+
     } catch (error) {
       message.error('할 일 정렬에 실패했습니다.');
-      return;
     }
   }
 }
@@ -454,6 +466,7 @@ const onTaskChange = async (targetEpic, evt) => {
 const fetchTodos = async () => {
   try {
     const response = await fetchEpics();
+    if(response.status !== 200) throw new Error();
 
     epics.value = response.data
 

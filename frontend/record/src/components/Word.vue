@@ -133,7 +133,8 @@ const handleCheck = async (isKnown: boolean) => {
         sentence: word.example
       }
 
-      await updateWord(requestData);
+      const response = await updateWord(requestData);
+      if(response.status !== 200) throw new Error();
 
       learned.value.push(word);
     } catch (error) {
@@ -151,7 +152,8 @@ const handleCheck = async (isKnown: boolean) => {
         sentence: word.example
       }
 
-      await updateWord(requestData);
+      const response = await updateWord(requestData);
+      if(response.status !== 200) throw new Error();
 
       notLearned.value.push(word);
     } catch (error) {

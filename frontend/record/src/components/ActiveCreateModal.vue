@@ -72,6 +72,7 @@ const handleOk = async () => {
           }
         }
       );
+      if(response.status !== 200) throw new Error();
 
       open.value = false;
       formRef.value.resetFields()
@@ -80,7 +81,7 @@ const handleOk = async () => {
     }
   } catch (error) {
     console.log(error)
-    message.error('활동내역이 생성되었습니다.');
+    message.error('활동내역이 생성 실패하였습니다.');
   }
 };
 
