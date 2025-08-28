@@ -8,6 +8,8 @@ import com.example.demo.common.CustomUserDetails;
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.common.util.UserUtil;
 import com.example.demo.economy.entity.Word;
+import com.example.demo.economy.entity.WordLog;
+import com.example.demo.economy.repository.WordLogRepository;
 import com.example.demo.economy.repository.WordRepository;
 import com.example.demo.economy.request.CreateWordRequest;
 import com.example.demo.economy.request.SearchWordRequest;
@@ -35,6 +37,7 @@ public class WordService {
 
     private final AdminRepository adminRepository;
     private final WordRepository wordRepository;
+    private final WordLogRepository wordLogRepository;
 
     @Transactional
     public Word createWord(CreateWordRequest request) {
@@ -87,6 +90,7 @@ public class WordService {
         return wordRepository.findWords(request, userDetails.getId(), pageable);
     }
 
+    @Transactional
     public List<WordGameResponse> startWordGame() {
         CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
@@ -94,6 +98,8 @@ public class WordService {
         if (admin.isDeleted()) {
             throw new ApplicationException("삭제된 관리자입니다.");
         }
+
+        wordLogRepository.save(WordLog.createWordLog(admin.getId()));
 
         // 외우지 못한 단어 전체 (최신 등록순)
         List<Word> unCompletedWord = wordRepository.findByAdminIdAndCompletedLessThan(admin.getId(), 5).stream()
