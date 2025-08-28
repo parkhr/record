@@ -536,7 +536,7 @@ public class EconomyService {
             return response;
         }
 
-        int requiredMinutes = (int) Math.ceil(Math.abs(wallet.getAmount()) / (double) PayPolicy.VERSION_1.getPayPerMinute());
+        int requiredMinutes = (int) Math.ceil(Math.abs(wallet.getAmount()) / (double) PayPolicy.VERSION_2.getPayPerMinute());
         int hours = requiredMinutes / 60;
         int minutes = requiredMinutes % 60;
 

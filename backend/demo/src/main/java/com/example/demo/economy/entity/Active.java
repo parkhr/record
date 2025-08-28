@@ -63,7 +63,7 @@ public class Active {
 
     public void save() {
         this.saved = true;
-        this.payPolicy = PayPolicy.VERSION_1; // 적립 시점 정책으로 반영
+        this.payPolicy = PayPolicy.VERSION_2; // 적립 시점 정책으로 반영
         this.updatedAt = LocalDateTime.now();
     }
 
