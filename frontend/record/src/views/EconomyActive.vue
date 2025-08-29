@@ -45,6 +45,9 @@
       </a-row>
     </template>
     <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'createdAt'">
+        {{ utcToKst(record.createdAt) }}
+      </template>
       <template v-if="column.key === 'action'">
         <span>
           <a v-if="!record.saved" @click="onSave(record)">적립</a>
@@ -71,6 +74,7 @@ import CommonModal from '@/components/CommonModal.vue';
 import { message } from 'ant-design-vue';
 import Stopwatch from '@/components/Stopwatch.vue';
 import ActiveCreateModal from '@/components/ActiveCreateModal.vue';
+import { useDate } from '@/utils/useDate';
 type RangeValue = [Dayjs, Dayjs];
 
 const searchParams = ref({
@@ -89,6 +93,8 @@ const deleteModalRef = ref();
 const savedModalRef = ref();
 const cancelSavedModalRef = ref();
 const activeCreateModalRef = ref();
+
+const { utcToKst } = useDate();
 
 const columns = [
   {

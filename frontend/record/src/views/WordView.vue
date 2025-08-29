@@ -58,16 +58,11 @@
         </a-col>
       </a-row>
     </template>
-    <!-- <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'action'">
-        <span>
-          <a v-if="!record.deducted" @click="onDeduct(record)">차감</a>
-          <a v-else @click="onCancelDeduct(record)">차감취소</a>
-          <a-divider type="vertical" />
-          <a @click="onDelete(record)">Delete</a>
-        </span>
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'createdAt'">
+        {{ utcToKst(record.createdAt) }}
       </template>
-    </template> -->
+    </template>
   </a-table>
 
   <WordCreateModal ref="wordCreateModal" />
@@ -86,6 +81,7 @@ import CommonModal from '@/components/CommonModal.vue';
 import WordCreateModal from '@/components/WordCreateModal.vue';
 import Word from '@/components/Word.vue';
 import { fetchAttempts, fetchWords } from '@/api/wordApi.js';
+import { useDate } from '@/utils/useDate';
 
 type RangeValue = [Dayjs, Dayjs];
 
@@ -108,6 +104,8 @@ const cancelDeductedModalRef = ref();
 const wordCreateModal = ref();
 const word = ref();
 const gameAttempts = ref(0);
+
+const { utcToKst } = useDate();
 
 const columns = [
   {

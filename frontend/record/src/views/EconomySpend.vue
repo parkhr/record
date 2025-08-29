@@ -1,22 +1,21 @@
 <template>
-  <a-row :gutter="[5, 5]" style="margin-bottom: 20px">
-    <a-col :span="2">
+  <a-row :gutter="[5, 5]" style="margin-bottom: 5px">
+    <a-col :xs="24" :sm="24" :md="3" :lg="3">
       <a-select
         v-model:value="status"
         style="width: 100%"
         :options="statuses.map(pro => ({ value: pro }))"
       ></a-select>
     </a-col>
-    <a-col :span="3">
-      <a-range-picker v-model:value="insertDateRange" style="width: 300px" />
+    <a-col :xs="24" :sm="24" :md="3" :lg="3">
+      <a-range-picker v-model:value="insertDateRange"/>
     </a-col>
-
-    <a-col :span="24"></a-col>
-
-    <a-col :span="1">
-      <a-button :icon="h(SearchOutlined)" @click="search" style="width: 100%">Search</a-button>
+  </a-row>
+  <a-row :gutter="[5, 5]" style="margin-bottom: 5px">
+    <a-col :xs="24" :sm="24" :md="24" :lg="2">
+      <a-button :icon="h(SearchOutlined)" @click="search">Search</a-button>
     </a-col>
-    <a-col :span="1">
+    <a-col :xs="24" :sm="24" :md="24" :lg="1">
       <a-button @click="reset" style="width: 100%">Reset</a-button>
     </a-col>
   </a-row>
@@ -36,6 +35,9 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'amount'">
         {{ Number(record.amount).toLocaleString() }}
+      </template>
+      <template v-if="column.key === 'spendAt'">
+        {{ utcToKst(record.spendAt) }}
       </template>
       <template v-if="column.key === 'action'">
         <span>
@@ -62,6 +64,9 @@ import { SearchOutlined } from '@ant-design/icons-vue';
 import SpendCreateModal from '@/components/SpendCreateModal.vue';
 import { message } from 'ant-design-vue';
 import CommonModal from '@/components/CommonModal.vue';
+import { useDate } from '@/utils/useDate';
+const { utcToKst } = useDate();
+
 
 type RangeValue = [Dayjs, Dayjs];
 
