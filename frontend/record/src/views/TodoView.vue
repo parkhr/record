@@ -315,12 +315,15 @@ const endDescriptionEdit = async (epic, todo) => {
 
 const onDueDateChange = async (epic, todo) => {
   try {
+    // todo.dueDate가 문자열이라면 Date 객체로 변환
+    const kstDate = new Date(todo.dueDate);
+
     let requestBody = {
       taskId: todo.id,
       epicId: epic.id,
       title: todo.title,
       content: todo.description,
-      startAt: todo.dueDate,
+      startAt: kstDate.toISOString(),
       sortOrder: todo.sortOrder,
       completed: todo.completed
     }

@@ -163,7 +163,6 @@ const getAttempts = async () => {
     const response = await fetchAttempts();
     if(response.status !== 200) throw new Error();
 
-    console.log(response.status)
     gameAttempts.value = response.data;
   } catch (error) {
     message.error('도전 횟수를 불러올 수 없습니다.');
