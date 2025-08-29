@@ -72,7 +72,7 @@ public class Spend {
             .amount(cardSmsRecord.getAmount())
             .place(cardSmsRecord.getMerchant())
             .deducted(false)
-            .spendAt(DateUtil.utcToKst(LocalDateTime.of(date, time))).build();
+            .spendAt(DateUtil.kstToUtc(LocalDateTime.of(date, time))).build();
     }
 
     public boolean isDeleted() {
