@@ -29,7 +29,7 @@
           <div style="padding: 5px; background: #e6f7ff; border-radius: 8px; color: #096dd9; font-size: 14px;">
             총 {{wordStatus.totalCount}}개 중 
             {{wordStatus.learnedCount}}개를 이미 외운 것 같네요! 🎉  
-            아직 {{wordStatus.unLearnedCount}}개가 헷갈리시는 것 같아요.
+            아직 {{wordStatus.unLearnedCount}}개 외우는 중인 것  같아요.
           </div>
         </a-col>
         <a-col>
