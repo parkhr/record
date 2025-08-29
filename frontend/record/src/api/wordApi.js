@@ -5,3 +5,4 @@ export const updateWord = async (data) => api.put('/api/economy/word', data);
 export const fetchWords = async (params) => api.get('/api/economy/word/search', {params});
 export const game = async () => api.get('/api/economy/word/game');
 export const fetchAttempts = async () => api.get('/api/economy/word/attempts');
+export const fetchWordStatus = async () => api.get('/api/economy/word/status');
