@@ -16,6 +16,7 @@ import com.example.demo.economy.request.SearchWordRequest;
 import com.example.demo.economy.request.UpdateWordRequest;
 import com.example.demo.economy.response.SearchWordResponse;
 import com.example.demo.economy.response.WordGameResponse;
+import com.example.demo.economy.response.WordStatusResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -146,5 +147,26 @@ public class WordService {
         List<WordLog> wordLogs = wordLogRepository.findByAdminIdAndCreatedAtBetween(admin.getId(), startOfDay, endOfDay);
 
         return wordLogs.size();
+    }
+
+    public WordStatusResponse getWordStatus() {
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        // 외우지 못한 단어
+        List<Word> unCompletedWord = wordRepository.findByAdminIdAndCompletedLessThan(admin.getId(), 5);
+
+        // 외운 단어
+        List<Word> completedWord = wordRepository.findByAdminIdAndCompletedGreaterThanEqual(admin.getId(), 5);
+
+        WordStatusResponse response = new WordStatusResponse();
+        response.setLearnedCount(completedWord.size());
+        response.setUnLearnedCount(unCompletedWord.size());
+        response.setTotalCount(completedWord.size() + unCompletedWord.size());
+        return response;
     }
 }

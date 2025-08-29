@@ -26,6 +26,13 @@
     <template #title>
       <a-row :gutter="5" justify="end">
         <a-col>
+          <div style="padding: 5px; background: #e6f7ff; border-radius: 8px; color: #096dd9; font-size: 14px;">
+            총 {{wordStatus.totalCount}}개 중 
+            {{wordStatus.learnedCount}}개를 이미 외운 것 같네요! 🎉  
+            아직 {{wordStatus.unLearnedCount}}개가 헷갈리시는 것 같아요.
+          </div>
+        </a-col>
+        <a-col>
           <!-- 0번일 때 -->
           <div
             v-if="gameAttempts === 0"
@@ -80,7 +87,7 @@ import { message } from 'ant-design-vue';
 import CommonModal from '@/components/CommonModal.vue';
 import WordCreateModal from '@/components/WordCreateModal.vue';
 import Word from '@/components/Word.vue';
-import { fetchAttempts, fetchWords } from '@/api/wordApi.js';
+import { fetchAttempts, fetchWords, fetchWordStatus } from '@/api/wordApi.js';
 import { useDate } from '@/utils/useDate';
 
 type RangeValue = [Dayjs, Dayjs];
@@ -104,6 +111,11 @@ const cancelDeductedModalRef = ref();
 const wordCreateModal = ref();
 const word = ref();
 const gameAttempts = ref(0);
+const wordStatus = ref({
+  totalCount: 0,
+  learnedCount: 0,
+  unLearnedCount: 0
+});
 
 const { utcToKst } = useDate();
 
@@ -170,6 +182,19 @@ const getAttempts = async () => {
   }
 }
 
+const getWordStatus = async () => {
+  try {
+    const response = await fetchWordStatus();
+    if(response.status !== 200) throw new Error();
+
+    console.log(response.data);
+
+    wordStatus.value = response.data;
+  } catch (error) {
+    message.error('단어 상태를 불러올 수 없습니다.');
+  }
+}
+
 const handleTableChange = (paginationConfig) => {
   const { current, pageSize } = paginationConfig
   pagination.value.current = current
@@ -227,6 +252,7 @@ const onCreate = () => {
 const onGame = () => {
   word.value.show(() => {
     getAttempts();
+    getWordStatus();
   });
 }
 
@@ -239,5 +265,7 @@ onMounted(() => {
   getWords(params);
 
   getAttempts();
+
+  getWordStatus();
 });
 </script>

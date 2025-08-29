@@ -49,4 +49,9 @@ public class WordController {
         return ResponseEntity.ok(wordService.getTodayAttempts());
     }
 
+    @GetMapping("/word/status")
+    public ResponseEntity<Object> getWordStatus() {
+
+        return ResponseEntity.ok(wordService.getWordStatus());
+    }
 }
