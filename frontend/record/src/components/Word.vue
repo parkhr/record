@@ -32,6 +32,13 @@
             >
               {{ showMeaning ? words[currentIndex].meaning : '뜻 보기 👀' }}
             </p>
+
+            <p
+              style="font-size: 18px; font-weight: bold; color: #1677ff; cursor: pointer;"
+              @click="speak(words[currentIndex].word)"
+            >
+              🔊 발음 듣기
+            </p>
             <!-- 외웠다고 표시 -->
             <!-- <span
               v-if="learned.includes(words[currentIndex].word)"
@@ -90,6 +97,22 @@ const learned = ref<string[]>([]);
 const notLearned = ref<string[]>([]);
 const showMeaning = ref(false);
 const loading = ref(false);
+
+const speak = (text: string) => {
+  if ("speechSynthesis" in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // 튜닝 옵션 적용
+    utterance.lang = "en-US"; // 영어 읽기
+    utterance.rate = 1;       // 속도 (0.5 ~ 2)
+    utterance.pitch = Math.random() * 2; // 음높이 (0 ~ 2)
+
+    speechSynthesis.cancel(); // 이전 발음 중지
+    speechSynthesis.speak(utterance);
+  } else {
+    alert("이 브라우저는 음성 합성을 지원하지 않습니다.");
+  }
+};
 
 const show = async (cb?: Function) => {
   callback.value = cb ?? null;
