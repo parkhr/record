@@ -16,66 +16,63 @@
       <div style="padding: 20px; text-align: center">
         <!-- 카드 영역 -->
         <div v-if="currentIndex < words.length" style="margin-top: 20px">
-          <a-card style="width: 350px; margin: 0 auto; position: relative;">
+          <a-card style="margin: 0 auto; position: relative;">
             <!-- 단어 -->
-            <p style="font-size: 22px; font-weight: bold; margin-bottom: 10px;">
-              {{ words[currentIndex].word }}
-            </p>
+            <div
+              style="
+                display: flex;
+                justify-content: center;   /* ✅ 가운데 정렬 */
+                align-items: center;
+                gap: 10px;                  /* 단어-아이콘 간격 */
+                font-size: 27px;
+                font-weight: bold;
+                margin-bottom: 10px;
+              "
+            >
+              <span>{{ words[currentIndex].word }}</span>
+              <span
+                role="button"
+                aria-label="speak"
+                style="font-size: 20px; color: #1677ff; cursor: pointer;"
+                @click="speak(words[currentIndex].word)"
+              >
+                🔊
+              </span>
+            </div>
             <!-- 예문 -->
             <p style="font-size: 16px; color: #555; margin-bottom: 15px;">
               {{ words[currentIndex].example }}
             </p>
             <!-- 뜻 (클릭해서 토글) -->
-            <p
-              style="font-size: 18px; font-weight: bold; color: #1677ff; cursor: pointer;"
-              @click="showMeaning = !showMeaning"
-            >
-              {{ showMeaning ? words[currentIndex].meaning : '뜻 보기 👀' }}
-            </p>
-
-            <p
-              style="font-size: 18px; font-weight: bold; color: #1677ff; cursor: pointer;"
-              @click="speak(words[currentIndex].word)"
-            >
-              🔊 발음 듣기
-            </p>
-            <!-- 외웠다고 표시 -->
-            <!-- <span
-              v-if="learned.includes(words[currentIndex].word)"
-              style="position: absolute; top: 10px; right: 15px; color: green; font-weight: bold;"
-            >
-              ✅ 외웠음
-            </span> -->
+            <a-row>
+              <a-col :span="24">
+                <div
+                  style="font-size: 18px; font-weight: bold; color: #1677ff; cursor: pointer;"
+                  @click="showMeaning = !showMeaning"
+                >
+                  {{ showMeaning ? words[currentIndex].meaning : '뜻 보기 👀' }}
+                </div>
+              </a-col>
+            </a-row>
           </a-card>
 
           <!-- 버튼 영역 -->
-          <div style="display: flex; justify-content: center; margin-top: 20px; gap: 40px;">
-            <a-button type="primary" danger @click="handleCheck(true)">O</a-button>
-            <a-button type="primary" @click="handleCheck(false)">X</a-button>
-          </div>
-          <!-- <div style="display: flex; justify-content: center; margin-top: 20px; gap: 40px;">
-            <a-button type="dashed" @click="markAsLearned">외웠다 ✅</a-button>
-          </div> -->
-        </div>
-
-        <!-- 끝났을 때 -->
-        <div v-else>
-          <p style="margin-top: 30px; font-size: 18px; font-weight: bold;">
-            🎉 모든 단어를 확인했습니다!
-          </p>
-        </div>
-
-        <div style="display: flex; justify-content: center; gap: 40px">
-          <div>
-            ✅ 외운 단어
-          </div>
-          <div>
-            ❌ 못 외운 단어
-          </div>
-        </div>
-        <div style="display: flex; justify-content: center; gap: 100px;">
-          <a-statistic :value="learned.length" />
-          <a-statistic :value="notLearned.length" />
+          <a-row style="margin-top: 20px;">
+            <a-col :span="12">
+              <a-button type="primary" danger @click="handleCheck(true)">O</a-button>
+              <div style="margin-top: 20px;">
+                ✅ 외운 단어
+              </div>
+              <a-statistic :value="learned.length" />
+            </a-col>
+            <a-col :span="12">
+              <a-button type="primary" @click="handleCheck(false)">X</a-button>
+              <div style="margin-top: 20px;">
+                ❌ 못 외운 단어
+              </div>
+              <a-statistic :value="notLearned.length" />
+            </a-col>
+          </a-row>
         </div>
       </div>
     </a-modal>
