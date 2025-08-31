@@ -47,7 +47,7 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
             params.put("status", request.getStatus());
         }
 
-        if(request.getStartDate() != null && request.getStartDate().isEmpty() && request.getEndDate() != null && request.getEndDate().isEmpty()) {
+        if(request.getStartDate() != null && !request.getStartDate().isEmpty() && request.getEndDate() != null && !request.getEndDate().isEmpty()) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             LocalDate startDate = LocalDate.parse(request.getStartDate(), formatter);
@@ -61,7 +61,7 @@ public class RecordRepositoryCustomImpl implements RecordRepositoryCustom {
             params.put("startDate", startDateTime);
 
             sql.append(" AND createdAt <= :endDate");
-            countSql.append(" AND createdAt >= :startDate");
+            countSql.append(" AND createdAt <= :endDate");
             params.put("endDate", endDateTime);
         }
 

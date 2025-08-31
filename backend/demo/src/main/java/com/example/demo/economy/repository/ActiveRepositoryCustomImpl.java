@@ -57,7 +57,7 @@ public class ActiveRepositoryCustomImpl implements ActiveRepositoryCustom {
             params.put("startDate", startDateTime);
 
             sql.append(" AND createdAt <= :endDate");
-            countSql.append(" AND createdAt >= :startDate");
+            countSql.append(" AND createdAt <= :endDate");
             params.put("endDate", endDateTime);
         }
 

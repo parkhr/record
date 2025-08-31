@@ -159,8 +159,8 @@ const search = () => {
     params.status = status.value;
   }
   if (insertDateRange.value) {
-    params.startDate = insertDateRange.value[0].format('YYYY-MM-DD');
-    params.endDate = insertDateRange.value[1].format('YYYY-MM-DD');
+    params.startDate = insertDateRange.value[0].toISOString();
+    params.endDate = insertDateRange.value[1].toISOString();
   }
 
   searchParams.value = params;

@@ -2,6 +2,10 @@ package com.example.demo.economy.repository;
 
 import com.example.demo.economy.request.SearchWordRequest;
 import com.example.demo.economy.response.SearchWordResponse;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,29 +36,35 @@ public class WordRepositoryCustomImpl implements WordRepositoryCustom {
         sql.append(" AND deletedAt IS NULL");
         countSql.append(" AND deletedAt IS NULL");
 
+        if (request.getName() != null && !request.getName().isEmpty()) {
+            sql.append(" AND name LIKE :name");
+            countSql.append(" AND name LIKE :name");
+            params.put("name", "%" + request.getName() + "%");
+        }
+
 //        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
 //            sql.append(" AND deducted = :status");
 //            countSql.append(" AND deducted = :status");
 //            params.put("status", request.getStatus());
 //        }
 //
-//        if(request.getStartDate() != null && request.getStartDate().isEmpty() && request.getEndDate() != null && request.getEndDate().isEmpty()) {
-//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//
-//            LocalDate startDate = LocalDate.parse(request.getStartDate(), formatter);
-//            LocalDate endDate = LocalDate.parse(request.getEndDate(), formatter);
-//
-//            LocalDateTime startDateTime = startDate.atStartOfDay();
-//            LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
-//
-//            sql.append(" AND spendAt >= :startDate");
-//            countSql.append(" AND spendAt >= :startDate");
-//            params.put("startDate", startDateTime);
-//
-//            sql.append(" AND spendAt <= :endDate");
-//            countSql.append(" AND spendAt >= :startDate");
-//            params.put("endDate", endDateTime);
-//        }
+        if(request.getStartDate() != null && !request.getStartDate().isEmpty() && request.getEndDate() != null && !request.getEndDate().isEmpty()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            LocalDate startDate = LocalDate.parse(request.getStartDate(), formatter);
+            LocalDate endDate = LocalDate.parse(request.getEndDate(), formatter);
+
+            LocalDateTime startDateTime = startDate.atStartOfDay();
+            LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+            sql.append(" AND createdAt >= :startDate");
+            countSql.append(" AND createdAt >= :startDate");
+            params.put("startDate", startDateTime);
+
+            sql.append(" AND createdAt <= :endDate");
+            countSql.append(" AND createdAt <= :endDate");
+            params.put("endDate", endDateTime);
+        }
 
         sql.append(" ORDER BY createdAt DESC");
 

@@ -1,11 +1,11 @@
 <template>
   <a-row :gutter="[5, 5]" style="margin-bottom: 20px">
-    <a-col :span="2">
-      <a-select
-        v-model:value="status"
+    <a-col :span="4">
+      <a-input
+        v-model:value="name"
         style="width: 100%"
-        :options="statuses.map(pro => ({ value: pro }))"
-      ></a-select>
+        placeholder="단어를 검색하세요."
+      />
     </a-col>
     <a-col :span="3">
       <a-range-picker v-model:value="insertDateRange" style="width: 300px" />
@@ -29,7 +29,7 @@
           <div style="padding: 5px; background: #e6f7ff; border-radius: 8px; color: #096dd9; font-size: 14px;">
             총 {{wordStatus.totalCount}}개 중 
             {{wordStatus.learnedCount}}개를 이미 외운 것 같네요! 🎉  
-            아직 {{wordStatus.unLearnedCount}}개 외우는 중인 것  같아요.
+            아직 {{wordStatus.unLearnedCount}}개 외우는 중인 것 같아요.
           </div>
         </a-col>
         <a-col>
@@ -99,10 +99,8 @@ const searchParams = ref({
   page: 0,
   pageSize: 20
 });
-const statuses = ['전체', '차감', '차감취소'];
-// 숫자로 변환된 차감 여부
-const deductedValue = computed(() => status.value === '차감' ? 1 : 0);
-const status = ref(statuses[0]);
+
+const name = ref('');
 const insertDateRange = ref<RangeValue>();
 
 const deleteModalRef = ref();
@@ -212,9 +210,13 @@ const search = () => {
     pageSize: pagination.value.pageSize,
   };
 
-  if (status.value && status.value !== '전체') {
-    params.status = deductedValue.value;
+  // if (status.value && status.value !== '전체') {
+  //   params.status = deductedValue.value;
+  // }
+  if(name.value) {
+    params.name = name.value;
   }
+
   if (insertDateRange.value) {
     params.startDate = insertDateRange.value[0].format('YYYY-MM-DD');
     params.endDate = insertDateRange.value[1].format('YYYY-MM-DD');
@@ -227,7 +229,7 @@ const search = () => {
 
 const reset = () => {
 
-  status.value = statuses[0];
+  name.value = '';
   insertDateRange.value = null;
 
   searchParams.value = {

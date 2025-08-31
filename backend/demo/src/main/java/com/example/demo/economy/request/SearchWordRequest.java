@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class SearchWordRequest {
 
-    private String status;
+    private String name;
     private String startDate;
     private String endDate;
 }

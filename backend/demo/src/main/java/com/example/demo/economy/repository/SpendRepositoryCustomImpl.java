@@ -44,7 +44,7 @@ public class SpendRepositoryCustomImpl implements SpendRepositoryCustom {
             params.put("status", request.getStatus());
         }
 
-        if(request.getStartDate() != null && request.getStartDate().isEmpty() && request.getEndDate() != null && request.getEndDate().isEmpty()) {
+        if(request.getStartDate() != null && !request.getStartDate().isEmpty() && request.getEndDate() != null && !request.getEndDate().isEmpty()) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             LocalDate startDate = LocalDate.parse(request.getStartDate(), formatter);
@@ -58,7 +58,7 @@ public class SpendRepositoryCustomImpl implements SpendRepositoryCustom {
             params.put("startDate", startDateTime);
 
             sql.append(" AND spendAt <= :endDate");
-            countSql.append(" AND spendAt >= :startDate");
+            countSql.append(" AND spendAt <= :endDate");
             params.put("endDate", endDateTime);
         }
 
