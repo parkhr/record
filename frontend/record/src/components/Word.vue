@@ -74,6 +74,13 @@
             </a-col>
           </a-row>
         </div>
+
+        <!-- 끝났을 때 -->
+        <div v-else>
+          <p style="margin-top: 30px; font-size: 18px; font-weight: bold;">
+            🎉 모든 단어를 확인했습니다!
+          </p>
+        </div>
       </div>
     </a-modal>
   </div>
