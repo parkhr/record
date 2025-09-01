@@ -13,7 +13,11 @@
         </a-button> -->
       </template>
 
-      <div style="padding: 20px; text-align: center">
+      <div style="font-size: 16px; color: #555; text-align: center;">
+        ⏱ {{ elapsedTime }}초 경과 | 
+        📖 {{ currentIndex + 1 }}/{{ words.length }}
+      </div>
+      <div style="text-align: center">
         <!-- 카드 영역 -->
         <div v-if="currentIndex < words.length" style="margin-top: 20px">
           <a-card style="margin: 0 auto; position: relative;">
@@ -80,6 +84,13 @@
           <p style="margin-top: 30px; font-size: 18px; font-weight: bold;">
             🎉 모든 단어를 확인했습니다!
           </p>
+          <!-- 결과 요약 -->
+          <div style="margin-top: 20px; font-size: 16px; line-height: 1.8;">
+            ⏱ 외운 시간: <b>{{ elapsedTime }}초</b><br />
+            📖 총 단어 수: <b>{{ words.length }}개</b><br />
+            ✅ 외운 단어: <b>{{ learned.length }}개</b><br />
+            ❌ 못 외운 단어: <b>{{ notLearned.length }}개</b>
+          </div>
         </div>
       </div>
     </a-modal>
@@ -97,6 +108,8 @@ const callback = ref<null | Function>(null);
 const words = ref([]);
 
 const currentIndex = ref(0);
+const elapsedTime = ref(0);
+const timer = ref(null);
 const learned = ref<string[]>([]);
 const notLearned = ref<string[]>([]);
 const showMeaning = ref(false);
@@ -126,10 +139,18 @@ const show = async (cb?: Function) => {
     const response = await game();
     words.value = response.data;
     callback.value?.();
+
+    startTimer();
     
   } catch (error) {
     message.error('단어를 불러오는데 실패했습니다.');
   }
+};
+
+const startTimer = () =>{
+  timer.value = setInterval(() => {
+    elapsedTime.value++;
+  }, 1000);
 };
 
 const handleOk = async () => {
@@ -145,6 +166,8 @@ const handleCancel = () => {
   learned.value = [];
   notLearned.value = [];
   showMeaning.value = false;
+  elapsedTime.value = 0;
+  timer.value && clearInterval(timer.value);
 };
 
 const handleCheck = async (isKnown: boolean) => {
@@ -190,6 +213,11 @@ const handleCheck = async (isKnown: boolean) => {
   }
 
   currentIndex.value++;
+
+  if(currentIndex.value >= words.value.length) {
+    timer.value && clearInterval(timer.value);
+  }
+
   showMeaning.value = false; // 다음 단어는 뜻 숨김
 };
 
