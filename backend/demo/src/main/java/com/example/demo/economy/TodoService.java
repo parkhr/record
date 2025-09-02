@@ -217,6 +217,7 @@ public class TodoService {
         }
 
         List<Task> tasks = taskRepository.findByEpicId(request.getEpicId());
+        tasks = tasks.stream().filter(task -> !task.isDeleted()).toList();
 
         if (tasks.size() != request.getTaskIds().size()) {
             throw new ApplicationException("할일 개수가 맞지 않습니다.");
@@ -253,6 +254,7 @@ public class TodoService {
         }
 
         List<Epic> epics = epicRepository.findByAdminId(admin.getId());
+        epics = epics.stream().filter(epic -> !epic.isDeleted()).toList();
 
         if (epics.size() != request.getEpicIds().size()) {
             throw new ApplicationException("카드 개수가 맞지 않습니다.");
