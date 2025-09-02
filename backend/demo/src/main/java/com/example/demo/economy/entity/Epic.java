@@ -28,6 +28,9 @@ public class Epic {
     @Column("title")
     private String title;
 
+    @Column("sortOrder")
+    private int sortOrder;
+
     @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
@@ -39,7 +42,7 @@ public class Epic {
     private LocalDateTime deletedAt;
 
     public static Epic createEpic(CreateEpicRequest request, long adminId) {
-        return Epic.builder().adminId(adminId).title(request.getTitle()).build();
+        return Epic.builder().adminId(adminId).title(request.getTitle()).sortOrder(0).build();
     }
 
     public void delete() {
@@ -52,6 +55,7 @@ public class Epic {
 
     public void update(UpdateEpicRequest request) {
         this.title = request.getTitle();
+        this.sortOrder = request.getSortOrder();
         this.updatedAt = LocalDateTime.now();
     }
 }

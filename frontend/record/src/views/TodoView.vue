@@ -16,6 +16,7 @@
         item-key="id"
         direction="horizontal"
         style="display: flex; flex-wrap: nowrap; overflow-x: auto;"
+        @change="onEpicChange($event)"
       >
         <template #item="{ element: epic }">
           <a-col :key="epic.id" style="flex: 0 0 500px; max-width: 500px;">
@@ -174,7 +175,7 @@
 import { nextTick, onMounted, ref } from 'vue';
 import draggable from 'vuedraggable';
 import { message } from 'ant-design-vue';
-import { createEpic, createTask, deleteEpic, deleteTask, fetchEpics, sortTask, updateEpic, updateTask } from '@/api/todoApi';
+import { createEpic, createTask, deleteEpic, deleteTask, fetchEpics, sortEpic, sortTask, updateEpic, updateTask } from '@/api/todoApi';
 
 const epicTitleInput = ref(null)
 const titleInput = ref(null)
@@ -234,7 +235,8 @@ const endEpicTitleEdit = async (epic) => {
   try {
     let requestBody = {
       epicId: epic.id,
-      title: epic.title
+      title: epic.title,
+      sortOrder: 0
     }
     
     const response = await updateEpic(requestBody);
@@ -402,6 +404,24 @@ const onDeleteEpic = async (epic) => {
     
   } catch (error) {
     message.error('카드 삭제에 실패했습니다.');
+  }
+}
+
+const onEpicChange = async (evt) => {
+  // 같은 epic 내 순서 변경
+  if (evt.moved) {
+
+    try {
+      let requestBody = {
+        epicIds: epics.value.map(epic => epic.id)
+      }
+      
+      const response = await sortEpic(requestBody);
+      if(response.status !== 200) throw new Error();
+
+    } catch (error) {
+      message.error('카드 정렬에 실패했습니다.');
+    }
   }
 }
 

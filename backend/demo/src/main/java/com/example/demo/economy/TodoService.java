@@ -13,6 +13,7 @@ import com.example.demo.economy.repository.EpicRepository;
 import com.example.demo.economy.repository.TaskRepository;
 import com.example.demo.economy.request.CreateEpicRequest;
 import com.example.demo.economy.request.CreateTaskRequest;
+import com.example.demo.economy.request.SortEpicRequest;
 import com.example.demo.economy.request.SortTaskRequest;
 import com.example.demo.economy.request.TaskResponse;
 import com.example.demo.economy.request.UpdateEpicRequest;
@@ -53,6 +54,7 @@ public class TodoService {
             .map(epic -> EpicResponse.builder()
                 .id(epic.getId())
                 .title(epic.getTitle())
+                .sortOrder(epic.getSortOrder())
                 .todo(
                     taskRepository.findByEpicId(epic.getId()).stream()
                         .filter(task -> !task.isDeleted())
@@ -70,6 +72,7 @@ public class TodoService {
                 )
                 .build()
             )
+            .sorted(Comparator.comparing(EpicResponse::getSortOrder, Comparator.nullsLast(Integer::compareTo)))
             .toList();
     }
 
@@ -238,5 +241,41 @@ public class TodoService {
         }
 
         taskRepository.saveAll(updatedTasks); // 배치 저장
+    }
+
+    @Transactional
+    public void sortEpic(SortEpicRequest request) {
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        List<Epic> epics = epicRepository.findByAdminId(admin.getId());
+
+        if (epics.size() != request.getEpicIds().size()) {
+            throw new ApplicationException("카드 개수가 맞지 않습니다.");
+        }
+
+        // id → Task 매핑
+        Map<Long, Epic> taskMap = epics.stream()
+            .collect(Collectors.toMap(Epic::getId, Function.identity()));
+
+        List<Epic> updatedEpics = new ArrayList<>();
+
+        for (int i = 0; i < request.getEpicIds().size(); i++) {
+            Long epicId = request.getEpicIds().get(i);
+            Epic epic = taskMap.get(epicId);
+
+            if (epic == null) {
+                throw new ApplicationException("잘못된 epicId: " + epicId);
+            }
+
+            epic.setSortOrder(i);
+            updatedEpics.add(epic);
+        }
+
+        epicRepository.saveAll(updatedEpics); // 배치 저장
     }
 }

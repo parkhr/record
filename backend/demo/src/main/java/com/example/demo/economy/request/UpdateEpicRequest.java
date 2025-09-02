@@ -9,4 +9,5 @@ public class UpdateEpicRequest {
 
     private long epicId;
     private String title;
+    private int sortOrder;
 }

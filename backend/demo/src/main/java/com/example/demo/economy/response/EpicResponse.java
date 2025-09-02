@@ -15,5 +15,6 @@ public class EpicResponse {
 
     private long id;
     private String title;
+    private int sortOrder;
     private List<TaskResponse> todo;
 }
