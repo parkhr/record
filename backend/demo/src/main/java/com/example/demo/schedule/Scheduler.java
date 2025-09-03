@@ -2,9 +2,12 @@ package com.example.demo.schedule;
 
 import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
+import com.example.demo.economy.entity.Word;
+import com.example.demo.economy.repository.WordRepository;
 import com.example.demo.push.PushMessage;
 import com.example.demo.push.PushSendResolver;
 import com.example.demo.push.PushSender;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,6 +19,7 @@ public class Scheduler {
 
     private final PushSendResolver pushSendResolver;
     private final AdminRepository adminRepository;
+    private final WordRepository wordRepository;
 
     @Scheduled(cron = "0 0 21 * * *", zone = "Asia/Seoul")
     public void checkUserSpending() {
@@ -48,6 +52,39 @@ public class Scheduler {
 
         for (Admin admin : admins) {
             //TODO 유저별 푸시 링크 다름
+            pushAppSender.send(pushMessage);
+        }
+    }
+
+    @Scheduled(cron = "0 0 8 * * *", zone = "Asia/Seoul")
+    public void recommendWord() {
+        PushSender pushAppSender = pushSendResolver.resolve();
+        Iterable<Admin> admins = adminRepository.findAll();
+
+        List<Admin> activeAdmin = new ArrayList<>();
+        for (Admin admin : admins) {
+            if(!admin.isDeleted()) {
+                activeAdmin.add(admin);
+            }
+        }
+
+        PushMessage pushMessage = PushMessage.builder()
+            .title("오늘의 추천 단어!")
+            .body("")
+            .build();
+
+        for (Admin admin : activeAdmin) {
+            //TODO 유저별 푸시 링크 다름
+
+            List<Word> words = wordRepository.findByAdminIdAndCompletedLessThan(admin.getId(), 1);
+            StringBuilder sb = new StringBuilder();
+
+            for(Word word : words) {
+                sb.append(word.getName()).append(" : ").append(word.getMean()).append("\n");
+            }
+
+            pushMessage.setBody(sb.toString());
+
             pushAppSender.send(pushMessage);
         }
     }
