@@ -34,6 +34,7 @@
 </template>
 
 <script lang="ts" setup>
+import { createActive } from '@/api/active';
 import api from '@/api/axios'
 import { message } from 'ant-design-vue';
 import { reactive, ref } from 'vue';
@@ -60,18 +61,12 @@ const handleOk = async () => {
       message.error('활동시간은 0분 보다 커야 합니다.');
       return;
     } else {
-      const response = await api.post(
-        '/api/economy/active',
-        {
-          minutes: formState.minutes, // 시간도 같이 보내면 좋음
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`,
-          }
-        }
-      );
+
+      const requestBody = {
+          minutes: formState.minutes,
+      }
+
+      const response = await createActive(requestBody);
       if(response.status !== 200) throw new Error();
 
       open.value = false;
@@ -80,7 +75,6 @@ const handleOk = async () => {
       callback.value?.(); // 행위 수행
     }
   } catch (error) {
-    console.log(error)
     message.error('활동내역이 생성 실패하였습니다.');
   }
 };

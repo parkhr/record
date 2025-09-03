@@ -26,7 +26,11 @@
     <template #title>
       <a-row :gutter="5" justify="end">
         <a-col>
-          <div style="padding: 5px; background: #e6f7ff; border-radius: 8px; color: #096dd9; font-size: 14px;">
+          <div v-if="wordStatus.totalCount === wordStatus.learnedCount" style="padding: 5px; background: #e6f7ff; border-radius: 8px; color: #096dd9; font-size: 14px;">
+            단어를 모두 외우셨네요! 🎉  
+          </div>
+
+          <div v-if="wordStatus.totalCount > wordStatus.learnedCount" style="padding: 5px; background: #e6f7ff; border-radius: 8px; color: #096dd9; font-size: 14px;">
             총 {{wordStatus.totalCount}}개 중 
             {{wordStatus.learnedCount}}개를 이미 외운 것 같네요! 🎉  
             아직 {{wordStatus.unLearnedCount}}개 외우는 중인 것 같아요.
@@ -184,8 +188,6 @@ const getWordStatus = async () => {
   try {
     const response = await fetchWordStatus();
     if(response.status !== 200) throw new Error();
-
-    console.log(response.data);
 
     wordStatus.value = response.data;
   } catch (error) {

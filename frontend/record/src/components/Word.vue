@@ -3,17 +3,18 @@
     <a-modal
       v-model:open="open"
       title="단어 학습"
-      @ok="handleOk"
+      @ok="handleAddActive"
       @cancel="handleCancel"
     >
       <template #footer>
-        <a-button key="back" @click="handleCancel">그만하기</a-button>
+        <a-button v-if="currentIndex < words.length" key="back" @click="handleCancel">그만하기</a-button>
+        <a-button v-else="currentIndex < words.length" key="complete" @click="handleAddActive">활동내역에 추가하기</a-button>
         <!-- <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
           등록
         </a-button> -->
       </template>
 
-      <div style="font-size: 16px; color: #555; text-align: center;">
+      <div v-if="currentIndex < words.length" style="font-size: 16px; color: #555; text-align: center;">
         ⏱ {{ elapsedTime }}초 경과 | 
         📖 {{ currentIndex + 1 }}/{{ words.length }}
       </div>
@@ -98,12 +99,13 @@
 </template>
 
 <script lang="ts" setup>
+import { createActive } from "@/api/active";
 import { game, updateWord } from "@/api/wordApi";
 import { message } from "ant-design-vue";
 import { onMounted, ref } from "vue";
 
 const open = ref(false);
-const callback = ref<null | Function>(null);
+const callback = ref(null);
 
 const words = ref([]);
 
@@ -138,7 +140,6 @@ const show = async (cb?: Function) => {
   try{
     const response = await game();
     words.value = response.data;
-    callback.value?.();
 
     startTimer();
     
@@ -153,13 +154,6 @@ const startTimer = () =>{
   }, 1000);
 };
 
-const handleOk = async () => {
-  if (callback.value) {
-    callback.value({ learned: learned.value, notLearned: notLearned.value });
-  }
-  open.value = false;
-};
-
 const handleCancel = () => {
   open.value = false;
   currentIndex.value = 0;
@@ -169,6 +163,32 @@ const handleCancel = () => {
   elapsedTime.value = 0;
   timer.value && clearInterval(timer.value);
 };
+
+const handleAddActive = async () => {
+  try {
+    callback.value?.();
+    const minutes = Math.floor(elapsedTime.value / 60);
+
+    if (minutes <= 0) {
+      message.error('활동 시간은 최소 1분 이상이어야 합니다.');
+      handleCancel();
+    } else {
+
+      const requestBody = {
+          minutes: minutes,
+      }
+
+      const response = await createActive(requestBody);
+      if(response.status !== 200) throw new Error();
+
+      message.success('활동내역이 생성되었습니다.');
+      handleCancel();
+    }
+  } catch (error) {
+    message.error('활동내역이 생성 실패하였습니다.');
+    handleCancel();
+  }
+}
 
 const handleCheck = async (isKnown: boolean) => {
   const word = words.value[currentIndex.value];
@@ -220,13 +240,6 @@ const handleCheck = async (isKnown: boolean) => {
 
   showMeaning.value = false; // 다음 단어는 뜻 숨김
 };
-
-// const markAsLearned = () => {
-//   const word = words[currentIndex.value].word;
-//   if (!learned.value.includes(word)) {
-//     learned.value.push(word);
-//   }
-// };
 
 defineExpose({ show });
 </script>
