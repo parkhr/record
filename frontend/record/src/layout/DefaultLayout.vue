@@ -224,12 +224,61 @@ onMounted(async () => {
 watch(
   () => router.currentRoute.value.fullPath,
   async (newPath, oldPath) => {
-    console.log('라우트 변경 감지:', oldPath, '→', newPath)
+    // console.log('라우트 변경 감지:', oldPath, '→', newPath)
+    
+    let result = null;
+    let path = "/" + newPath.split("/")[1]; 
 
-    try {
-      //TODO url 로 메뉴를 조회화여 현재메뉴 세팅
-    } catch (error) {
-      message.error('메뉴를 불러올 수 없습니다.')
+    menus.value.forEach(item => {
+      if(item.link === path) {
+        result = item;
+      }
+    })
+
+    if(!result) {
+      //TODO 메뉴를 못 찾을 시, 기존 홈으로 이동
+    } else {
+      selectedMenu.value = result.link
+      selectedMenuId.value = result.id
+      selectedMenuName.value = result.name
+
+      localStorage.setItem('selectedMenu', result.link)
+      localStorage.setItem('selectedMenuId', result.id)
+      localStorage.setItem('selectedMenuName', result.name)
+
+      let params = {
+        menuLevel : 2,
+        parentId : localStorage.getItem('selectedMenuId')
+      }
+
+      let response = await api.get('/api/menu', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+        },
+        params: params
+      });
+
+      childMenus.value = response.data
+
+      result = null;
+      childMenus.value.forEach(item => {
+        if(item.link === newPath) {
+          result = item;
+        }
+      })
+
+      if(!result) {
+        //TODO 메뉴를 못 찾을 시, 기존 홈으로 이동
+      } else {
+        selectedChildMenu.value = result.link
+        selectedChildMenuId.value = result.id
+        selectedChildMenuName.value = result.name
+
+        localStorage.setItem('selectedChildMenu', result.link)
+        localStorage.setItem('selectedChildMenuId', result.id)
+        localStorage.setItem('selectedChildMenuName', result.name)
+      }
     }
   }
 )
