@@ -1,0 +1,86 @@
+{
+  "steps": {
+    "application": "Application/Report",
+    "basic": "Basic Information",
+    "enrollment": "Enrollment",
+    "workplace": "Workplace",
+    "reentry": "Re-entry Period"
+  },
+  "form": {
+    "label": {
+      "application": "Application/Report",
+      "desiredStatus": "Desired Status",
+      "singleOrMultiple": "Single / Multiple",
+
+      "name": "Name",
+      "birth": "Date of Birth",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "nationality": "Nationality",
+      "alienRegNo": "Alien Registration No.",
+      "passportNo": "Passport Number",
+      "passportIssue": "Passport Issue Date",
+      "passportExpiry": "Passport Expiry Date",
+      "koreaAddress": "Address in Korea",
+      "tel": "Telephone",
+      "mobile": "Mobile",
+      "homeAddress": "Home Country Address",
+      "homeTel": "Home Country Phone",
+      "email": "Email",
+
+      "isEnrolled": "Enrollment Status",
+      "schoolName": "School Name",
+      "schoolTel": "School Phone",
+      "schoolType": "School Type",
+      "eduApproved": "Approved by Education Office",
+      "eduNotApproved": "Not Approved / Alternative School",
+
+      "workplaceOriginal": "Current Workplace",
+      "bizNoOriginal": "Business Reg. No. (Current)",
+      "telOriginal": "Phone (Current Workplace)",
+      "workplaceFuture": "Future Workplace",
+      "bizNoFuture": "Business Reg. No. (Future)",
+      "telFuture": "Phone (Future Workplace)",
+      "annualIncome": "Annual Income",
+      "job": "Occupation",
+
+      "reentryPeriod": "Re-entry Period"
+    },
+    "value": {
+      "application": {
+        "1": "Foreigner Registration",
+        "2": "Reissue of Registration Card",
+        "3": "Extension of Stay",
+        "4": "Change of Visa Status",
+        "5": "Grant of Visa Status",
+        "6": "Permission for Activities Beyond Visa Status",
+        "7": "Change/Add Workplace Permission / Report",
+        "8": "Re-entry Permit (Single, Multiple)",
+        "9": "Report of Change of Residence",
+        "10": "Report of Change in Registration Details",
+        "11": "Single",
+        "12": "Multiple"
+      }
+    },
+    "tooltip": {
+      "application": {
+        "1": "When you first come to Korea, you register your personal information. It’s like a resident registration card.",
+        "2": "When your card is lost or damaged, you can get a new one.",
+        "3": "Permission to extend your stay if you want to stay longer in Korea.",
+        "4": "Apply when you want to change your current visa status. Example: Student → Work.",
+        "5": "Getting a visa status for the first time in Korea.",
+        "6": "Permission to do activities not allowed under your original visa. Example: A student wants to work part-time.",
+        "7": "You must report or get permission when changing or adding a workplace.",
+        "8": "Required when leaving and re-entering Korea. Single: one entry. Multiple: multiple entries.",
+        "9": "Report when your residence in Korea changes.",
+        "10": "Report when registered information like name or passport number changes."
+      }
+    }
+  },
+  "button": {
+    "prev": "← Previous",
+    "next": "Next →",
+    "save": "💾 Save"
+  }
+}

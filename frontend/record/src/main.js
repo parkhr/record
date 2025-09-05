@@ -3,11 +3,21 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import Antd, { message } from 'ant-design-vue';
 import App from './App.vue'
+import { createI18n } from 'vue-i18n'
+import ko from './locales/ko.json'
+import en from './locales/en.json'
+import zh from './locales/zh.json'
 import router from './router'
 import 'ant-design-vue/dist/reset.css';
 import api from './api/axios'
 
-const app = createApp(App)
+const i18n = createI18n({
+  locale: 'ko',
+  fallbackLocale: 'en',
+  messages: { ko, en, zh }
+})
+
+const app = createApp(App).use(i18n)
 
 app.use(router)
 

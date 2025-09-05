@@ -73,6 +73,11 @@ const router = createRouter({
           name: 'word',
           component: () => import('../views/WordView.vue'),
         },
+        {
+          path: '/gov/application',
+          name: 'application',
+          component: () => import('../views/Application.vue'),
+        }
       ]
     },
   ],
