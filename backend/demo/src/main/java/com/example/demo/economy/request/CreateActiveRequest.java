@@ -7,5 +7,6 @@ import lombok.Setter;
 @Setter
 public class CreateActiveRequest {
 
+    private String type;
     private int minutes;
 }

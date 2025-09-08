@@ -24,9 +24,9 @@
       </a-row>
     </a-col>
 
-    <a-col :span="4">
+    <!-- <a-col :span="4">
       <Stopwatch @refreshByChild="refreshByChild"/>
-    </a-col>
+    </a-col> -->
     <a-col :span="1">
       
     </a-col>
@@ -93,6 +93,7 @@ const deleteModalRef = ref();
 const savedModalRef = ref();
 const cancelSavedModalRef = ref();
 const activeCreateModalRef = ref();
+const activeCreateWriteModalRef = ref();
 
 const { utcToKst } = useDate();
 
@@ -101,6 +102,11 @@ const columns = [
     title: 'No',
     dataIndex: 'key',
     key: 'key',
+  },
+  {
+    title: '유형',
+    dataIndex: 'type',
+    key: 'type',
   },
   {
     title: '활동시간 (분)',

@@ -175,6 +175,7 @@ const handleAddActive = async () => {
     } else {
 
       const requestBody = {
+          type: '영어단어',
           minutes: minutes,
       }
 

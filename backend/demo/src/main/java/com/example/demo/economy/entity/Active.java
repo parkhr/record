@@ -25,6 +25,9 @@ public class Active {
     @Column("adminId")
     private long adminId;
 
+    @Column("type")
+    private String type;
+
     @Column("minutes")
     private int minutes;
 
@@ -56,6 +59,7 @@ public class Active {
 
         return Active.builder()
             .adminId(adminId)
+            .type(request.getType())
             .minutes(request.getMinutes())
             .saved(false)
             .build();

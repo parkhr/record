@@ -26,7 +26,7 @@ public class ActiveRepositoryCustomImpl implements ActiveRepositoryCustom {
 
     @Override
     public Page<SearchActiveResponse> findActives(SearchActiveRequest request, long adminId, Pageable pageable) {
-        StringBuilder sql = new StringBuilder("SELECT id, minutes, saved, createdAt FROM active WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT id, type, minutes, saved, createdAt FROM active WHERE 1=1");
         StringBuilder countSql = new StringBuilder("SELECT COUNT(1) FROM active WHERE 1=1");
         Map<String, Object> params = new HashMap<>();
 

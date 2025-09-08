@@ -10,6 +10,7 @@ import lombok.Setter;
 public class SearchActiveResponse {
 
     private long id;
+    private String type;
     private int minutes;
     private boolean saved;
 
