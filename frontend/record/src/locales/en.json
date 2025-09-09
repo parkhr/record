@@ -48,20 +48,27 @@
       "reentryPeriod": "Re-entry Period"
     },
     "value": {
-      "application": {
-        "1": "Foreigner Registration",
-        "2": "Reissue of Registration Card",
-        "3": "Extension of Stay",
-        "4": "Change of Visa Status",
-        "5": "Grant of Visa Status",
-        "6": "Permission for Activities Beyond Visa Status",
-        "7": "Change/Add Workplace Permission / Report",
-        "8": "Re-entry Permit (Single, Multiple)",
-        "9": "Report of Change of Residence",
-        "10": "Report of Change in Registration Details",
-        "11": "Single",
-        "12": "Multiple"
-      }
+      "registerForigner": "Register as Foreigner",
+      "reissueCard": "Reissue Registration Card",
+      "extendStay": "Extend Stay Permit",
+      "changeStatus": "Change Status Permit",
+      "grantStatus": "Grant Status",
+      "permitOutsideActivity": "Permit Outside Activity",
+      "changeOrAddWorkplace": "Change or Add Workplace Permit/Report",
+      "reentryPermit": "Re-entry Permit (Single/Multiple)",
+      "reportChangeResidence": "Report Change of Residence",
+      "reportChangeDetails": "Report Change of Details",
+      "single": "Single",
+      "multiple": "Multiple",
+
+      "male": "Male",
+      "female": "Female",
+
+      "enroll": "Enrolled",
+      "notEnroll": "Not Enrolled",
+
+      "eduApprove": "Approved by Education Office",
+      "eduNotApprove": "Not Approved / Alternative School"
     },
     "tooltip": {
       "application": {
@@ -76,7 +83,43 @@
         "9": "Report when your residence in Korea changes.",
         "10": "Report when registered information like name or passport number changes."
       }
-    }
+    },
+    "placeholder": {
+      "firstName": "firstName",
+      "lastName": "lastName",
+      "birth": "Select Date of Birth",
+      "nationality": "Enter nationality",
+      "alienRegNo": "Enter Alien Registration No.",
+      "passportNo": "Enter Passport Number",
+      "passportIssue": "Select Passport Issue Date",
+      "passportExpiry": "Select Passport Expiry Date",
+      "koreaAddress": "Enter Address in Korea",
+      "tel": "Enter Telephone",
+      "mobile": "Enter Mobile",
+      "homeAddress": "Enter Home Country Address",
+      "homeTel": "Enter Home Country Phone",
+      "email": "Enter Email Address",
+      "schoolName": "Enter School Name",
+      "schoolTel": "Enter School Phone",
+      "schoolType": "Select School Type",
+
+      "workplaceOriginal": "Enter Current Workplace",
+      "bizNoOriginal": "Enter Business Reg. No. (Current)",
+      "telOriginal": "Enter Phone (Current Workplace)",
+      "workplaceFuture": "Enter Future Workplace",
+      "bizNoFuture": "Enter Business Reg. No. (Future)",
+      "telFuture": "Enter Phone (Future Workplace)",
+      "annualIncome": "Enter Annual Income",
+      "job": "Enter Occupation",
+
+      "reentryPeriod": "Select Re-entry Period"
+    },
+    "result": {
+      "1" : "Submission Complete!",
+      "2" : "Please check the details you entered.",
+      "3" : "Download"
+    },
+    "ex": "ex"
   },
   "button": {
     "prev": "← Previous",
