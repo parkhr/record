@@ -4,6 +4,7 @@ import com.example.demo.economy.request.CancelMinusAmountRequest;
 import com.example.demo.economy.request.CancelPlusAmountRequest;
 import com.example.demo.economy.request.CreateActiveRequest;
 import com.example.demo.economy.request.CreateSpendRequest;
+import com.example.demo.economy.request.CreateWriteSpendRequest;
 import com.example.demo.economy.request.MinusAmountRequest;
 import com.example.demo.economy.request.PlusAmountRequest;
 import com.example.demo.economy.request.SearchActiveRequest;
@@ -31,6 +32,14 @@ public class EconomyController {
     public ResponseEntity<Object> createSpend(@RequestBody CreateSpendRequest request) {
 
         economyService.createSpend(request);
+        return ResponseEntity.ok().build();
+    }
+
+    // 지출내역 수기 생성
+    @PostMapping("/spend/write")
+    public ResponseEntity<Object> createSpendByWrite(@RequestBody CreateWriteSpendRequest request) {
+
+        economyService.createSpendByWrite(request);
         return ResponseEntity.ok().build();
     }
 

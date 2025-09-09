@@ -28,6 +28,9 @@
           <a-button @click="onExport">엑셀 다운로드</a-button>
         </a-col>
         <a-col>
+          <a-button type="primary" @click="onWrite">수기등록</a-button>
+        </a-col>
+        <a-col>
           <a-button type="primary" @click="onCreate">등록</a-button>
         </a-col>
       </a-row>
@@ -51,6 +54,7 @@
   </a-table>
 
   <SpendCreateModal ref="spendCreateModal" />
+  <SpendCreateWriteModal ref="spendCreateWriteModal" />
   <CommonModal ref="deleteModalRef"/>
   <CommonModal ref="deductedModalRef"/>
   <CommonModal ref="cancelDeductedModalRef"/>
@@ -62,6 +66,7 @@ import { onMounted, ref, h, computed } from 'vue'
 import type { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons-vue';
 import SpendCreateModal from '@/components/SpendCreateModal.vue';
+import SpendCreateWriteModal from '@/components/SpendCreateWriteModal.vue';
 import { message } from 'ant-design-vue';
 import CommonModal from '@/components/CommonModal.vue';
 import { useDate } from '@/utils/useDate';
@@ -87,6 +92,7 @@ const deleteModalRef = ref();
 const deductedModalRef = ref();
 const cancelDeductedModalRef = ref();
 const spendCreateModal = ref();
+const spendCreateWriteModal = ref();
 
 const columns = [
   {
@@ -198,6 +204,12 @@ const onCreate = () => {
   spendCreateModal.value.show(() => {
     fetchSpends(searchParams.value);
   });
+}
+
+const onWrite = () => {
+  spendCreateWriteModal.value.show(() => {
+    
+  })
 }
 
 const onExport = () => {

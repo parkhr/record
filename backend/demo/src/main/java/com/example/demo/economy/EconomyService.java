@@ -24,6 +24,7 @@ import com.example.demo.economy.request.CancelMinusAmountRequest;
 import com.example.demo.economy.request.CancelPlusAmountRequest;
 import com.example.demo.economy.request.CreateActiveRequest;
 import com.example.demo.economy.request.CreateSpendRequest;
+import com.example.demo.economy.request.CreateWriteSpendRequest;
 import com.example.demo.economy.request.MinusAmountRequest;
 import com.example.demo.economy.request.PlusAmountRequest;
 import com.example.demo.economy.request.SearchActiveRequest;
@@ -85,6 +86,19 @@ public class EconomyService {
         }
 
         return spendRepository.save(Spend.createSpend(cardSmsRecord, admin.getId()));
+    }
+
+    @Transactional
+    public Spend createSpendByWrite(CreateWriteSpendRequest request) {
+
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException("삭제된 관리자입니다.");
+        }
+
+        return spendRepository.save(Spend.createSpendByWrite(request, admin.getId()));
     }
 
     public Page<SearchSpendResponse> findSpends(SearchSpendRequest request, Pageable pageable) {

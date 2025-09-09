@@ -2,13 +2,11 @@ package com.example.demo.economy.entity;
 
 import com.example.demo.common.util.DateUtil;
 import com.example.demo.economy.domain.CardSmsRecord;
+import com.example.demo.economy.request.CreateWriteSpendRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.MonthDay;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -73,6 +71,17 @@ public class Spend {
             .place(cardSmsRecord.getMerchant())
             .deducted(false)
             .spendAt(DateUtil.kstToUtc(LocalDateTime.of(date, time))).build();
+    }
+
+    public static Spend createSpendByWrite(CreateWriteSpendRequest request, long adminId) {
+        LocalTime time = LocalTime.of(0, 0, 0);
+
+        return Spend.builder()
+            .adminId(adminId)
+            .amount(request.getAmount())
+            .place(request.getPlace())
+            .deducted(false)
+            .spendAt(DateUtil.kstToUtc(LocalDateTime.of(request.getDate(), time))).build();
     }
 
     public boolean isDeleted() {
