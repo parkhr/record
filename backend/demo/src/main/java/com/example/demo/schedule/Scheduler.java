@@ -35,7 +35,9 @@ public class Scheduler {
 
         for (Admin admin : admins) {
             //TODO 유저별 푸시 링크 다름
-            pushAppSender.send(pushMessage);
+            if(admin.isPushAgreed()) {
+                pushAppSender.send(pushMessage);
+            }
         }
     }
 
@@ -76,18 +78,20 @@ public class Scheduler {
             .build();
 
         for (Admin admin : activeAdmin) {
-            //TODO 유저별 푸시 링크 다름
+            if(admin.isPushAgreed()) {
+                //TODO 유저별 푸시 링크 다름
 
-            List<Word> words = wordRepository.findByAdminIdAndCompletedLessThan(admin.getId(), 1);
-            StringBuilder sb = new StringBuilder();
+                List<Word> words = wordRepository.findByAdminIdAndCompletedLessThan(admin.getId(), 1);
+                StringBuilder sb = new StringBuilder();
 
-            for(Word word : words) {
-                sb.append(word.getName()).append(" : ").append(word.getMean()).append("\n");
+                for(Word word : words) {
+                    sb.append(word.getName()).append(" : ").append(word.getMean()).append("\n");
+                }
+
+                pushMessage.setBody(sb.toString());
+
+                pushAppSender.send(pushMessage);
             }
-
-            pushMessage.setBody(sb.toString());
-
-            pushAppSender.send(pushMessage);
         }
     }
 }
