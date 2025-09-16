@@ -34,6 +34,9 @@ public class Admin {
     @Column("isUse")
     private boolean isUse;
 
+    @Column("isPushAgreed")
+    private boolean isPushAgreed;
+
     @CreatedDate
     @Column("createdAt")
     private LocalDateTime createdAt;
@@ -50,6 +53,7 @@ public class Admin {
             .password(request.getPassword())
             .roleId(request.getRoleId())
             .isUse(true)
+            .isPushAgreed(false)
             .build();
     }
 

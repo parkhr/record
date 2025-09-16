@@ -52,7 +52,9 @@ public class Scheduler {
 
         for (Admin admin : admins) {
             //TODO 유저별 푸시 링크 다름
-            pushAppSender.send(pushMessage);
+            if(admin.isPushAgreed()) {
+                pushAppSender.send(pushMessage);
+            }
         }
     }
 
