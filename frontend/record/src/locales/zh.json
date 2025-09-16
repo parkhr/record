@@ -48,20 +48,27 @@
       "reentryPeriod": "再入境申请期限"
     },
     "value": {
-      "application": {
-        "1": "外国人登记",
-        "2": "登记证补发",
-        "3": "延长停留许可",
-        "4": "变更停留资格",
-        "5": "授予停留资格",
-        "6": "停留资格外活动许可",
-        "7": "工作单位变更/追加许可或申报",
-        "8": "再入境许可（单次，多次）",
-        "9": "居住地变更申报",
-        "10": "登记事项变更申报",
-        "11": "单次",
-        "12": "多次"
-      }
+      "registerForigner": "外国人登记",
+      "reissueCard": "重新领取登记证",
+      "extendStay": "延长停留期限许可",
+      "changeStatus": "变更停留资格许可",
+      "grantStatus": "停留资格授予",
+      "permitOutsideActivity": "停留资格外活动许可",
+      "changeOrAddWorkplace": "工作单位变更ㆍ新增许可 / 申报",
+      "reentryPermit": "再入境许可（单次, 多次）",
+      "reportChangeResidence": "停留地变更申报",
+      "reportChangeDetails": "登记事项变更申报",
+      "single": "单次",
+      "multiple": "多次",
+
+      "male": "男",
+      "female": "女",
+
+      "enroll": "在学",
+      "notEnroll": "未在学",
+
+      "eduApprove": "教育局认可",
+      "eduNotApprove": "教育局未认可，替代学校"
     },
     "tooltip": {
       "application": {
@@ -76,7 +83,43 @@
         "9": "居住地点变更时需要申报。",
         "10": "注册的姓名、护照号码等变更时需要申报。"
       }
-    }
+    },
+    "placeholder": {
+      "firstName": "请输入姓氏",
+      "lastName": "请输入名字",
+      "birth": "请选择出生日期",
+      "nationality": "请输入国籍",
+      "alienRegNo": "请输入外国人登记号",
+      "passportNo": "请输入护照号码",
+      "passportIssue": "请选择护照签发日期",
+      "passportExpiry": "请选择护照有效期",
+      "koreaAddress": "请输入韩国境内地址",
+      "tel": "请输入电话号码",
+      "mobile": "请输入手机号码",
+      "homeAddress": "请输入本国地址",
+      "homeTel": "请输入本国电话号码",
+      "email": "请输入电子邮箱",
+      "schoolName": "请输入学校名称",
+      "schoolTel": "请输入学校电话号码",
+      "schoolType": "请选择学校类型",
+
+      "workplaceOriginal": "请输入原工作单位",
+      "bizNoOriginal": "请输入注册号（原工作单位）",
+      "telOriginal": "请输入电话号码（原工作单位）",
+      "workplaceFuture": "请输入预定工作单位",
+      "bizNoFuture": "请输入注册号（预定工作单位）",
+      "telFuture": "请输入电话号码（预定工作单位）",
+      "annualIncome": "请输入年收入金额",
+      "job": "请输入职业",
+
+      "reentryPeriod": "请选择再入境申请期限"
+    },
+    "result": {
+      "1" : "输入已完成！",
+      "2" : "请确认您输入的内容。",
+      "3" : "下载"
+    },
+    "ex": "例子"
   },
   "button": {
     "prev": "← 上一步",

@@ -48,20 +48,27 @@
       "reentryPeriod": "재입국 신청기간"
     },
     "value": {
-      "application": {
-        "1": "외국인 등록",
-        "2": "등록증 재발급",
-        "3": "체류기간 연장허가",
-        "4": "체류자격 변경허가",
-        "5": "체류자격 부여",
-        "6": "체류자격 외 활동허가",
-        "7": "근무처 변경ㆍ추가허가 / 신고",
-        "8": "재입국허가 (단수, 복수)",
-        "9": "체류지 변경신고",
-        "10": "등록사항 변경신고",
-        "11": "단수",
-        "12": "복수"
-      }
+      "registerForigner": "외국인 등록",
+      "reissueCard": "등록증 재발급",
+      "extendStay": "체류기간 연장허가",
+      "changeStatus": "체류자격 변경허가",
+      "grantStatus": "체류자격 부여",
+      "permitOutsideActivity": "체류자격 외 활동허가",
+      "changeOrAddWorkplace": "근무처 변경ㆍ추가허가 / 신고",
+      "reentryPermit": "재입국허가 (단수, 복수)",
+      "reportChangeResidence": "체류지 변경신고",
+      "reportChangeDetails": "등록사항 변경신고",
+      "single": "단수",
+      "multiple": "복수",
+
+      "male": "남",
+      "female": "여",
+
+      "enroll": "재학",
+      "notEnroll": "미재학",
+
+      "eduApprove": "교육청 인가",
+      "eduNotApprove": "교육청 비인가, 대안학교"
     },
     "tooltip": {
       "application": {
@@ -76,7 +83,42 @@
         "9": "한국에서 사는 곳이 바뀌면 신고하는 거예요.",
         "10": "등록된 이름, 여권번호 등이 바뀌면 신고하는 거예요."
       }
-    }
+    },
+    "placeholder": {
+      "firstName": "성",
+      "lastName": "명",
+      "birth": "생년월일 선택",
+      "nationality": "국적 입력",
+      "alienRegNo": "외국인등록번호 입력",
+      "passportNo": "여권번호 입력",
+      "passportIssue": "여권 발급일자 선택",
+      "passportExpiry": "여권 유효기간 선택",
+      "koreaAddress": "대한민국 내 주소 입력",
+      "tel": "전화번호 입력",
+      "mobile": "휴대전화 입력",
+      "homeAddress": "본국 주소 입력",
+      "homeTel": "본국 전화번호 입력",
+      "email": "전자우편 입력",
+      "schoolName": "학교 이름 입력",
+      "schoolTel": "학교 전화번호 입력",
+      "schoolType": "학교 종류 입력",
+
+      "workplaceOriginal": "원 근무처 입력",
+      "bizNoOriginal": "사업자등록번호(원 근무처) 입력",
+      "telOriginal": "전화번호(원 근무처) 입력",
+      "workplaceFuture": "예정 근무처 입력",
+      "bizNoFuture": "사업자등록번호(예정 근무처) 입력",
+      "telFuture": "전화번호(예정 근무처) 입력",
+      "annualIncome": "연 소득금액 입력",
+      "job": "직업 입력",
+
+      "reentryPeriod": "재입국 신청기간 입력"
+    },
+    "result": {
+      "1" : "입력이 완료되었습니다!",
+      "2" : "잠시만 기다려주세요..."
+    },
+    "ex": "예"
   },
   "button": {
     "prev": "← 이전",
