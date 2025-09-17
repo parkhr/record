@@ -85,7 +85,7 @@ public class Scheduler {
                 StringBuilder sb = new StringBuilder();
 
                 for(Word word : words) {
-                    sb.append(word.getName()).append(" : ").append(word.getMean()).append("\n");
+                    sb.append(word.getName()).append(" : ").append(word.getMean()).append(" 노출 수 : ").append(word.getView()).append("\n");
                 }
 
                 pushMessage.setBody(sb.toString());
