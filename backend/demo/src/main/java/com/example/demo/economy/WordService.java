@@ -110,8 +110,11 @@ public class WordService {
             .sorted(Comparator.comparingLong(Word::getId).reversed()).toList();
 
         // 외운 단어 조회수 적은 순서대로 100개
-        List<Word> completedWord = wordRepository.findByAdminIdAndCompletedGreaterThanEqual(admin.getId(), 5).stream()
-            .sorted(Comparator.comparingInt(Word::getView)).limit(100).toList();
+//        List<Word> completedWord = wordRepository.findByAdminIdAndCompletedGreaterThanEqual(admin.getId(), 5).stream()
+//            .sorted(Comparator.comparingInt(Word::getView)).limit(100).toList();
+
+        //외운 단어 완전 랜덤 100개
+        List<Word> completedWord = wordRepository.findRandomCompletedWords(admin.getId());
 
         List<Word> sessionWords = new ArrayList<>();
 
