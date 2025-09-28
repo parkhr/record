@@ -113,7 +113,7 @@ const searchParams = ref({
   startDate: null,
   endDate: null,
   page: 0,
-  pageSize: 20
+  size: 20
 });
 
 const name = ref('');
@@ -180,9 +180,11 @@ const getWords = async (params) => {
     if(response.status !== 200) throw new Error();
 
     const totalElements = response.data.totalElements;
+
     pagination.value.total = totalElements
+
     data.value = response.data.content.map((item, index) => {
-      item.key = totalElements - (params.page * params.pageSize + index);
+      item.key = totalElements - (params.page * params.size + index);
       return item;
     });
   } catch (error) {
@@ -219,7 +221,7 @@ const handleTableChange = (paginationConfig) => {
   pagination.value.pageSize = pageSize
 
   searchParams.value.page = current - 1;
-  searchParams.value.pageSize = pageSize;
+  searchParams.value.size = pageSize;
 
   getWords(searchParams.value)
 }
@@ -263,7 +265,7 @@ const reset = () => {
     startDate: null,
     endDate: null,
     page: 0,
-    pageSize: pagination.value.pageSize
+    size: pagination.value.pageSize
   };
 
   pagination.value.current = 1;
@@ -287,7 +289,7 @@ const onGame = () => {
 onMounted(() => {
   const params: any = {
     page: 0,
-    pageSize: pagination.value.pageSize,
+    size: pagination.value.pageSize,
   };
 
   getWords(params);

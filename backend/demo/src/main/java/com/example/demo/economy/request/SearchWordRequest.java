@@ -12,4 +12,6 @@ public class SearchWordRequest {
     private String endDate;
     private String sortBy;
     private String order;
+    private int pageNumber;
+    private int pageSize;
 }
