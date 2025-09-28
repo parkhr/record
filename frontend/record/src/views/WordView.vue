@@ -229,7 +229,7 @@ const handleTableChange = (paginationConfig) => {
 const search = () => {
   const params: any = {
     page: 0,
-    pageSize: pagination.value.pageSize,
+    size: pagination.value.pageSize,
   };
 
   // if (status.value && status.value !== '전체') {
