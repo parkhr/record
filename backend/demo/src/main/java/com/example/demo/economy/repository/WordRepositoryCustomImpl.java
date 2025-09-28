@@ -25,7 +25,7 @@ public class WordRepositoryCustomImpl implements WordRepositoryCustom {
 
     @Override
     public Page<SearchWordResponse> findWords(SearchWordRequest request, long adminId, Pageable pageable) {
-        StringBuilder sql = new StringBuilder("SELECT id, adminId, name, mean, completed, sentence, createdAt FROM word WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT id, adminId, name, mean, completed, view, sentence, createdAt FROM word WHERE 1=1");
         StringBuilder countSql = new StringBuilder("SELECT COUNT(1) FROM word WHERE 1=1");
         Map<String, Object> params = new HashMap<>();
 
@@ -48,7 +48,7 @@ public class WordRepositoryCustomImpl implements WordRepositoryCustom {
 //            params.put("status", request.getStatus());
 //        }
 //
-        if(request.getStartDate() != null && !request.getStartDate().isEmpty() && request.getEndDate() != null && !request.getEndDate().isEmpty()) {
+        if (request.getStartDate() != null && !request.getStartDate().isEmpty() && request.getEndDate() != null && !request.getEndDate().isEmpty()) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             LocalDate startDate = LocalDate.parse(request.getStartDate(), formatter);
@@ -66,7 +66,11 @@ public class WordRepositoryCustomImpl implements WordRepositoryCustom {
             params.put("endDate", endDateTime);
         }
 
-        sql.append(" ORDER BY createdAt DESC");
+        if (request.getSortBy() != null && !request.getSortBy().isEmpty() && request.getOrder() != null && !request.getOrder().isEmpty()) {
+            sql.append(" ORDER BY ").append(request.getSortBy()).append(" ").append(request.getOrder());
+        } else {
+            sql.append(" ORDER BY createdAt DESC");
+        }
 
         sql.append(" LIMIT :limit OFFSET :offset");
         params.put("limit", pageable.getPageSize());

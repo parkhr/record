@@ -7,9 +7,21 @@
         placeholder="단어를 검색하세요."
       />
     </a-col>
-    <a-col :span="3">
-      <a-range-picker v-model:value="insertDateRange" style="width: 300px" />
+    <a-col :span="5">
+      <a-range-picker v-model:value="insertDateRange" style="width: 340px" />
     </a-col>
+
+    <!-- 정렬 선택 -->
+    <a-col :span="3">
+      <a-select v-model:value="sort" style="width: 200px" placeholder="정렬 선택">
+        <a-select-option value="view,desc">조회순</a-select-option>
+        <a-select-option value="createdAt,desc">최신순</a-select-option>
+        <a-select-option value="createdAt,asc">오래된순</a-select-option>
+        <a-select-option value="name,asc">이름 ↑</a-select-option>
+        <a-select-option value="name,desc">이름 ↓</a-select-option>
+      </a-select>
+    </a-col>
+
 
     <a-col :span="24"></a-col>
 
@@ -106,6 +118,7 @@ const searchParams = ref({
 
 const name = ref('');
 const insertDateRange = ref<RangeValue>();
+const sort = ref('정렬 선택');
 
 const deleteModalRef = ref();
 const deductedModalRef = ref();
@@ -136,6 +149,11 @@ const columns = [
     title: '의미',
     dataIndex: 'mean',
     key: 'mean',
+  },
+  {
+    title: '조회수',
+    dataIndex: 'view',
+    key: 'view',
   },
   {
     title: '등록날짜',
@@ -222,6 +240,12 @@ const search = () => {
   if (insertDateRange.value) {
     params.startDate = insertDateRange.value[0].format('YYYY-MM-DD');
     params.endDate = insertDateRange.value[1].format('YYYY-MM-DD');
+  }
+
+  if (sort.value) {
+    const [field, direction] = sort.value.split(",");
+    params.sortBy = field;
+    params.order = direction;
   }
 
   searchParams.value = params;
