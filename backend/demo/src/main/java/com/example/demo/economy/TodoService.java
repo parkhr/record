@@ -1,6 +1,8 @@
 package com.example.demo.economy;
 
 import static com.example.demo.common.ErrorMessage.ADMIN_NOT_FOUND;
+import static com.example.demo.common.ErrorMessage.DELETED_ADMIN;
+import static com.example.demo.common.ErrorMessage.LOGIN_REQUIRED;
 
 import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
@@ -42,11 +44,11 @@ public class TodoService {
     private final AdminRepository adminRepository;
 
     public List<EpicResponse> findEpic() {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         return epicRepository.findByAdminId(admin.getId()).stream()
@@ -78,11 +80,11 @@ public class TodoService {
 
     @Transactional
     public Epic createEpic(CreateEpicRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         return epicRepository.save(Epic.createEpic(request, admin.getId()));
@@ -90,11 +92,11 @@ public class TodoService {
 
     @Transactional
     public void updateEpic(UpdateEpicRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         Epic epic = epicRepository.findById(request.getEpicId()).orElseThrow(() -> new ApplicationException("카드를 찾을 수 없습니다."));
@@ -113,11 +115,11 @@ public class TodoService {
 
     @Transactional
     public void deleteEpic(long epicId) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         Epic epic = epicRepository.findById(epicId).orElseThrow(() -> new ApplicationException("카드를 찾을 수 없습니다."));
@@ -144,11 +146,11 @@ public class TodoService {
 
     @Transactional
     public Task createTask(CreateTaskRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         return taskRepository.save(Task.createTask(request, admin.getId()));
@@ -156,11 +158,11 @@ public class TodoService {
 
     @Transactional
     public void updateTask(UpdateTaskRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         Task task = taskRepository.findById(request.getTaskId()).orElseThrow(() -> new ApplicationException("할 일을 찾을 수 없습니다."));
@@ -179,11 +181,11 @@ public class TodoService {
 
     @Transactional
     public void deleteTask(long taskId) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new ApplicationException("할 일을 찾을 수 없습니다."));
@@ -203,11 +205,11 @@ public class TodoService {
     @Transactional
     public void sortTask(SortTaskRequest request) {
 
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         Epic epic = epicRepository.findById(request.getEpicId()).orElseThrow(() -> new ApplicationException("에픽을 찾을 수 없습니다."));
@@ -246,11 +248,11 @@ public class TodoService {
 
     @Transactional
     public void sortEpic(SortEpicRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         List<Epic> epics = epicRepository.findByAdminId(admin.getId());

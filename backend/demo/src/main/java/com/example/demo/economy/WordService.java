@@ -1,6 +1,8 @@
 package com.example.demo.economy;
 
 import static com.example.demo.common.ErrorMessage.ADMIN_NOT_FOUND;
+import static com.example.demo.common.ErrorMessage.DELETED_ADMIN;
+import static com.example.demo.common.ErrorMessage.LOGIN_REQUIRED;
 
 import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
@@ -48,11 +50,11 @@ public class WordService {
 
     @Transactional
     public Word createWord(CreateWordRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         Optional<Word> optionalWord = wordRepository.findByAdminIdAndName(admin.getId(), request.getName());
@@ -65,11 +67,11 @@ public class WordService {
 
     @Transactional
     public void updateWord(UpdateWordRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         Word word = wordRepository.findById(request.getWordId()).orElseThrow(() -> new ApplicationException("단어가 없습니다."));
@@ -92,11 +94,11 @@ public class WordService {
     }
 
     public Page<SearchWordResponse> findWords(SearchWordRequest request, Pageable pageable) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         return wordRepository.findWords(request, userDetails.getId(), pageable);
@@ -104,11 +106,11 @@ public class WordService {
 
     @Transactional
     public List<WordGameResponse> startWordGame() {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         wordLogRepository.save(WordLog.createWordLog(admin.getId()));
@@ -144,11 +146,11 @@ public class WordService {
     }
 
     public int getTodayAttempts() {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         LocalDate today = LocalDate.now();
@@ -161,11 +163,11 @@ public class WordService {
     }
 
     public WordStatusResponse getWordStatus() {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         // 외우지 못한 단어

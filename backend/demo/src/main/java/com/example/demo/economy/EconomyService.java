@@ -1,6 +1,16 @@
 package com.example.demo.economy;
 
 import static com.example.demo.common.ErrorMessage.ADMIN_NOT_FOUND;
+import static com.example.demo.common.ErrorMessage.ALREADY_CANCELED_DEDUCTION;
+import static com.example.demo.common.ErrorMessage.ALREADY_DEDUCTED_EXPENSE;
+import static com.example.demo.common.ErrorMessage.DELETED_ACTIVITY;
+import static com.example.demo.common.ErrorMessage.DELETED_ADMIN;
+import static com.example.demo.common.ErrorMessage.DELETED_EXPENSE;
+import static com.example.demo.common.ErrorMessage.DELETED_WALLET;
+import static com.example.demo.common.ErrorMessage.EXPENSE_NOT_FOUND;
+import static com.example.demo.common.ErrorMessage.LOGIN_REQUIRED;
+import static com.example.demo.common.ErrorMessage.NO_AUTH;
+import static com.example.demo.common.ErrorMessage.WALLET_NOT_FOUND;
 
 import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
@@ -78,11 +88,11 @@ public class EconomyService {
     @Transactional
     public Spend createSpend(CreateSpendRequest request) {
         CardSmsRecord cardSmsRecord = CardSmsParser.parse(request.getMessage());
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         return spendRepository.save(Spend.createSpend(cardSmsRecord, admin.getId()));
@@ -91,48 +101,48 @@ public class EconomyService {
     @Transactional
     public Spend createSpendByWrite(CreateWriteSpendRequest request) {
 
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         return spendRepository.save(Spend.createSpendByWrite(request, admin.getId()));
     }
 
     public Page<SearchSpendResponse> findSpends(SearchSpendRequest request, Pageable pageable) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
 
         return spendRepository.findSpends(request, userDetails.getId(), pageable);
     }
 
     @Transactional
     public void minusAmount(MinusAmountRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
-        Spend spend = spendRepository.findById(request.getSpendId()).orElseThrow(() -> new ApplicationException("지출내역을 찾을 수 없습니다."));
+        Spend spend = spendRepository.findById(request.getSpendId()).orElseThrow(() -> new ApplicationException(EXPENSE_NOT_FOUND));
 
         if (spend.getAdminId() != admin.getId()) {
-            throw new ApplicationException("권한이 없습니다.");
+            throw new ApplicationException(NO_AUTH);
         }
 
         if (spend.isDeducted()) {
-            throw new ApplicationException("이미 차감된 지출내역 입니다.");
+            throw new ApplicationException(ALREADY_DEDUCTED_EXPENSE);
         }
 
         if (spend.isDeleted()) {
-            throw new ApplicationException("삭제된 지출내역 입니다.");
+            throw new ApplicationException(DELETED_EXPENSE);
         }
 
         if (admin.isDeleted()) {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException("해당 관리자의 지갑을 찾을 수 없습니다."));
+        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException(WALLET_NOT_FOUND));
 
         if (wallet.isDeleted()) {
-            throw new ApplicationException("삭제된 지갑 입니다.");
+            throw new ApplicationException(DELETED_WALLET);
         }
 
         spend.deduct();
@@ -153,30 +163,30 @@ public class EconomyService {
 
     @Transactional
     public void cancelMinusAmount(CancelMinusAmountRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
-        Spend spend = spendRepository.findById(request.getSpendId()).orElseThrow(() -> new ApplicationException("지출내역을 찾을 수 없습니다."));
+        Spend spend = spendRepository.findById(request.getSpendId()).orElseThrow(() -> new ApplicationException(EXPENSE_NOT_FOUND));
 
         if (spend.getAdminId() != admin.getId()) {
-            throw new ApplicationException("권한이 없습니다.");
+            throw new ApplicationException(NO_AUTH);
         }
 
         if (!spend.isDeducted()) {
-            throw new ApplicationException("이미 차감 취소된 지출내역 입니다.");
+            throw new ApplicationException(ALREADY_CANCELED_DEDUCTION);
         }
 
         if (spend.isDeleted()) {
-            throw new ApplicationException("삭제된 지출내역 입니다.");
+            throw new ApplicationException(DELETED_EXPENSE);
         }
 
         if (admin.isDeleted()) {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException("해당 관리자의 지갑을 찾을 수 없습니다."));
+        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException(WALLET_NOT_FOUND));
 
         if (wallet.isDeleted()) {
-            throw new ApplicationException("삭제된 지갑 입니다.");
+            throw new ApplicationException(DELETED_WALLET);
         }
 
         spend.cancelDeduct();
@@ -190,20 +200,20 @@ public class EconomyService {
 
     @Transactional
     public void deleteSpend(Long spendId) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
-        Spend spend = spendRepository.findById(spendId).orElseThrow(() -> new ApplicationException("지출내역을 찾을 수 없습니다."));
+        Spend spend = spendRepository.findById(spendId).orElseThrow(() -> new ApplicationException(EXPENSE_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         if (spend.getAdminId() != admin.getId()) {
-            throw new ApplicationException("권한이 없습니다.");
+            throw new ApplicationException(NO_AUTH);
         }
 
         if (spend.isDeleted()) {
-            throw new ApplicationException("삭제된 지출내역 입니다.");
+            throw new ApplicationException(DELETED_EXPENSE);
         }
 
         spend.delete();
@@ -212,12 +222,12 @@ public class EconomyService {
 
     @Transactional
     public Active createActive(CreateActiveRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
         Active active = Active.createActive(request, userDetails.getId());
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         return activeRepository.save(active);
@@ -225,20 +235,20 @@ public class EconomyService {
 
     @Transactional
     public void deleteActive(Long activeId) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
         Active active = activeRepository.findById(activeId).orElseThrow(() -> new ApplicationException("활동내역을 찾을 수 없습니다."));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         if (active.getAdminId() != admin.getId()) {
-            throw new ApplicationException("권한이 없습니다.");
+            throw new ApplicationException(NO_AUTH);
         }
 
         if (active.isDeleted()) {
-            throw new ApplicationException("삭제된 활동내역 입니다.");
+            throw new ApplicationException(DELETED_ACTIVITY);
         }
 
         active.delete();
@@ -246,19 +256,19 @@ public class EconomyService {
     }
 
     public Page<SearchActiveResponse> findActives(SearchActiveRequest request, Pageable pageable) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
 
         return activeRepository.findActives(request, userDetails.getId(), pageable);
     }
 
     @Transactional
     public void plusAmount(PlusAmountRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
         Active active = activeRepository.findById(request.getActiveId()).orElseThrow(() -> new ApplicationException("활동내역을 찾을 수 없습니다."));
 
         if (active.getAdminId() != admin.getId()) {
-            throw new ApplicationException("권한이 없습니다.");
+            throw new ApplicationException(NO_AUTH);
         }
 
         if (active.isSaved()) {
@@ -266,17 +276,17 @@ public class EconomyService {
         }
 
         if (active.isDeleted()) {
-            throw new ApplicationException("삭제된 활동내역 입니다.");
+            throw new ApplicationException(DELETED_ACTIVITY);
         }
 
         if (admin.isDeleted()) {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException("해당 관리자의 지갑을 찾을 수 없습니다."));
+        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException(WALLET_NOT_FOUND));
 
         if (wallet.isDeleted()) {
-            throw new ApplicationException("삭제된 지갑 입니다.");
+            throw new ApplicationException(DELETED_WALLET);
         }
 
         active.save();
@@ -290,12 +300,12 @@ public class EconomyService {
 
     @Transactional
     public void cancelPlusAmount(CancelPlusAmountRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
         Active active = activeRepository.findById(request.getActiveId()).orElseThrow(() -> new ApplicationException("활동내역을 찾을 수 없습니다."));
 
         if (active.getAdminId() != admin.getId()) {
-            throw new ApplicationException("권한이 없습니다.");
+            throw new ApplicationException(NO_AUTH);
         }
 
         if (!active.isSaved()) {
@@ -303,17 +313,17 @@ public class EconomyService {
         }
 
         if (active.isDeleted()) {
-            throw new ApplicationException("삭제된 활동내역 입니다.");
+            throw new ApplicationException(DELETED_ACTIVITY);
         }
 
         if (admin.isDeleted()) {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException("해당 관리자의 지갑을 찾을 수 없습니다."));
+        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException(WALLET_NOT_FOUND));
 
         if (wallet.isDeleted()) {
-            throw new ApplicationException("삭제된 지갑 입니다.");
+            throw new ApplicationException(DELETED_WALLET);
         }
 
         active.cancelSave();
@@ -327,14 +337,14 @@ public class EconomyService {
 
     public WalletResponse findMyWallet() {
 
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
             throw new ApplicationException("삭제된 관리자 입니다.");
         }
 
-        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException("해당 관리자의 지갑을 찾을 수 없습니다."));
+        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException(WALLET_NOT_FOUND));
 
         WalletResponse walletResponse = new WalletResponse();
         walletResponse.setAmount(wallet.getAmount());
@@ -346,7 +356,7 @@ public class EconomyService {
 
     public List<DashboardRecentResponse> recent() {
 
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
@@ -370,7 +380,7 @@ public class EconomyService {
 
     public DashboardActiveResponse thisWeekActive() {
 
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
@@ -396,7 +406,7 @@ public class EconomyService {
     }
 
     public DashboardActiveResponse lastWeekActive() {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
@@ -423,7 +433,7 @@ public class EconomyService {
 
     public DashboardSpendResponse thisWeekSpend() {
 
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
@@ -450,7 +460,7 @@ public class EconomyService {
 
     public DashboardSpendResponse lastWeekSpend() {
 
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
@@ -476,11 +486,11 @@ public class EconomyService {
     }
 
     public DashboardSpendMonthResponse thisMonthSpend() {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         LocalDate today = LocalDate.now();
@@ -505,11 +515,11 @@ public class EconomyService {
 
     public DashboardActiveMonthResponse thisMonthActive() {
 
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         LocalDate today = LocalDate.now();
@@ -534,9 +544,9 @@ public class EconomyService {
 
     public DashboardBreakEvenTimeResponse getBreakEvenTime() {
 
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
-        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException("해당 관리자의 지갑을 찾을 수 없습니다."));
+        Wallet wallet = walletRepository.findByAdminId(userDetails.getId()).orElseThrow(() -> new ApplicationException(WALLET_NOT_FOUND));
 
         if (admin.isDeleted()) {
             throw new ApplicationException("삭제된 관리자 입니다.");

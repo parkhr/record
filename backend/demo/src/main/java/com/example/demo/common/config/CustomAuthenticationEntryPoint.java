@@ -1,5 +1,7 @@
 package com.example.demo.common.config;
 
+import static com.example.demo.common.ErrorMessage.LOGIN_REQUIRED;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -12,6 +14,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인이 필요합니다.");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, LOGIN_REQUIRED);
     }
 }

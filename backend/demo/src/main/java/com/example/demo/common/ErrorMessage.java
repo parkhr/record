@@ -15,4 +15,15 @@ public class ErrorMessage {
     public static final String INVALID_RECORD_LOCATION_TYPE = "기록물을 배치할 계층 타입이 아닙니다.";
     public static final String RECORD_IS_NOT_ON_LOAN = "대출중인 기록물이 아닙니다.";
     public static final String DELAY_LIMIT_EXCEEDED = "반납연기 가능횟수를 초과합니다.";
+    public static final String DELETED_ADMIN = "삭제된 관리자입니다.";
+    public static final String WALLET_NOT_FOUND = "해당 관리자의 지갑을 찾을 수 없습니다.";
+    public static final String LOGIN_REQUIRED = "로그인이 필요합니다.";
+    public static final String NO_AUTH_GROUP = "해당하는 권한그룹이 없습니다.";
+    public static final String EXPENSE_NOT_FOUND = "지출내역을 찾을 수 없습니다.";
+    public static final String NO_AUTH = "권한이 없습니다.";
+    public static final String ALREADY_DEDUCTED_EXPENSE = "이미 차감된 지출내역 입니다.";
+    public static final String DELETED_EXPENSE = "삭제된 지출내역 입니다.";
+    public static final String DELETED_WALLET = "삭제된 지갑 입니다.";
+    public static final String ALREADY_CANCELED_DEDUCTION = "이미 차감 취소된 지출내역 입니다.";
+    public static final String DELETED_ACTIVITY = "삭제된 활동내역 입니다.";
 }

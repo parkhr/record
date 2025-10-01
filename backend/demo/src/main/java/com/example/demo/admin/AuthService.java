@@ -1,6 +1,8 @@
 package com.example.demo.admin;
 
 import static com.example.demo.common.ErrorMessage.ADMIN_NOT_FOUND;
+import static com.example.demo.common.ErrorMessage.NO_AUTH;
+import static com.example.demo.common.ErrorMessage.NO_AUTH_GROUP;
 
 import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.entity.LoginLog;
@@ -49,22 +51,22 @@ public class AuthService {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
 
-        Role role = roleRepository.findById(admin.getRoleId()).orElseThrow(() -> new BadCredentialsException("해당하는 권한그룹이 없습니다."));
+        Role role = roleRepository.findById(admin.getRoleId()).orElseThrow(() -> new BadCredentialsException(NO_AUTH_GROUP));
 
         if (role.isDeleted()) {
-            throw new ApplicationException("해당하는 권한그룹이 없습니다.");
+            throw new ApplicationException(NO_AUTH_GROUP);
         }
 
         List<Long> permissionIds = rolePermissionRepository.findByRoleId(role.getId()).stream().filter(item -> !item.isDeleted())
             .map(RolePermission::getPermissionId).toList();
 
         if (permissionIds.isEmpty()) {
-            throw new BadCredentialsException("해당하는 권한이 없습니다.");
+            throw new BadCredentialsException(NO_AUTH);
         }
 
         List<Permission> permissions = permissionRepository.findByIdIn(permissionIds);
         if (permissions.isEmpty()) {
-            throw new BadCredentialsException("해당하는 권한이 없습니다.");
+            throw new BadCredentialsException(NO_AUTH);
         }
 
         List<PermissionType> permissionTypes = permissions.stream().filter(item -> !item.isDeleted()).map(Permission::getName).toList();

@@ -1,6 +1,9 @@
 package com.example.demo.menu;
 
 import static com.example.demo.common.ErrorMessage.ADMIN_NOT_FOUND;
+import static com.example.demo.common.ErrorMessage.DELETED_ADMIN;
+import static com.example.demo.common.ErrorMessage.LOGIN_REQUIRED;
+import static com.example.demo.common.ErrorMessage.MENU_NOT_FOUND;
 
 import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
@@ -36,18 +39,18 @@ public class MenuController {
     @GetMapping
 //    @PreAuthorize("hasRole('READ_MENU')")
     public ResponseEntity<Object> findMenus(SearchMenuRequest request) {
-        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException("로그인이 필요합니다."));
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
         Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
 
         if (admin.isDeleted()) {
-            throw new ApplicationException("삭제된 관리자입니다.");
+            throw new ApplicationException(DELETED_ADMIN);
         }
 
         List<Long> menuIds = roleMenuRepository.findByRoleId(admin.getRoleId()).stream().filter(item -> !item.isDeleted())
             .map(RoleMenu::getMenuId).toList();
 
         if (menuIds.isEmpty()) {
-            throw new ApplicationException("해당하는 메뉴가 없습니다.");
+            throw new ApplicationException(MENU_NOT_FOUND);
         }
 
         List<Menu> filteredMenus = menuRepository.findByIdIn(menuIds).stream()
@@ -56,7 +59,7 @@ public class MenuController {
             .collect(Collectors.toList());
 
         if (filteredMenus.isEmpty()) {
-            throw new ApplicationException("해당하는 메뉴가 없습니다.");
+            throw new ApplicationException(MENU_NOT_FOUND);
         }
 
         return ResponseEntity.ok().body(filteredMenus);
