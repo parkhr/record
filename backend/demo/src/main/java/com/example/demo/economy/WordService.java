@@ -8,7 +8,9 @@ import com.example.demo.common.CustomUserDetails;
 import com.example.demo.common.exception.ApplicationException;
 import com.example.demo.common.util.UserUtil;
 import com.example.demo.economy.entity.Word;
+import com.example.demo.economy.entity.WordCompleteLog;
 import com.example.demo.economy.entity.WordLog;
+import com.example.demo.economy.repository.WordCompleteLogRepository;
 import com.example.demo.economy.repository.WordLogRepository;
 import com.example.demo.economy.repository.WordRepository;
 import com.example.demo.economy.request.CreateWordRequest;
@@ -42,6 +44,7 @@ public class WordService {
     private final AdminRepository adminRepository;
     private final WordRepository wordRepository;
     private final WordLogRepository wordLogRepository;
+    private final WordCompleteLogRepository wordCompleteLogRepository;
 
     @Transactional
     public Word createWord(CreateWordRequest request) {
@@ -77,6 +80,11 @@ public class WordService {
 
         if (admin.getId() != word.getAdminId()) {
             throw new ApplicationException("계정이 없습니다.");
+        }
+
+        // completed 가 4 -> 5 로 변경되는 시점에 로깅
+        if (isWordMastered(word.getCompleted(), request.getCompleted())) {
+            wordCompleteLogRepository.save(WordCompleteLog.createWordCompleteLog(admin.getId(), word.getId()));
         }
 
         word.update(request);
@@ -171,5 +179,9 @@ public class WordService {
         response.setUnLearnedCount(unCompletedWord.size());
         response.setTotalCount(completedWord.size() + unCompletedWord.size());
         return response;
+    }
+
+    private boolean isWordMastered(int beforeCompleteCount, int afterCompleteCount) {
+        return beforeCompleteCount == 4 && afterCompleteCount == 5;
     }
 }
