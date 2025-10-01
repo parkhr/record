@@ -77,6 +77,11 @@ const router = createRouter({
           path: '/gov/application',
           name: 'application',
           component: () => import('../views/Application.vue'),
+        },
+        {
+          path: '/economy/timeline',
+          name: 'test',
+          component: () => import('../views/Timeline.vue'),
         }
       ]
     },
