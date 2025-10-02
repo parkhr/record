@@ -8,7 +8,7 @@
           <div class="time-label">{{ hour }}</div>
 
           <!-- 시간 칸 -->
-          <div class="time-cell">
+          <div class="time-cell" @click="handleTimeCellClick($event, hour)">
             <!-- 10분 눈금 -->
             <div
               v-for="i in 6"
@@ -57,40 +57,29 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
 // ----------------------
-// 타입 정의
-// ----------------------
-interface EventItem {
-  title: string;
-  start: string; // "HH:MM"
-  end: string;   // "HH:MM"
-  desc: string;
-  color: string;
-}
-
-// ----------------------
 // 상태 정의
 // ----------------------
 const hours = Array.from({ length: 16 }, (_, i) =>
   String(i + 8).padStart(2, "0") + ":00"
 );
 
-const events = ref<EventItem[]>([
-  { title: "아침 루틴 & 출근", start: "08:00", end: "09:00", desc: "물 500ml 마시기, 스트레칭, 샤워, 출근, 할일 정리", color: "#1677ff" },
-  { title: "집중업무", start: "09:00", end: "10:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
-  { title: "집중업무", start: "10:00", end: "11:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
-  { title: "집중업무", start: "11:00", end: "12:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
-  { title: "점심 식사", start: "12:00", end: "13:00", desc: "식사, 가벼운 산책 / 자리에서 스트레칭, 영어단어 외우기", color: "#13c2c2" },
-  { title: "운동", start: "13:00", end: "14:00", desc: "헬스장 가기", color: "#f5222d" },
-  { title: "일정관리", start: "14:00", end: "15:00", desc: "일정관리" , color: "#eb2f96" },
-  { title: "단순업무", start: "15:00", end: "16:00", desc: "단순업무" , color: "#eb2f96" },
-  { title: "집중업무", start: "16:00", end: "17:00", desc: "집중업무" , color: "#fa8c16" },
-  { title: "집중업무", start: "17:00", end: "18:00", desc: "집중업무" , color: "#fa8c16" },
-  { title: "저녁 + 관계", start: "18:00", end: "19:00", desc: "가족/연인/친구와 시간 보내기, 저녁 식사 + 소화 보조 산책" , color: "#13c2c2" },
-  { title: "저녁 + 관계", start: "19:00", end: "20:00", desc: "가족/연인/친구와 시간 보내기, 저녁 식사 + 소화 보조 산책" , color: "#13c2c2" },
-  { title: "휴식", start: "20:00", end: "21:00", desc: "쉬기", color: "#fa541c" },
-  { title: "작업", start: "21:00", end: "22:00", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", color: "#52c41a" },
-  { title: "작업", start: "22:00", end: "23:00", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", color: "#52c41a" },
-  { title: "마무리 루틴", start: "23:00", end: "24:00", desc: "독서", color: "#1677ff" },
+const events = ref([
+  { id: 1, title: "아침 루틴 & 출근", start: "08:00", end: "09:00", desc: "물 500ml 마시기, 스트레칭, 샤워, 출근, 할일 정리", color: "#1677ff" },
+  { id: 2, title: "집중업무", start: "09:00", end: "10:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
+  { id: 3, title: "집중업무", start: "10:00", end: "11:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
+  { id: 4, title: "집중업무", start: "11:00", end: "12:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
+  { id: 5, title: "점심 식사", start: "12:00", end: "13:00", desc: "식사, 가벼운 산책 / 자리에서 스트레칭, 영어단어 외우기", color: "#13c2c2" },
+  { id: 6, title: "운동", start: "13:00", end: "13:30", desc: "헬스장 가기", color: "#f5222d" },
+  // { id: 7, title: "일정관리", start: "14:00", end: "15:00", desc: "일정관리" , color: "#eb2f96" },
+  { id: 8, title: "단순업무", start: "15:00", end: "16:00", desc: "단순업무" , color: "#eb2f96" },
+  { id: 9, title: "집중업무", start: "16:00", end: "17:00", desc: "집중업무" , color: "#fa8c16" },
+  { id: 10, title: "집중업무", start: "17:00", end: "18:00", desc: "집중업무" , color: "#fa8c16" },
+  { id: 11, title: "저녁 + 관계", start: "18:00", end: "19:00", desc: "가족/연인/친구와 시간 보내기, 저녁 식사 + 소화 보조 산책" , color: "#13c2c2" },
+  { id: 12, title: "저녁 + 관계", start: "19:00", end: "20:00", desc: "가족/연인/친구와 시간 보내기, 저녁 식사 + 소화 보조 산책" , color: "#13c2c2" },
+  { id: 13, title: "휴식", start: "20:00", end: "21:00", desc: "쉬기", color: "#fa541c" },
+  { id: 14, title: "작업", start: "21:00", end: "22:00", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", color: "#52c41a" },
+  { id: 15, title: "작업", start: "22:00", end: "23:00", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", color: "#52c41a" },
+  { id: 16, title: "마무리 루틴", start: "23:00", end: "24:00", desc: "독서", color: "#1677ff" },
 ]);
 
 const currentTime = ref(new Date());
@@ -117,7 +106,15 @@ const getEventsAtHour = (hour: string) => {
   });
 };
 
-const getEventStyle = (event: EventItem) => {
+const getEventsAtMinute = (minute: number) => {
+  return events.value.filter(e => {
+    const eStart = toMinutes(e.start);
+    const eEnd = toMinutes(e.end);
+    return minute >= eStart && minute < eEnd;
+  });
+};
+
+const getEventStyle = (event) => {
   const hourNum = parseInt(event.start.split(":")[0], 10);
   const startOfHour = hourNum * 60;
 
@@ -154,6 +151,22 @@ const getCurrentTimeLeft = () => {
   const totalMin = min + sec / 60;
   return (totalMin / 60) * 100;
 };
+
+const handleTimeCellClick = (e, hour) => {
+
+  const cell = e.currentTarget as HTMLElement;
+  const rect = cell.getBoundingClientRect();
+
+  // 클릭한 위치 비율 (0 ~ 1)
+  const clickRatio = (e.clientX - rect.left) / rect.width;
+
+  // 시(hour)를 숫자로 변환
+  const hourNum = parseInt(hour.split(":")[0], 10);
+
+  // 클릭한 분 = 시*60 + (60 * 비율)
+  const minutes = Math.floor(hourNum * 60 + clickRatio * 60);
+  console.log(getEventsAtMinute(minutes))
+}
 
 // ----------------------
 // 타이머

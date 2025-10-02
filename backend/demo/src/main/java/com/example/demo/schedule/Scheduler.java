@@ -21,21 +21,36 @@ public class Scheduler {
     private final AdminRepository adminRepository;
     private final WordRepository wordRepository;
 
-    @Scheduled(cron = "0 0 21 * * *", zone = "Asia/Seoul")
-    public void checkUserSpending() {
+    @Scheduled(cron = "0 0 8 * * *", zone = "Asia/Seoul")
+    public void recommendWord() {
         PushSender pushAppSender = pushSendResolver.resolve();
-        List<Admin> admins = adminRepository.findAdminsWithTodayNoSpend();
+        Iterable<Admin> admins = adminRepository.findAll();
+
+        List<Admin> activeAdmin = new ArrayList<>();
+        for (Admin admin : admins) {
+            if (!admin.isDeleted()) {
+                activeAdmin.add(admin);
+            }
+        }
 
         PushMessage pushMessage = PushMessage.builder()
-            .title("오늘 지출, 아직 안 하셨어요?")
-            .body("하루의 마무리는 지출 등록부터!  \n"
-                + "오늘 소비한 내역을 잊지 말고 등록해주세요.  \n"
-                + "지금 바로 입력하고, 습관을 만들어볼까요?")
+            .title("오늘의 추천 단어!")
+            .body("")
             .build();
 
-        for (Admin admin : admins) {
-            //TODO 유저별 푸시 링크 다름
-            if(admin.isPushAgreed()) {
+        for (Admin admin : activeAdmin) {
+            if (!admin.isDeleted() && admin.isPushAgreed()) {
+                //TODO 유저별 푸시 링크 다름
+
+                List<Word> words = wordRepository.findByAdminIdAndCompletedLessThan(admin.getId(), 1);
+                StringBuilder sb = new StringBuilder();
+
+                for (Word word : words) {
+                    sb.append(word.getName()).append(" : ").append(word.getMean()).append(" 노출 수 : ").append(word.getView()).append("\n");
+                }
+
+                pushMessage.setBody(sb.toString());
+
                 pushAppSender.send(pushMessage);
             }
         }
@@ -54,42 +69,27 @@ public class Scheduler {
 
         for (Admin admin : admins) {
             //TODO 유저별 푸시 링크 다름
-            if(admin.isPushAgreed()) {
+            if (!admin.isDeleted() && admin.isPushAgreed()) {
                 pushAppSender.send(pushMessage);
             }
         }
     }
 
-    @Scheduled(cron = "0 0 8 * * *", zone = "Asia/Seoul")
-    public void recommendWord() {
+    @Scheduled(cron = "0 0 21 * * *", zone = "Asia/Seoul")
+    public void checkUserSpending() {
         PushSender pushAppSender = pushSendResolver.resolve();
-        Iterable<Admin> admins = adminRepository.findAll();
-
-        List<Admin> activeAdmin = new ArrayList<>();
-        for (Admin admin : admins) {
-            if(!admin.isDeleted()) {
-                activeAdmin.add(admin);
-            }
-        }
+        List<Admin> admins = adminRepository.findAdminsWithTodayNoSpend();
 
         PushMessage pushMessage = PushMessage.builder()
-            .title("오늘의 추천 단어!")
-            .body("")
+            .title("오늘 지출, 아직 안 하셨어요?")
+            .body("하루의 마무리는 지출 등록부터!  \n"
+                + "오늘 소비한 내역을 잊지 말고 등록해주세요.  \n"
+                + "지금 바로 입력하고, 습관을 만들어볼까요?")
             .build();
 
-        for (Admin admin : activeAdmin) {
-            if(admin.isPushAgreed()) {
-                //TODO 유저별 푸시 링크 다름
-
-                List<Word> words = wordRepository.findByAdminIdAndCompletedLessThan(admin.getId(), 1);
-                StringBuilder sb = new StringBuilder();
-
-                for(Word word : words) {
-                    sb.append(word.getName()).append(" : ").append(word.getMean()).append(" 노출 수 : ").append(word.getView()).append("\n");
-                }
-
-                pushMessage.setBody(sb.toString());
-
+        for (Admin admin : admins) {
+            //TODO 유저별 푸시 링크 다름
+            if (!admin.isDeleted() && admin.isPushAgreed()) {
                 pushAppSender.send(pushMessage);
             }
         }
