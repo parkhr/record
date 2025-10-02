@@ -75,15 +75,22 @@ const hours = Array.from({ length: 16 }, (_, i) =>
 );
 
 const events = ref<EventItem[]>([
-  { title: "아침 루틴 & 출근", start: "08:15", desc: "물 500ml 마시기, 스트레칭, 샤워, 출근, 할일 정리", end: "09:00", color: "#1677ff" },
-  { title: "회의", start: "09:00", desc: "팀 미팅", end: "10:00", color: "#fa8c16" },
-  { title: "점심 식사", start: "12:00", desc: "식사, 가벼운 산책 / 자리에서 스트레칭, 영어단어 외우기", end: "13:00", color: "#13c2c2" },
-  { title: "프로젝트 작업", start: "14:00", desc: "코딩 및 문서 작성", end: "17:00", color: "#eb2f96" },
-  { title: "운동", start: "20:00", desc: "헬스장 가기", end: "21:00", color: "#f5222d" },
-  { title: "휴식", start: "21:00", desc: "쉬기", end: "21:30", color: "#fa541c" },
-  { title: "작업", start: "21:30", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", end: "22:00", color: "#52c41a" },
-  { title: "작업", start: "22:00", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", end: "22:40", color: "#52c41a" },
-  { title: "작업", start: "23:00", desc: "마무리 루틴 (독서)", end: "24:00", color: "#1677ff" },
+  { title: "아침 루틴 & 출근", start: "08:00", end: "09:00", desc: "물 500ml 마시기, 스트레칭, 샤워, 출근, 할일 정리", color: "#1677ff" },
+  { title: "집중업무", start: "09:00", end: "10:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
+  { title: "집중업무", start: "10:00", end: "11:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
+  { title: "집중업무", start: "11:00", end: "12:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
+  { title: "점심 식사", start: "12:00", end: "13:00", desc: "식사, 가벼운 산책 / 자리에서 스트레칭, 영어단어 외우기", color: "#13c2c2" },
+  { title: "운동", start: "13:00", end: "14:00", desc: "헬스장 가기", color: "#f5222d" },
+  { title: "일정관리", start: "14:00", end: "15:00", desc: "일정관리" , color: "#eb2f96" },
+  { title: "단순업무", start: "15:00", end: "16:00", desc: "단순업무" , color: "#eb2f96" },
+  { title: "집중업무", start: "16:00", end: "17:00", desc: "집중업무" , color: "#fa8c16" },
+  { title: "집중업무", start: "17:00", end: "18:00", desc: "집중업무" , color: "#fa8c16" },
+  { title: "저녁 + 관계", start: "18:00", end: "19:00", desc: "가족/연인/친구와 시간 보내기, 저녁 식사 + 소화 보조 산책" , color: "#13c2c2" },
+  { title: "저녁 + 관계", start: "19:00", end: "20:00", desc: "가족/연인/친구와 시간 보내기, 저녁 식사 + 소화 보조 산책" , color: "#13c2c2" },
+  { title: "휴식", start: "20:00", end: "21:00", desc: "쉬기", color: "#fa541c" },
+  { title: "작업", start: "21:00", end: "22:00", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", color: "#52c41a" },
+  { title: "작업", start: "22:00", end: "23:00", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", color: "#52c41a" },
+  { title: "마무리 루틴", start: "23:00", end: "24:00", desc: "독서", color: "#1677ff" },
 ]);
 
 const currentTime = ref(new Date());
