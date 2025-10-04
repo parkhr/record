@@ -45,4 +45,10 @@ public class ReportController {
         reportService.deleteReportTask(reportTaskId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/report/task/statistic/{reportId}")
+    public ResponseEntity<Object> statisticReportTask(@PathVariable("reportId") Long reportId) {
+
+        return ResponseEntity.ok(reportService.statisticReportTask(reportId));
+    }
 }

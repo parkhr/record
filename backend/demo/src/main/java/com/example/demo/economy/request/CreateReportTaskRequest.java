@@ -7,12 +7,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateReportTaskRequest {
-    
+
+    private Long reportId;
     private String title;
     private String content;
     private String type;
     private String color;
     private String condition;
+    private String hard;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 }

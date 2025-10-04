@@ -16,10 +16,13 @@ import com.example.demo.economy.repository.ReportTaskRepository;
 import com.example.demo.economy.request.CreateReportTaskRequest;
 import com.example.demo.economy.request.UpdateReportTaskRequest;
 import com.example.demo.economy.response.ReportResponse;
+import com.example.demo.economy.response.ReportStatisticResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,12 +53,10 @@ public class ReportService {
         Report report = reportRepository.findByAdminIdAndDateBetween(admin.getId(), start, end)
             .orElseThrow(() -> new ApplicationException("데일리리포트가 생성되지 않았습니다."));
 
-        List<ReportTask> reportTasks = reportTaskRepository.findByAdminIdAndReportId(admin.getId(), report.getId());
+        List<ReportTask> reportTasks = reportTaskRepository.findByAdminIdAndReportId(admin.getId(), report.getId()).stream()
+            .filter(item -> !item.isDeleted()).toList();
 
-        return ReportResponse.builder()
-            .report(report)
-            .reportTasks(reportTasks)
-            .build();
+        return ReportResponse.builder().report(report).reportTasks(reportTasks).build();
     }
 
     @Transactional
@@ -67,13 +68,7 @@ public class ReportService {
             throw new ApplicationException(DELETED_ADMIN);
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDateTime start = today.atStartOfDay();
-        LocalDateTime end = today.plusDays(1).atStartOfDay().minusNanos(1);
-
-        Report report = reportRepository.findByAdminIdAndDateBetween(admin.getId(), start, end)
-            .orElseThrow(() -> new ApplicationException("데일리리포트가 생성되지 않았습니다."));
-
+        Report report = reportRepository.findById(request.getReportId()).orElseThrow(() -> new ApplicationException("데일리리포트가 생성되지 않았습니다."));
         return reportTaskRepository.save(ReportTask.createReportTask(request, admin.getId()));
     }
 
@@ -107,5 +102,35 @@ public class ReportService {
 
         reportTask.delete();
         reportTaskRepository.save(reportTask);
+    }
+
+    public ReportStatisticResponse statisticReportTask(long reportId) {
+        CustomUserDetails userDetails = UserUtil.getCustomUserDetails().orElseThrow(() -> new BadCredentialsException(LOGIN_REQUIRED));
+        Admin admin = adminRepository.findById(userDetails.getId()).orElseThrow(() -> new ApplicationException(ADMIN_NOT_FOUND));
+
+        if (admin.isDeleted()) {
+            throw new ApplicationException(DELETED_ADMIN);
+        }
+
+        List<ReportTask> reportTasks = reportTaskRepository.findByAdminIdAndReportId(admin.getId(), reportId);
+
+        if (reportTasks.isEmpty()) {
+            return new ReportStatisticResponse();
+        } else {
+            // 활동시간
+            Map<String, List<ReportTask>> time = reportTasks.stream().collect(Collectors.groupingBy(ReportTask::getType));
+
+            // 몰입도
+            Map<String, List<ReportTask>> hard = reportTasks.stream().collect(Collectors.groupingBy(ReportTask::getHard));
+
+            // 컨디션
+            Map<String, List<ReportTask>> condition = reportTasks.stream().collect(Collectors.groupingBy(ReportTask::getCondition));
+
+            ReportStatisticResponse response = new ReportStatisticResponse();
+            response.setHard(hard);
+            response.setCondition(condition);
+            response.setTime(time);
+            return response;
+        }
     }
 }

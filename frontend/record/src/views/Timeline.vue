@@ -24,8 +24,8 @@
               class="event-block"
               :style="getEventStyle(event)"
             >
-              <div class="event-time">{{ event.start }} ~ {{ event.end }}</div>
-              <div class="event-title">{{ event.title }} / {{ event.desc }}</div>
+              <div class="event-time">{{ event.startTime.split("T")[1] }} ~ {{ event.endTime.split("T")[1] }}</div>
+              <div class="event-title">{{ event.title }} / {{ event.content }}</div>
             </div>
 
             <!-- 현재 시간 선 -->
@@ -41,20 +41,27 @@
     <a-col :span="14">
       <div>해야할 것 !</div>
         <ul>
-            <li>데일리리포트 생성(스케줄러로 새벽 4시쯤 데일리리포트 생성)</li>
             <li>반복되는 고정 데이터 저장 및 백엔드 연동 ex) 아침루틴</li>
             <li>데일리리포트 데이터 등록(좀 더 쉽게 등록할 수 있는 방법 고민 ...)</li>
-            <li>데일리리포트 데이터 수정</li>
-            <li>데일리리포트 데이터 삭제</li>
             <li>데일리리포트 통계 (하루 피드백, 주간 피드백, 월간 피드백)</li>
+            <li> 타입, 몰입도, 컨디션 표시 ..</li>
         </ul>
         
     </a-col>
   </a-row>
+
+  <ReportTaskCreateModal ref="reportTaskCreateModal" />
+  <ReportTaskUpdateModal ref="reportTaskUpdateModal" />
 </template>
 
 <script lang="ts" setup>
+import { fetchReport, fetchStatisticReport } from '@/api/reportApi';
+import ReportTaskCreateModal from '@/components/ReportTaskCreateModal.vue';
+import ReportTaskUpdateModal from '@/components/ReportTaskUpdateModal.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
+
+const reportTaskCreateModal = ref();
+const reportTaskUpdateModal = ref();
 
 // ----------------------
 // 상태 정의
@@ -63,24 +70,8 @@ const hours = Array.from({ length: 16 }, (_, i) =>
   String(i + 8).padStart(2, "0") + ":00"
 );
 
-const events = ref([
-  { id: 1, title: "아침 루틴 & 출근", start: "08:00", end: "09:00", desc: "물 500ml 마시기, 스트레칭, 샤워, 출근, 할일 정리", color: "#1677ff" },
-  { id: 2, title: "집중업무", start: "09:00", end: "10:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
-  { id: 3, title: "집중업무", start: "10:00", end: "11:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
-  { id: 4, title: "집중업무", start: "11:00", end: "12:00", desc: "가장 어려운 일부터 시작, 구체적 목표 설정: “2시간 안에 → 기능 A의 로직 완성”", color: "#fa8c16" },
-  { id: 5, title: "점심 식사", start: "12:00", end: "13:00", desc: "식사, 가벼운 산책 / 자리에서 스트레칭, 영어단어 외우기", color: "#13c2c2" },
-  { id: 6, title: "운동", start: "13:00", end: "13:30", desc: "헬스장 가기", color: "#f5222d" },
-  // { id: 7, title: "일정관리", start: "14:00", end: "15:00", desc: "일정관리" , color: "#eb2f96" },
-  { id: 8, title: "단순업무", start: "15:00", end: "16:00", desc: "단순업무" , color: "#eb2f96" },
-  { id: 9, title: "집중업무", start: "16:00", end: "17:00", desc: "집중업무" , color: "#fa8c16" },
-  { id: 10, title: "집중업무", start: "17:00", end: "18:00", desc: "집중업무" , color: "#fa8c16" },
-  { id: 11, title: "저녁 + 관계", start: "18:00", end: "19:00", desc: "가족/연인/친구와 시간 보내기, 저녁 식사 + 소화 보조 산책" , color: "#13c2c2" },
-  { id: 12, title: "저녁 + 관계", start: "19:00", end: "20:00", desc: "가족/연인/친구와 시간 보내기, 저녁 식사 + 소화 보조 산책" , color: "#13c2c2" },
-  { id: 13, title: "휴식", start: "20:00", end: "21:00", desc: "쉬기", color: "#fa541c" },
-  { id: 14, title: "작업", start: "21:00", end: "22:00", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", color: "#52c41a" },
-  { id: 15, title: "작업", start: "22:00", end: "23:00", desc: "몰입 창의 작업 (아이디어 구상, 사이드 프로젝트 설계)", color: "#52c41a" },
-  { id: 16, title: "마무리 루틴", start: "23:00", end: "24:00", desc: "독서", color: "#1677ff" },
-]);
+const report = ref(null);
+const events = ref([]);
 
 const currentTime = ref(new Date());
 
@@ -88,38 +79,53 @@ const currentTime = ref(new Date());
 // 유틸 함수
 // ----------------------
 const toMinutes = (time: string): number => {
-  const [h, m] = time.split(":").map(Number);
+
+  const [h, m] = time.split("T")[1].split(":").map(Number);
   return h * 60 + m;
 };
 
 // ----------------------
 // 메서드
 // ----------------------
+
+const onCreate = (hourNum) => {
+  reportTaskCreateModal.value.show(hourNum, report.value.id, () => {
+    getReport();
+  });
+};
+
+const onUpdate = (task) => {
+  reportTaskUpdateModal.value.show(task, task.id, () => {
+    getReport();
+  });
+};
+
 const getEventsAtHour = (hour: string) => {
   const hourNum = parseInt(hour.split(":")[0], 10);
   const startMin = hourNum * 60;
   const endMin = (hourNum + 1) * 60;
   return events.value.filter(e => {
-    const eStart = toMinutes(e.start);
-    const eEnd = toMinutes(e.end);
+    const eStart = toMinutes(e.startTime);
+    const eEnd = toMinutes(e.endTime);
+    
     return eStart >= startMin && eEnd <= endMin;
   });
 };
 
 const getEventsAtMinute = (minute: number) => {
   return events.value.filter(e => {
-    const eStart = toMinutes(e.start);
-    const eEnd = toMinutes(e.end);
+    const eStart = toMinutes(e.startTime);
+    const eEnd = toMinutes(e.endTime);
     return minute >= eStart && minute < eEnd;
   });
 };
 
 const getEventStyle = (event) => {
-  const hourNum = parseInt(event.start.split(":")[0], 10);
+  const hourNum = parseInt(event.startTime.split("T")[1].split(":")[0], 10);
   const startOfHour = hourNum * 60;
 
-  const startMin = toMinutes(event.start);
-  const endMin = toMinutes(event.end);
+  const startMin = toMinutes(event.startTime);
+  const endMin = toMinutes(event.endTime);
 
   const leftPercent = ((startMin - startOfHour) / 60) * 100;
   const widthPercent = ((endMin - startMin) / 60) * 100;
@@ -132,7 +138,7 @@ const getEventStyle = (event) => {
     height: "60%",
     top: "20%",
     borderRadius: "4px",
-    color: "#fff",
+    color: "#444444",
     fontSize: "13px",
     padding: "2px 4px",
     overflow: "hidden",
@@ -165,9 +171,26 @@ const handleTimeCellClick = (e, hour) => {
 
   // 클릭한 분 = 시*60 + (60 * 비율)
   const minutes = Math.floor(hourNum * 60 + clickRatio * 60);
-  console.log(getEventsAtMinute(minutes))
+  let reportTask = getEventsAtMinute(minutes);
+
+  if(reportTask.length > 0) {
+    let task = reportTask[0];
+    onUpdate(task);
+  }else {
+    onCreate(hourNum);
+  }
 }
 
+const getReport = async () => {
+
+    const result = await fetchReport();
+
+    report.value = result.data.report;
+    events.value = result.data.reportTasks;
+
+    const statisticResult = await fetchStatisticReport(report.value.id)
+    console.log(statisticResult.data);
+}
 // ----------------------
 // 타이머
 // ----------------------
@@ -177,6 +200,11 @@ onMounted(() => {
     currentTime.value = new Date();
   }, 1000);
 });
+
+onMounted(() => {
+  getReport();
+});
+
 onUnmounted(() => {
   clearInterval(timer);
 });

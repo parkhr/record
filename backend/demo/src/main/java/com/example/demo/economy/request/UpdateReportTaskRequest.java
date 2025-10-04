@@ -13,6 +13,7 @@ public class UpdateReportTaskRequest {
     private String content;
     private String type;
     private String color;
+    private String hard;
     private String condition;
     private LocalDateTime startTime;
     private LocalDateTime endTime;

@@ -43,6 +43,9 @@ public class ReportTask {
     @Column("condition")
     private String condition;
 
+    @Column("hard")
+    private String hard;
+
     @Column("startTime")
     private LocalDateTime startTime;
 
@@ -62,10 +65,12 @@ public class ReportTask {
     public static ReportTask createReportTask(CreateReportTaskRequest request, long adminId) {
         return ReportTask.builder()
             .adminId(adminId)
+            .reportId(request.getReportId())
             .title(request.getTitle())
             .content(request.getContent())
             .type(request.getType())
             .color(request.getColor())
+            .hard(request.getHard())
             .condition(request.getCondition())
             .startTime(request.getStartTime())
             .endTime(request.getEndTime())
@@ -82,19 +87,21 @@ public class ReportTask {
         this.content = request.getContent();
         this.type = request.getType();
         this.color = request.getColor();
+        this.hard = request.getHard();
         this.condition = request.getCondition();
         this.startTime = request.getStartTime();
         this.endTime = request.getEndTime();
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
     }
 //
 //    public void delete() {
 //        this.deletedAt = LocalDateTime.now();
 //    }
 //
-//    public boolean isDeleted() {
-//        return this.deletedAt != null;
-//    }
 //
 //    public void update(UpdateTaskRequest request) {
 //        this.epicId = request.getEpicId();
