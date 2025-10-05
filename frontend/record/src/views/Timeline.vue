@@ -1,6 +1,11 @@
 <template>
   <a-row>
-    <a-col :span="10">
+    <div class="day-detail">
+      <h3>{{ report?.date.split("T")[0] }}</h3>
+    </div>
+  </a-row>
+  <a-row>
+    <a-col :span="14">
       <div class="day-timeline">
         <!-- 시간대 row -->
         <div v-for="(hour, index) in hours" :key="index" class="time-row">
@@ -25,7 +30,32 @@
               :style="getEventStyle(event)"
             >
               <div class="event-time">{{ event.startTime.split("T")[1] }} ~ {{ event.endTime.split("T")[1] }}</div>
-              <div class="event-title">{{ event.title }} / {{ event.content }}</div>
+                <div class="event-title">
+                  <a-tag :bordered="false" color: event.color>
+                    {{ event.type}}
+                  </a-tag>
+
+                  {{ event.title }}
+                  <template v-if="event.condition === '좋음'">
+                    <ArrowUpOutlined />
+                  </template>
+                  <template v-else-if="event.condition === '중간'">
+                    <ArrowRightOutlined />
+                  </template>
+                  <template v-else-if="event.condition === '나쁨'">
+                    <ArrowDownOutlined />
+                  </template>
+                  
+                  <template v-if="event.hard === '상'">
+                    <SmileOutlined />
+                  </template>
+                  <template v-if="event.hard === '중'">
+                    <MehOutlined />
+                  </template>
+                  <template v-if="event.hard === '하'">
+                    <FrownOutlined />
+                  </template>
+                </div>
             </div>
 
             <!-- 현재 시간 선 -->
@@ -38,17 +68,20 @@
         </div>
       </div>
     </a-col>
-    <a-col :span="14">
-      <div>해야할 것 !</div>
+    <a-col :span="10">
+      <div class="day-statistics">
+        <h3>데일리리포트 통계</h3>
+
+
+
+
+        <div>해야할 것 !</div>
         <ul>
-          <li>설정 DB 설계</li>
-          <li>설정 crud</li>
-          <li>데일리리포트에 설정 반영</li>
           <li>데일리리포트 통계 (하루 피드백, 주간 피드백, 월간 피드백)</li>
-          <li>타입, 몰입도, 컨디션 표시</li>
           <li>날짜 불일치 해결</li>
-          <li>리포트 상세 설명 (오늘날짜... )</li>
+          <li>설정 crud</li>
         </ul>
+      </div>
     </a-col>
   </a-row>
 
@@ -61,6 +94,14 @@ import { fetchReport, fetchStatisticReport } from '@/api/reportApi';
 import ReportTaskCreateModal from '@/components/ReportTaskCreateModal.vue';
 import ReportTaskUpdateModal from '@/components/ReportTaskUpdateModal.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
+import {
+  SmileOutlined,
+  ArrowUpOutlined,
+  ArrowRightOutlined,
+  ArrowDownOutlined,
+  FrownOutlined,
+  MehOutlined
+} from '@ant-design/icons-vue';
 
 const reportTaskCreateModal = ref();
 const reportTaskUpdateModal = ref();
@@ -213,6 +254,16 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+
+.day-statistics {
+  margin-left : 20px;
+}
+
+.day-detail {
+  margin-left: 80px;
+  margin-bottom: 20px;
+}
+
 .day-timeline {
   display: flex;
   flex-direction: column;
