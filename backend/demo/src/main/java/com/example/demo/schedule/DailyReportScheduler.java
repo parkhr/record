@@ -2,6 +2,7 @@ package com.example.demo.schedule;
 
 import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
+import com.example.demo.economy.ReportScheduleService;
 import com.example.demo.economy.entity.Report;
 import com.example.demo.economy.repository.ReportRepository;
 import com.example.demo.push.PushMessage;
@@ -21,6 +22,7 @@ public class DailyReportScheduler {
     private final PushSendResolver pushSendResolver;
     private final AdminRepository adminRepository;
     private final ReportRepository reportRepository;
+    private final ReportScheduleService reportScheduleService;
 
     @Scheduled(cron = "0 0 4 * * *", zone = "Asia/Seoul")
     public void createDailyReport() {
@@ -28,7 +30,7 @@ public class DailyReportScheduler {
 
         for (Admin admin : admins) {
             if (!admin.isDeleted()) {
-                reportRepository.save(Report.createReport(admin.getId()));
+                reportScheduleService.createReport(admin);
             }
         }
     }

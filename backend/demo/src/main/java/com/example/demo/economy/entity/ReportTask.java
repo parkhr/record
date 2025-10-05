@@ -2,7 +2,9 @@ package com.example.demo.economy.entity;
 
 import com.example.demo.economy.request.CreateReportTaskRequest;
 import com.example.demo.economy.request.UpdateReportTaskRequest;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,6 +63,30 @@ public class ReportTask {
 
     @Column("deletedAt")
     private LocalDateTime deletedAt;
+
+    public static ReportTask of(ReportConfig config, long reportId) {
+
+        LocalDate today = LocalDate.now();  // 오늘 날짜
+        LocalTime start = config.getStartTime(); // 예: 08:00
+        LocalTime end = config.getEndTime();     // 예: 09:00
+
+        LocalDateTime startDateTime = LocalDateTime.of(today, start);
+        LocalDateTime endDateTime = LocalDateTime.of(today, end);
+
+        return ReportTask.builder()
+            .reportId(reportId)
+            .adminId(config.getAdminId())
+            .title(config.getTitle())
+            .content(config.getContent())
+            .type(config.getType())
+            .color(config.getColor())
+            .condition(config.getCondition())
+            .hard(config.getHard())
+            .startTime(startDateTime)
+            .endTime(endDateTime)
+            .createdAt(LocalDateTime.now())
+            .build();
+    }
 
     public static ReportTask createReportTask(CreateReportTaskRequest request, long adminId) {
         return ReportTask.builder()
