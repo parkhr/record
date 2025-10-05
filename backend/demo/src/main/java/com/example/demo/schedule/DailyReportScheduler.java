@@ -2,6 +2,7 @@ package com.example.demo.schedule;
 
 import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
+import com.example.demo.common.util.DateUtil;
 import com.example.demo.economy.ReportScheduleService;
 import com.example.demo.economy.entity.Report;
 import com.example.demo.economy.repository.ReportRepository;
@@ -10,6 +11,7 @@ import com.example.demo.push.PushSendResolver;
 import com.example.demo.push.PushSender;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -45,13 +47,11 @@ public class DailyReportScheduler {
             .body("기록을 시작해보세요!")
             .build();
 
-        LocalDate today = LocalDate.now();
-        LocalDateTime start = today.atStartOfDay();
-        LocalDateTime end = today.plusDays(1).atStartOfDay().minusNanos(1);
+        LocalDateTime[] rangeForDate = DateUtil.getUtcRangeForDate(LocalDate.now(ZoneId.of("Asia/Seoul")), ZoneId.of("Asia/Seoul"));
 
         for (Admin admin : admins) {
             if (!admin.isDeleted() && admin.isPushAgreed()) {
-                Optional<Report> optionalReport = reportRepository.findByAdminIdAndDateBetween(admin.getId(), start, end);
+                Optional<Report> optionalReport = reportRepository.findByAdminIdAndDateBetween(admin.getId(), rangeForDate[0], rangeForDate[1]);
 
                 if (optionalReport.isPresent()) {
                     //TODO 유저별 푸시 링크 다름

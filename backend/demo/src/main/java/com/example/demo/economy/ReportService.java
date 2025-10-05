@@ -8,6 +8,7 @@ import com.example.demo.admin.entity.Admin;
 import com.example.demo.admin.repository.AdminRepository;
 import com.example.demo.common.CustomUserDetails;
 import com.example.demo.common.exception.ApplicationException;
+import com.example.demo.common.util.DateUtil;
 import com.example.demo.common.util.UserUtil;
 import com.example.demo.economy.entity.Report;
 import com.example.demo.economy.entity.ReportTask;
@@ -19,6 +20,7 @@ import com.example.demo.economy.response.ReportResponse;
 import com.example.demo.economy.response.ReportStatisticResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,11 +47,9 @@ public class ReportService {
             throw new ApplicationException(DELETED_ADMIN);
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDateTime start = today.atStartOfDay();
-        LocalDateTime end = today.plusDays(1).atStartOfDay().minusNanos(1);
+        LocalDateTime[] rangeForDate = DateUtil.getUtcRangeForDate(LocalDate.now(ZoneId.of("Asia/Seoul")), ZoneId.of("Asia/Seoul"));
 
-        Report report = reportRepository.findByAdminIdAndDateBetween(admin.getId(), start, end)
+        Report report = reportRepository.findByAdminIdAndDateBetween(admin.getId(), rangeForDate[0], rangeForDate[1])
             .orElseThrow(() -> new ApplicationException("데일리리포트가 생성되지 않았습니다."));
 
         List<ReportTask> reportTasks = reportTaskRepository.findByAdminIdAndReportId(admin.getId(), report.getId()).stream()

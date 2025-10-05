@@ -14,6 +14,27 @@ public class DateUtil {
 
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 
+
+
+
+
+    /**
+     * 특정 타임존의 LocalDate 기준 하루 전체를 UTC 기준 LocalDateTime 범위로 반환
+     *
+     * @param date LocalDate 기준 (예: KST 기준 오늘)
+     * @param zone 타임존 (예: ZoneId.of("Asia/Seoul"))
+     * @return LocalDateTime[] { UTC 시작, UTC 끝 }
+     */
+    public static LocalDateTime[] getUtcRangeForDate(LocalDate date, ZoneId zone) {
+        ZonedDateTime start = date.atStartOfDay(zone);
+        ZonedDateTime end = date.plusDays(1).atStartOfDay(zone).minusNanos(1);
+
+        LocalDateTime utcStart = start.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+        LocalDateTime utcEnd = end.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+
+        return new LocalDateTime[]{utcStart, utcEnd};
+    }
+
     /**
      * 특정 날짜가 속한 주의 시작과 종료 반환
      *
